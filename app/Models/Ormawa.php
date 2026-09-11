@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+class Ormawa extends Model
+{
+    protected $fillable = [
+        'nama',
+        'slug',
+        'tingkat',
+        'fakultas',
+        'jurusan',
+        'deskripsi',
+        'visi',
+        'misi',
+        'logo',
+        'kontak_email',
+        'kontak_instagram',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Ormawa $ormawa) {
+            if (empty($ormawa->slug)) {
+                $ormawa->slug = Str::slug($ormawa->nama);
+            }
+        });
+    }
+
+    public function ormawaAdmins() { return $this->hasMany(OrmawaAdmin::class); }
+    public function admins() { return $this->belongsToMany(User::class, 'ormawa_admins'); }
+    public function recruitments() { return $this->hasMany(Recruitment::class); }
+    public function prestasis() { return $this->hasMany(OrmawaPrestasi::class); }
+    public function programKerjas() { return $this->hasMany(OrmawaProgramKerja::class); }
+}

@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* UNSOED Gold Accent */
+    --color-gold-50: #fffef0;
+    --color-gold-100: #fffacc;
+    --color-gold-200: #fff599;
+    --color-gold-300: #ffed5c;
+    --color-gold-400: #ffe42a;
+    --color-gold-500: #FFDF16;
+    --color-gold-600: #e6c200;
+    --color-gold-700: #bf9b00;
+    --color-gold-800: #997800;
+    --color-gold-900: #7a6100;
+
+    /* Functional Colors */
+    --color-success-500: #22c55e;
+    --color-warning-500: #f59e0b;
+    --color-danger-500: #ef4444;
+}

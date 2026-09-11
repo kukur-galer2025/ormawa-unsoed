@@ -1,0 +1,14 @@
+@extends("layouts.app")
+@section("title","Profil Saya")@section("page-title","Edit Profil")
+@section("sidebar")@include("layouts.partials.sidebar-mahasiswa")@endsection
+@section("content")
+<div class="max-w-2xl"><div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+<form method="POST" action="{{ route('mahasiswa.profile.update') }}" enctype="multipart/form-data" class="space-y-5">@csrf @method('PUT')
+<div><label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label><input type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></div>
+<div><label class="block text-sm font-medium text-slate-700 mb-1">NIM</label><input type="text" value="{{ $profile->nim }}" disabled class="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 text-slate-500"></div>
+<div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium text-slate-700 mb-1">Fakultas</label><input type="text" name="fakultas" value="{{ old('fakultas', $profile->fakultas) }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></div><div><label class="block text-sm font-medium text-slate-700 mb-1">Jurusan</label><input type="text" name="jurusan" value="{{ old('jurusan', $profile->jurusan) }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></div></div>
+<div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium text-slate-700 mb-1">Angkatan</label><input type="text" name="angkatan" value="{{ old('angkatan', $profile->angkatan) }}" required maxlength="4" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></div><div><label class="block text-sm font-medium text-slate-700 mb-1">No. HP</label><input type="text" name="no_hp" value="{{ old('no_hp', $profile->no_hp) }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></div></div>
+<div><label class="block text-sm font-medium text-slate-700 mb-1">Foto</label><input type="file" name="foto" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div>
+<div class="pt-2"><button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25">Simpan Profil</button></div>
+</form></div></div>
+@endsection
