@@ -33,7 +33,7 @@ class AdminManagementController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'ormawa_ids' => 'required|array|min:1',
-            'ormawa_ids.*' => 'exists:ormawas,id',
+            'ormawa_ids.*' => 'exists:ormawa,id',
         ]);
 
         $user = User::create([
@@ -67,7 +67,7 @@ class AdminManagementController extends Controller
             'email' => 'required|email|unique:users,email,' . $admin->id,
             'password' => 'nullable|string|min:8',
             'ormawa_ids' => 'required|array|min:1',
-            'ormawa_ids.*' => 'exists:ormawas,id',
+            'ormawa_ids.*' => 'exists:ormawa,id',
         ]);
 
         $admin->update([

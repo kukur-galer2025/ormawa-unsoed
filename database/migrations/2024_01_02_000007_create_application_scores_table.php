@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('application_scores', function (Blueprint $table) {
+        Schema::create('nilai_pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained()->onDelete('cascade');
-            $table->foreignId('criteria_id')->constrained('criteria')->onDelete('cascade');
+            $table->foreignId('application_id')->constrained('pendaftaran')->onDelete('cascade');
+            $table->foreignId('criteria_id')->constrained('kriteria')->onDelete('cascade');
             $table->integer('actual_value')->nullable()->comment('Nilai aktual yang diinput admin 1-5');
             $table->integer('gap')->nullable()->comment('actual_value - target_value');
             $table->decimal('bobot_gap', 3, 1)->nullable()->comment('Dari tabel konversi gap');
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('application_scores');
+        Schema::dropIfExists('nilai_pendaftaran');
     }
 };

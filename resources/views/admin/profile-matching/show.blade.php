@@ -109,8 +109,8 @@
                     </button>
                 </form>
             @else
-                @if($div->applications_count > 0 && $div->hasAspects && $div->bobotValid && $div->aspectsReady && !$div->allScored)
-                    <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition-colors">
+                @if($div->profile_matching_results_count > 0)
+                    <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition-colors" title="Lihat hasil kalkulasi terakhir yang tersimpan">
                         Lihat Hasil (Lama)
                     </a>
                 @endif

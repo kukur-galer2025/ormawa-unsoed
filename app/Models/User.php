@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function ormawas()
     {
-        return $this->belongsToMany(Ormawa::class, 'ormawa_admins');
+        return $this->belongsToMany(Ormawa::class, 'admin_ormawa');
     }
 
     public function applications()

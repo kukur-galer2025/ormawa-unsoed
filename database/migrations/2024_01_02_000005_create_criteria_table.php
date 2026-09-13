@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('criteria', function (Blueprint $table) {
+        Schema::create('kriteria', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('aspect_id')->constrained('aspects')->onDelete('cascade');
+            $table->foreignId('aspect_id')->constrained('aspek')->onDelete('cascade');
             $table->string('nama_kriteria');
             $table->enum('tipe', ['core', 'secondary']);
             $table->integer('target_value')->comment('Nilai target profil ideal 1-5');
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('criteria');
+        Schema::dropIfExists('kriteria');
     }
 };

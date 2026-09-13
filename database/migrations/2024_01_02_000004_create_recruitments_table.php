@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('recruitments', function (Blueprint $table) {
+        Schema::create('rekrutmen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ormawa_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ormawa_id')->constrained('ormawa')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->text('persyaratan')->nullable();
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('recruitments');
+        Schema::dropIfExists('rekrutmen');
     }
 };

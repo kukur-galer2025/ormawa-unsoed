@@ -28,7 +28,7 @@
                 <input type="file" name="berkas_pendukung" accept=".pdf,.doc,.docx" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                 @error('berkas_pendukung')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
             </div>
-            <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:from-blue-500 hover:to-indigo-500 transition-all" onclick="return confirm('Yakin ingin mendaftar pada rekrutmen ini?')">Kirim Pendaftaran</button>
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:from-blue-500 hover:to-indigo-500 transition-all" onclick="confirmClick(event, 'Yakin ingin mendaftar pada rekrutmen ini?')">Kirim Pendaftaran</button>
         </form>
     </div>
 </div>

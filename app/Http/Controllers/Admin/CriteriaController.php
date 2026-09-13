@@ -26,7 +26,7 @@ class CriteriaController extends Controller
     public function store(Request $request, Recruitment $recruitment)
     {
         $request->validate([
-            'aspect_id' => 'required|exists:aspects,id',
+            'aspect_id' => 'required|exists:aspek,id',
             'nama_kriteria' => 'required|string|max:255',
             'tipe' => 'required|in:core,secondary',
             'target_value' => 'required|integer|min:1|max:5',
@@ -74,7 +74,7 @@ class CriteriaController extends Controller
     public function update(Request $request, Recruitment $recruitment, Criteria $criterion)
     {
         $request->validate([
-            'aspect_id' => 'required|exists:aspects,id',
+            'aspect_id' => 'required|exists:aspek,id',
             'nama_kriteria' => 'required|string|max:255',
             'tipe' => 'required|in:core,secondary',
             'target_value' => 'required|integer|min:1|max:5',

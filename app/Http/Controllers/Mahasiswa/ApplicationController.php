@@ -16,7 +16,7 @@ class ApplicationController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'recruitment_division_id' => 'required|exists:recruitment_divisions,id',
+            'recruitment_division_id' => 'required|exists:divisi_rekrutmen,id',
             'motivasi' => 'required|string|max:2000',
             'berkas_pendukung' => 'nullable|file|max:5120|mimes:pdf,doc,docx',
         ]);

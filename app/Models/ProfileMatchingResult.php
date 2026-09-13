@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProfileMatchingResult extends Model
 {
+    protected $table = 'hasil_profile_matching';
     protected $fillable = [
         'application_id', 'recruitment_division_id', 'detail_per_aspek', 'total_score', 'ranking',
     ];

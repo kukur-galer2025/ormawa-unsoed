@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Criteria extends Model
 {
-    protected $table = 'criteria';
+    protected $table = 'kriteria';
 
     protected $fillable = [
         'aspect_id', 'nama_kriteria', 'tipe', 'target_value', 'keterangan', 'urutan',
@@ -21,6 +21,11 @@ class Criteria extends Model
      */
     public function getDivisionAttribute()
     {
-        return $this->aspect?->division;
+        if ($this->relationLoaded('aspect') && $this->aspect) {
+            return $this->aspect->relationLoaded('division') 
+                ? $this->aspect->division 
+                : $this->aspect->division()->first();
+        }
+        return $this->aspect()->with('division')->first()?->division;
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrmawaAdmin extends Model
 {
+    protected $table = 'admin_ormawa';
     protected $fillable = ['user_id', 'ormawa_id'];
 
     public function user() { return $this->belongsTo(User::class); }

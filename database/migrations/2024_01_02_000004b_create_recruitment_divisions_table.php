@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('recruitment_divisions', function (Blueprint $table) {
+        Schema::create('divisi_rekrutmen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('recruitment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('recruitment_id')->constrained('rekrutmen')->onDelete('cascade');
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->integer('kuota')->default(0)->comment('Max jumlah yang diterima di divisi ini');
@@ -20,6 +20,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('recruitment_divisions');
+        Schema::dropIfExists('divisi_rekrutmen');
     }
 };

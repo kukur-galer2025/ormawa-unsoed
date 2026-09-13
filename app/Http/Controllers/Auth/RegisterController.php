@@ -24,7 +24,7 @@ class RegisterController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'nim' => 'required|string|max:20|unique:mahasiswa_profiles,nim',
+            'nim' => 'required|string|max:20|unique:profil_mahasiswa,nim',
             'fakultas' => 'required|string|max:255',
             'jurusan' => 'required|string|max:255',
             'angkatan' => 'required|string|size:4',

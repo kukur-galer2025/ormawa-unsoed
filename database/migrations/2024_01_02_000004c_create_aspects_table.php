@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('aspects', function (Blueprint $table) {
+        Schema::create('aspek', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recruitment_division_id')
-                  ->constrained('recruitment_divisions')->onDelete('cascade');
+                  ->constrained('divisi_rekrutmen')->onDelete('cascade');
             $table->string('nama');
             $table->decimal('bobot', 5, 2)->comment('Bobot aspek, e.g. 0.30 = 30%');
             $table->decimal('cf_percentage', 5, 2)->default(60.00);
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('aspects');
+        Schema::dropIfExists('aspek');
     }
 };

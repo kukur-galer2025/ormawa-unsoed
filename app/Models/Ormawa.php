@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 
 class Ormawa extends Model
 {
+    protected $table = 'ormawa';
     protected $fillable = [
         'nama',
         'slug',
@@ -36,7 +37,7 @@ class Ormawa extends Model
     }
 
     public function ormawaAdmins() { return $this->hasMany(OrmawaAdmin::class); }
-    public function admins() { return $this->belongsToMany(User::class, 'ormawa_admins'); }
+    public function admins() { return $this->belongsToMany(User::class, 'admin_ormawa'); }
     public function recruitments() { return $this->hasMany(Recruitment::class); }
     public function prestasis() { return $this->hasMany(OrmawaPrestasi::class); }
     public function programKerjas() { return $this->hasMany(OrmawaProgramKerja::class); }

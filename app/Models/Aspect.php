@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aspect extends Model
 {
+    protected $table = 'aspek';
     protected $fillable = [
         'recruitment_division_id', 'nama', 'bobot',
         'cf_percentage', 'sf_percentage', 'urutan',

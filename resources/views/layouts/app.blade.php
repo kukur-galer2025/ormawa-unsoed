@@ -88,6 +88,60 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmForm(event, message) {
+            event.preventDefault();
+            const form = event.target;
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-lg',
+                    cancelButton: 'rounded-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+        
+        function confirmClick(event, message) {
+            event.preventDefault();
+            const target = event.currentTarget;
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-lg',
+                    cancelButton: 'rounded-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (target.tagName === 'BUTTON' && target.type === 'submit') {
+                        target.closest('form').submit();
+                    } else if (target.tagName === 'A') {
+                        window.location.href = target.href;
+                    }
+                }
+            });
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

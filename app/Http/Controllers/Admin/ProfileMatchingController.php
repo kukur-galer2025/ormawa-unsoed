@@ -21,13 +21,7 @@ class ProfileMatchingController extends Controller
     {
         $ormawa = auth()->user()->ormawas()->first();
         $recruitments = $ormawa->recruitments()
-            ->where(function ($query) {
-                $query->whereIn('status', ['ditutup', 'selesai'])
-                      ->orWhere(function ($q) {
-                          $q->where('status', 'dibuka')
-                            ->where('tanggal_tutup', '<', now()->startOfDay());
-                      });
-            })
+            ->where('status', '!=', 'draft')
             ->withCount(['divisions', 'applications'])
             ->latest()
             ->paginate(10);
@@ -38,7 +32,7 @@ class ProfileMatchingController extends Controller
     public function show(Recruitment $recruitment)
     {
         $recruitment->load(['divisions' => function ($q) {
-            $q->withCount('applications');
+            $q->withCount(['applications', 'profileMatchingResults']);
         }, 'divisions.aspects.criteria']);
 
         foreach ($recruitment->divisions as $div) {

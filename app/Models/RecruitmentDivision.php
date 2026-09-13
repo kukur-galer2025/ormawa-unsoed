@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RecruitmentDivision extends Model
 {
+    protected $table = 'divisi_rekrutmen';
     protected $fillable = [
         'recruitment_id', 'nama', 'deskripsi', 'kuota',
     ];

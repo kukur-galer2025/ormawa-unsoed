@@ -12,8 +12,24 @@
     </div>
 </div>
 
-@foreach($recruitment->divisions as $div)
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+<div x-data="{ selectedDivision: 'all' }">
+    <div class="mb-6 max-w-xs">
+        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Filter Divisi</label>
+        <div class="relative">
+            <select x-model="selectedDivision" class="w-full appearance-none bg-white border border-slate-300 text-slate-700 py-2.5 pl-4 pr-10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm">
+                <option value="all">Semua Divisi</option>
+                @foreach($recruitment->divisions as $divOption)
+                    <option value="{{ $divOption->id }}">{{ $divOption->nama }}</option>
+                @endforeach
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+        </div>
+    </div>
+
+    @foreach($recruitment->divisions as $div)
+    <div x-show="selectedDivision === 'all' || selectedDivision == '{{ $div->id }}'" x-transition.opacity.duration.300ms class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <div>
             <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
@@ -48,7 +64,7 @@
                     </div>
                     <div class="flex gap-2">
                         <button @click="editing = true" class="px-3 py-1.5 text-xs bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200">Edit</button>
-                        <form action="{{ route('admin.aspect.destroy', [$recruitment, $aspect]) }}" method="POST" onsubmit="return confirm('Hapus aspek ini beserta semua kriterianya?')">
+                        <form action="{{ route('admin.aspect.destroy', [$recruitment, $aspect]) }}" method="POST" onsubmit="confirmForm(event, 'Hapus aspek ini beserta semua kriterianya?')">
                             @csrf @method('DELETE')
                             <button type="submit" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100">Hapus</button>
                         </form>
@@ -64,8 +80,8 @@
                             <input type="text" name="nama" value="{{ $aspect->nama }}" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (desimal)</label>
-                            <input type="number" name="bobot" value="{{ $aspect->bobot }}" step="0.01" min="0.01" max="1" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (%)</label>
+                            <input type="number" name="bobot" value="{{ $aspect->bobot * 100 }}" step="1" min="1" max="100" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">CF %</label>
@@ -101,8 +117,8 @@
                     <input type="text" name="nama" required placeholder="e.g. Kecerdasan" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (desimal) *</label>
-                    <input type="number" name="bobot" step="0.01" min="0.01" max="1" required placeholder="0.30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (%) *</label>
+                    <input type="number" name="bobot" step="1" min="1" max="100" required placeholder="30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">CF % *</label>
@@ -113,10 +129,11 @@
                     <input type="number" name="sf_percentage" step="0.01" min="0" max="100" required value="40" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                 </div>
             </div>
-            <p class="text-[11px] text-slate-500">Bobot dalam desimal (0.30 = 30%). CF% + SF% harus = 100%.</p>
+            <p class="text-[11px] text-slate-500">CF% + SF% harus = 100%.</p>
             <button type="submit" class="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-sm">Tambah Aspek</button>
         </form>
     </div>
 </div>
 @endforeach
+</div>
 @endsection

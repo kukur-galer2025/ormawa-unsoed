@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ormawa_admins', function (Blueprint $table) {
+        Schema::create('admin_ormawa', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('ormawa_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ormawa_id')->constrained('ormawa')->onDelete('cascade');
             $table->timestamps();
             $table->unique(['user_id', 'ormawa_id']);
         });
@@ -19,6 +19,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('ormawa_admins');
+        Schema::dropIfExists('admin_ormawa');
     }
 };

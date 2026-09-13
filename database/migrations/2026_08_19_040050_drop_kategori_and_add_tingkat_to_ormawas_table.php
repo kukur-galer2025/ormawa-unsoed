@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ormawas', function (Blueprint $table) {
+        Schema::table('ormawa', function (Blueprint $table) {
             $table->dropColumn('kategori');
             $table->enum('tingkat', ['Universitas', 'Fakultas', 'Jurusan'])->after('slug')->default('Universitas');
             $table->string('fakultas')->nullable()->after('tingkat');
@@ -24,7 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ormawas', function (Blueprint $table) {
+        Schema::table('ormawa', function (Blueprint $table) {
             $table->dropColumn(['tingkat', 'fakultas', 'jurusan']);
             $table->enum('kategori', ['BEM', 'DPM', 'HMPS', 'UKM', 'Lainnya'])->after('slug')->default('Lainnya');
         });

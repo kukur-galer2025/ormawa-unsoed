@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApplicationScore extends Model
 {
+    protected $table = 'nilai_pendaftaran';
     protected $fillable = [
         'application_id', 'criteria_id', 'actual_value', 'gap', 'bobot_gap',
     ];

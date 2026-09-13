@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('profile_matching_results', function (Blueprint $table) {
+        Schema::create('hasil_profile_matching', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained()->onDelete('cascade');
-            $table->foreignId('recruitment_division_id')->constrained('recruitment_divisions')->onDelete('cascade');
+            $table->foreignId('application_id')->constrained('pendaftaran')->onDelete('cascade');
+            $table->foreignId('recruitment_division_id')->constrained('divisi_rekrutmen')->onDelete('cascade');
             $table->json('detail_per_aspek')->nullable()->comment('Breakdown NCF/NSF/nilai per aspek');
             $table->decimal('total_score', 5, 2)->nullable();
             $table->integer('ranking')->nullable();
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('profile_matching_results');
+        Schema::dropIfExists('hasil_profile_matching');
     }
 };

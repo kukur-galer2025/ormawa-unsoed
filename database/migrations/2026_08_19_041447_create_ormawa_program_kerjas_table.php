@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ormawa_program_kerjas', function (Blueprint $table) {
+        Schema::create('proker_ormawa', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ormawa_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('ormawa_id')->constrained('ormawa')->cascadeOnDelete();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->string('foto')->nullable();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ormawa_program_kerjas');
+        Schema::dropIfExists('proker_ormawa');
     }
 };
