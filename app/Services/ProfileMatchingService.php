@@ -34,7 +34,12 @@ class ProfileMatchingService
     public function calculateGapAndWeight(int $actualValue, int $targetValue): array
     {
         $gap = $actualValue - $targetValue;
-        $bobot = self::GAP_MAPPING[$gap] ?? 1;
+        
+        if (!array_key_exists($gap, self::GAP_MAPPING)) {
+            throw new \InvalidArgumentException("Nilai gap {$gap} berada di luar batas mapping yang diizinkan (-4 s/d 4). Periksa kembali nilai aktual dan target.");
+        }
+
+        $bobot = self::GAP_MAPPING[$gap];
 
         return [
             'gap' => $gap,
@@ -68,8 +73,8 @@ class ProfileMatchingService
      */
     public function calculateFactorsForAspect(Application $application, Aspect $aspect): array
     {
-        $criteriaIds = $aspect->criteria()->pluck('id');
-        $scores = $application->scores()->whereIn('criteria_id', $criteriaIds)->with('criteria')->get();
+        $criteriaIds = $aspect->criteria->pluck('id');
+        $scores = $application->scores->whereIn('criteria_id', $criteriaIds);
 
         $coreScores = $scores->filter(fn($s) => $s->criteria->tipe === 'core');
         $secondaryScores = $scores->filter(fn($s) => $s->criteria->tipe === 'secondary');
@@ -104,14 +109,15 @@ class ProfileMatchingService
      */
     public function processDivision(Recruitment $recruitment, RecruitmentDivision $division): Collection
     {
-        $applications = $division->applications()
-            ->where('status', '!=', 'ditolak')
-            ->with(['scores.criteria'])
-            ->get();
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($recruitment, $division) {
+            $applications = $division->applications()
+                ->where('status', '!=', 'ditolak')
+                ->with(['scores.criteria'])
+                ->get();
 
-        $aspects = $division->aspects()->with('criteria')->orderBy('urutan')->get();
+            $aspects = $division->aspects()->with('criteria')->orderBy('urutan')->get();
 
-        $results = collect();
+            $results = collect();
 
         foreach ($applications as $application) {
             // Step 1-2: Update gap & bobot for all scores
@@ -173,16 +179,17 @@ class ProfileMatchingService
                 ]
             );
 
-            // Auto-decision: update status berdasarkan ranking vs kuota
+            // Auto-decision: update status rekomendasi berdasarkan ranking vs kuota
             $ranking = $index + 1;
             $app = Application::find($result['application_id']);
             if ($app) {
                 $app->update([
-                    'status' => $ranking <= $division->kuota ? 'diterima' : 'ditolak',
+                    'status_rekomendasi' => $ranking <= $division->kuota ? 'direkomendasikan' : 'tidak direkomendasikan'
                 ]);
             }
         }
 
         return $results;
+        });
     }
 }

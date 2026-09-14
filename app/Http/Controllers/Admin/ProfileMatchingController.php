@@ -72,6 +72,8 @@ class ProfileMatchingController extends Controller
 
     public function calculate(Recruitment $recruitment, RecruitmentDivision $division)
     {
+        abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Kalkulasi belum diizinkan.');
+
         if ($division->applications()->count() === 0) {
             return back()->with('error', 'Tidak ada pelamar di divisi ini.');
         }
@@ -85,7 +87,13 @@ class ProfileMatchingController extends Controller
             return back()->with('error', 'Total bobot semua aspek harus = 100% (1.0). Saat ini: ' . round($totalBobot * 100) . '%.');
         }
 
-        $this->service->processDivision($recruitment, $division);
+        try {
+            $this->service->processDivision($recruitment, $division);
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', 'Gagal memproses kalkulasi: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan sistem saat kalkulasi: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.profile-matching.result', [$recruitment, $division])
             ->with('success', 'Kalkulasi Profile Matching untuk divisi "' . $division->nama . '" berhasil.');

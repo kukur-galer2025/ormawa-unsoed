@@ -31,8 +31,16 @@ class ApplicationController extends Controller
         }
 
         // Check if recruitment is open
-        if (!$recruitment->isOpen()) {
-            return back()->with('error', 'Rekrutmen ini sudah ditutup.');
+        if (now()->startOfDay() < $recruitment->tanggal_buka->startOfDay()) {
+            return back()->with('error', 'Rekrutmen ini belum dibuka. Pendaftaran baru dimulai pada ' . $recruitment->tanggal_buka->format('d M Y') . '.');
+        }
+
+        if (now()->startOfDay() > $recruitment->tanggal_tutup->endOfDay()) {
+            return back()->with('error', 'Rekrutmen ini sudah ditutup sejak ' . $recruitment->tanggal_tutup->format('d M Y') . '.');
+        }
+
+        if ($recruitment->status !== 'dibuka') {
+            return back()->with('error', 'Rekrutmen ini sedang tidak aktif atau belum dipublikasikan sepenuhnya.');
         }
 
         // Check if division quota is full

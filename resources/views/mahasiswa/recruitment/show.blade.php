@@ -4,6 +4,8 @@
 @section("content")
 <div class="mb-6"><a href="{{ route('mahasiswa.recruitment.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali ke Katalog</a></div>
 
+<div x-data="{ mediaModalOpen: false, modalTitle: '', modalImage: '', modalDesc: '', modalYear: '' }">
+
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
     <div class="h-48 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
         <div class="absolute inset-0 bg-black/20"></div>
@@ -30,11 +32,20 @@
                 </h3>
                 <ul class="space-y-3">
                     @foreach($ormawa->prestasis->take(3) as $prestasi)
-                    <li class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <div class="mt-0.5"><span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded">{{ $prestasi->tahun }}</span></div>
-                        <div>
-                            <p class="font-semibold text-slate-800 text-sm">{{ $prestasi->judul }}</p>
-                            <p class="text-xs text-slate-500">{{ $prestasi->tingkat }}</p>
+                    <li @click="mediaModalOpen = true; modalTitle = '{{ addslashes($prestasi->judul) }}'; modalImage = '{{ $prestasi->foto ? Storage::url($prestasi->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $prestasi->deskripsi)) }}'; modalYear = '{{ $prestasi->tahun }}'" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
+                        @if($prestasi->foto)
+                            <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
+                                <img src="{{ Storage::url($prestasi->foto) }}" alt="{{ $prestasi->judul }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                        @endif
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">{{ $prestasi->tahun }}</span>
+                                <p class="font-semibold text-slate-800 text-sm leading-tight group-hover:text-amber-600 transition-colors">{{ $prestasi->judul }}</p>
+                            </div>
+                            @if($prestasi->deskripsi)
+                                <p class="text-xs text-slate-500 line-clamp-2">{{ $prestasi->deskripsi }}</p>
+                            @endif
                         </div>
                     </li>
                     @endforeach
@@ -48,9 +59,25 @@
                     <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     Program Kerja
                 </h3>
-                <div class="flex flex-wrap gap-2">
+                <div class="grid grid-cols-1 gap-3">
                     @foreach($ormawa->programKerjas as $proker)
-                    <span class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg border border-blue-100">{{ $proker->nama }}</span>
+                    <div @click="mediaModalOpen = true; modalTitle = '{{ addslashes($proker->nama) }}'; modalImage = '{{ $proker->foto ? Storage::url($proker->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $proker->deskripsi)) }}'; modalYear = ''" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
+                        @if($proker->foto)
+                            <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
+                                <img src="{{ Storage::url($proker->foto) }}" alt="{{ $proker->nama }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                        @else
+                            <div class="w-16 h-16 shrink-0 rounded-lg bg-blue-100 flex items-center justify-center text-blue-500">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            </div>
+                        @endif
+                        <div class="flex-1">
+                            <p class="font-semibold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">{{ $proker->nama }}</p>
+                            @if($proker->deskripsi)
+                                <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">{{ $proker->deskripsi }}</p>
+                            @endif
+                        </div>
+                    </div>
                     @endforeach
                 </div>
             </div>
@@ -72,7 +99,13 @@
             <div class="p-6 border-b border-slate-100">
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-lg font-bold text-slate-800">{{ $rec->judul }}</h3>
-                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 animate-pulse">BUKA</span>
+                    @if($rec->isOpen())
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 animate-pulse">BUKA</span>
+                    @elseif(now() < $rec->tanggal_buka)
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200">SEGERA</span>
+                    @else
+                        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200">DITUTUP</span>
+                    @endif
                 </div>
                 <p class="text-sm text-slate-600 mb-4">{{ $rec->deskripsi }}</p>
                 <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
@@ -111,6 +144,10 @@
                             @elseif($isFull)
                                 <button disabled class="w-full py-2 bg-red-50 text-red-500 text-xs font-bold rounded-lg cursor-not-allowed">
                                     Kuota Penuh
+                                </button>
+                            @elseif(!$rec->isOpen())
+                                <button disabled class="w-full py-2 bg-slate-100 text-slate-500 text-xs font-bold rounded-lg cursor-not-allowed border border-slate-200">
+                                    @if(now() < $rec->tanggal_buka) Belum Dibuka @else Ditutup @endif
                                 </button>
                             @else
                                 <button @click="modalOpen = true; selectedRecruitment = {{ $rec->id }}; selectedDivision = {{ $div->id }}" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm">
@@ -168,4 +205,33 @@
         </div>
     </div>
 @endif
+
+<!-- Modal Prestasi/Proker Viewer -->
+<div x-show="mediaModalOpen" class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div x-show="mediaModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-sm" @click="mediaModalOpen = false"></div>
+
+        <div x-show="mediaModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative inline-block w-full max-w-2xl overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
+            <button @click="mediaModalOpen = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 text-slate-800 rounded-full transition-colors z-10">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            
+            <div class="flex flex-col max-h-[85vh]">
+                <div x-show="modalImage" class="w-full bg-slate-100 border-b border-slate-200 flex items-center justify-center relative overflow-hidden" style="min-h: 200px; max-h: 400px;">
+                    <img :src="modalImage" class="w-full h-full object-cover">
+                </div>
+                
+                <div class="p-6 overflow-y-auto">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span x-show="modalYear" x-text="modalYear" class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded"></span>
+                        <h3 class="text-xl font-bold text-slate-800" x-text="modalTitle"></h3>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed whitespace-pre-line mt-4" x-text="modalDesc"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
 @endsection

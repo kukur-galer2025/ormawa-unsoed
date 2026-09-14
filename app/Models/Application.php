@@ -8,7 +8,7 @@ class Application extends Model
 {
     protected $table = 'pendaftaran';
     protected $fillable = [
-        'recruitment_id', 'recruitment_division_id', 'user_id', 'motivasi', 'berkas_pendukung', 'status',
+        'recruitment_id', 'recruitment_division_id', 'user_id', 'motivasi', 'berkas_pendukung', 'status', 'status_rekomendasi',
     ];
 
     public function recruitment() { return $this->belongsTo(Recruitment::class); }
