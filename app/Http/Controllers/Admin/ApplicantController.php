@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
 use App\Models\Application;
 use App\Models\Recruitment;
 use Illuminate\Http\Request;
 
 class ApplicantController extends Controller
 {
+    use ChecksRecruitmentOwnership;
+
     public function index(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load('divisions');
         $divisionId = request('division_id');
 
@@ -28,6 +33,8 @@ class ApplicantController extends Controller
 
     public function show(Recruitment $recruitment, Application $application)
     {
+        $this->ensureFullOwnership($recruitment, $application);
+
         $application->load(['user.mahasiswaProfile', 'division', 'scores.criteria', 'profileMatchingResult']);
         return view('admin.applicant.show', compact('recruitment', 'application'));
     }

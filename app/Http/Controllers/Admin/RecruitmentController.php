@@ -7,24 +7,16 @@ use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
+
 class RecruitmentController extends Controller
 {
-    protected function getOrmawa()
-    {
-        return auth()->user()->ormawas()->first();
-    }
+    use ChecksRecruitmentOwnership;
 
-    protected function ensureOwnership(Recruitment $recruitment): void
-    {
-        $ormawa = $this->getOrmawa();
-        if (!$ormawa || $recruitment->ormawa_id !== $ormawa->id) {
-            abort(403, 'Anda tidak memiliki akses ke rekrutmen ini.');
-        }
-    }
 
     public function index()
     {
-        $ormawa = $this->getOrmawa();
+        $ormawa = $this->getAdminOrmawa();
         $recruitments = $ormawa->recruitments()
             ->withCount(['applications', 'divisions'])
             ->latest()
@@ -51,7 +43,7 @@ class RecruitmentController extends Controller
             'divisions.*.kuota' => 'required|integer|min:1',
         ]);
 
-        $ormawa = $this->getOrmawa();
+        $ormawa = $this->getAdminOrmawa();
         $recruitment = $ormawa->recruitments()->create($request->only([
             'judul', 'deskripsi', 'persyaratan', 'tanggal_buka', 'tanggal_tutup',
         ]));
@@ -69,21 +61,21 @@ class RecruitmentController extends Controller
 
     public function show(Recruitment $recruitment)
     {
-        $this->ensureOwnership($recruitment);
+        $this->ensureRecruitmentOwnership($recruitment);
         $recruitment->load(['divisions.aspects.criteria', 'divisions.applications', 'applications.user.mahasiswaProfile']);
         return view('admin.recruitment.show', compact('recruitment'));
     }
 
     public function edit(Recruitment $recruitment)
     {
-        $this->ensureOwnership($recruitment);
+        $this->ensureRecruitmentOwnership($recruitment);
         $recruitment->load('divisions');
         return view('admin.recruitment.edit', compact('recruitment'));
     }
 
     public function update(Request $request, Recruitment $recruitment)
     {
-        $this->ensureOwnership($recruitment);
+        $this->ensureRecruitmentOwnership($recruitment);
 
         $request->validate([
             'judul' => 'required|string|max:255',
@@ -131,7 +123,7 @@ class RecruitmentController extends Controller
 
     public function destroy(Recruitment $recruitment)
     {
-        $this->ensureOwnership($recruitment);
+        $this->ensureRecruitmentOwnership($recruitment);
         $recruitment->delete();
         return redirect()->route('admin.recruitment.index')->with('success', 'Rekrutmen berhasil dihapus.');
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
 use App\Models\Application;
 use App\Models\ApplicationScore;
 use App\Models\Recruitment;
@@ -11,8 +12,11 @@ use Illuminate\Http\Request;
 
 class ScoringController extends Controller
 {
+    use ChecksRecruitmentOwnership;
     public function index(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         if (!in_array($recruitment->status, ['ditutup', 'selesai'])) {
             return redirect()->route('admin.recruitment.show', $recruitment)
                 ->with('error', 'Input nilai hanya bisa dilakukan setelah rekrutmen ditutup.');
@@ -43,6 +47,8 @@ class ScoringController extends Controller
 
     public function store(Request $request, Recruitment $recruitment, Application $application)
     {
+        $this->ensureFullOwnership($recruitment, $application);
+
         if (!in_array($recruitment->status, ['ditutup', 'selesai'])) {
             return back()->with('error', 'Input nilai hanya bisa dilakukan setelah rekrutmen ditutup.');
         }

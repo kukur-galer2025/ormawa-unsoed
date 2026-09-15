@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
 use App\Models\Aspect;
 use App\Models\Criteria;
 use App\Models\CriteriaValueLabel;
@@ -11,20 +12,27 @@ use Illuminate\Http\Request;
 
 class CriteriaController extends Controller
 {
+    use ChecksRecruitmentOwnership;
     public function index(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load(['divisions.aspects.criteria.valueLabels']);
         return view('admin.criteria.index', compact('recruitment'));
     }
 
     public function create(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load('divisions.aspects');
         return view('admin.criteria.create', compact('recruitment'));
     }
 
     public function store(Request $request, Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $request->validate([
             'aspect_id' => 'required|exists:aspek,id',
             'nama_kriteria' => 'required|string|max:255',
@@ -66,6 +74,8 @@ class CriteriaController extends Controller
 
     public function edit(Recruitment $recruitment, Criteria $criterion)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load('divisions.aspects');
         $criterion->load('valueLabels');
         return view('admin.criteria.edit', compact('recruitment', 'criterion'));
@@ -73,6 +83,8 @@ class CriteriaController extends Controller
 
     public function update(Request $request, Recruitment $recruitment, Criteria $criterion)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $request->validate([
             'aspect_id' => 'required|exists:aspek,id',
             'nama_kriteria' => 'required|string|max:255',
@@ -102,6 +114,8 @@ class CriteriaController extends Controller
 
     public function destroy(Recruitment $recruitment, Criteria $criterion)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $criterion->delete();
         return redirect()->route('admin.criteria.index', $recruitment)
             ->with('success', 'Kriteria berhasil dihapus.');

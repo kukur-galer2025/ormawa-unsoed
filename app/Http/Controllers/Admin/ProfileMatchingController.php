@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
 use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
 use App\Services\ProfileMatchingService;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 
 class ProfileMatchingController extends Controller
 {
+    use ChecksRecruitmentOwnership;
     protected ProfileMatchingService $service;
 
     public function __construct(ProfileMatchingService $service)
@@ -19,7 +21,7 @@ class ProfileMatchingController extends Controller
 
     public function index()
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = $this->getAdminOrmawa();
         $recruitments = $ormawa->recruitments()
             ->where('status', '!=', 'draft')
             ->withCount(['divisions', 'applications'])
@@ -31,6 +33,8 @@ class ProfileMatchingController extends Controller
 
     public function show(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load(['divisions' => function ($q) {
             $q->withCount(['applications', 'profileMatchingResults']);
         }, 'divisions.aspects.criteria']);
@@ -72,6 +76,8 @@ class ProfileMatchingController extends Controller
 
     public function calculate(Recruitment $recruitment, RecruitmentDivision $division)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Kalkulasi belum diizinkan.');
 
         if ($division->applications()->count() === 0) {
@@ -101,6 +107,8 @@ class ProfileMatchingController extends Controller
 
     public function result(Recruitment $recruitment, RecruitmentDivision $division)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $results = $division->profileMatchingResults()
             ->with(['application.user.mahasiswaProfile'])
             ->orderBy('ranking')

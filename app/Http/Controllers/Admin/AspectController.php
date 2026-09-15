@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
 use App\Models\Aspect;
 use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
@@ -10,11 +11,14 @@ use Illuminate\Http\Request;
 
 class AspectController extends Controller
 {
+    use ChecksRecruitmentOwnership;
     /**
      * Show aspects for a recruitment's division.
      */
     public function index(Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $recruitment->load(['divisions.aspects.criteria']);
         return view('admin.aspect.index', compact('recruitment'));
     }
@@ -24,6 +28,8 @@ class AspectController extends Controller
      */
     public function store(Request $request, Recruitment $recruitment)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $request->validate([
             'recruitment_division_id' => 'required|exists:divisi_rekrutmen,id',
             'nama' => 'required|string|max:255',
@@ -69,6 +75,8 @@ class AspectController extends Controller
      */
     public function update(Request $request, Recruitment $recruitment, Aspect $aspect)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'bobot' => 'required|numeric|min:1|max:100',
@@ -107,6 +115,8 @@ class AspectController extends Controller
      */
     public function destroy(Recruitment $recruitment, Aspect $aspect)
     {
+        $this->ensureRecruitmentOwnership($recruitment);
+
         $aspect->delete();
         return redirect()->route('admin.aspect.index', $recruitment)
             ->with('success', 'Aspek berhasil dihapus.');
