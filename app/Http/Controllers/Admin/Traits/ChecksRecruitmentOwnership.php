@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin\Traits;
 
 use App\Models\Application;
+use App\Models\Aspect;
+use App\Models\Criteria;
 use App\Models\Recruitment;
+use App\Models\RecruitmentDivision;
 
 /**
  * Trait ChecksRecruitmentOwnership
@@ -49,6 +52,45 @@ trait ChecksRecruitmentOwnership
     }
 
     /**
+     * Pastikan divisi ini benar-benar anak dari recruitment yang diberikan.
+     */
+    protected function ensureDivisionBelongsToRecruitment(
+        Recruitment $recruitment,
+        RecruitmentDivision $division
+    ): void {
+        if ($division->recruitment_id !== $recruitment->id) {
+            abort(404, 'Divisi tidak ditemukan dalam rekrutmen ini.');
+        }
+    }
+
+    /**
+     * Pastikan aspek ini benar-benar anak dari salah satu divisi di recruitment yang diberikan.
+     */
+    protected function ensureAspectBelongsToRecruitment(
+        Recruitment $recruitment,
+        Aspect $aspect
+    ): void {
+        $divisionIds = $recruitment->divisions()->pluck('id');
+        if (!$divisionIds->contains($aspect->recruitment_division_id)) {
+            abort(404, 'Aspek tidak ditemukan dalam rekrutmen ini.');
+        }
+    }
+
+    /**
+     * Pastikan kriteria ini benar-benar anak dari salah satu aspek di recruitment yang diberikan.
+     */
+    protected function ensureCriterionBelongsToRecruitment(
+        Recruitment $recruitment,
+        Criteria $criterion
+    ): void {
+        $divisionIds = $recruitment->divisions()->pluck('id');
+        $aspectIds = Aspect::whereIn('recruitment_division_id', $divisionIds)->pluck('id');
+        if (!$aspectIds->contains($criterion->aspect_id)) {
+            abort(404, 'Kriteria tidak ditemukan dalam rekrutmen ini.');
+        }
+    }
+
+    /**
      * Shortcut: cek ownership recruitment + cek application milik recruitment tsb.
      */
     protected function ensureFullOwnership(
@@ -59,3 +101,4 @@ trait ChecksRecruitmentOwnership
         $this->ensureApplicationBelongsToRecruitment($recruitment, $application);
     }
 }
+

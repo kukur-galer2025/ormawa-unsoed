@@ -75,6 +75,7 @@ class CriteriaController extends Controller
     public function edit(Recruitment $recruitment, Criteria $criterion)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureCriterionBelongsToRecruitment($recruitment, $criterion);
 
         $recruitment->load('divisions.aspects');
         $criterion->load('valueLabels');
@@ -84,6 +85,7 @@ class CriteriaController extends Controller
     public function update(Request $request, Recruitment $recruitment, Criteria $criterion)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureCriterionBelongsToRecruitment($recruitment, $criterion);
 
         $request->validate([
             'aspect_id' => 'required|exists:aspek,id',
@@ -115,6 +117,7 @@ class CriteriaController extends Controller
     public function destroy(Recruitment $recruitment, Criteria $criterion)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureCriterionBelongsToRecruitment($recruitment, $criterion);
 
         $criterion->delete();
         return redirect()->route('admin.criteria.index', $recruitment)

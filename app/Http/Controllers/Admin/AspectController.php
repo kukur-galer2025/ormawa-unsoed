@@ -76,6 +76,7 @@ class AspectController extends Controller
     public function update(Request $request, Recruitment $recruitment, Aspect $aspect)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureAspectBelongsToRecruitment($recruitment, $aspect);
 
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -116,6 +117,7 @@ class AspectController extends Controller
     public function destroy(Recruitment $recruitment, Aspect $aspect)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureAspectBelongsToRecruitment($recruitment, $aspect);
 
         $aspect->delete();
         return redirect()->route('admin.aspect.index', $recruitment)

@@ -77,6 +77,7 @@ class ProfileMatchingController extends Controller
     public function calculate(Recruitment $recruitment, RecruitmentDivision $division)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
 
         abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Kalkulasi belum diizinkan.');
 
@@ -108,6 +109,7 @@ class ProfileMatchingController extends Controller
     public function result(Recruitment $recruitment, RecruitmentDivision $division)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
 
         $results = $division->profileMatchingResults()
             ->with(['application.user.mahasiswaProfile'])
