@@ -53,13 +53,13 @@ class SocialiteController extends Controller
                 'is_active' => true,
             ]);
 
-            // Create empty mahasiswa profile
+            // Create empty mahasiswa profile (use null, not empty string, to avoid UNIQUE constraint violation on nim)
             MahasiswaProfile::create([
                 'user_id' => $user->id,
-                'nim' => '',
-                'fakultas' => '',
-                'jurusan' => '',
-                'angkatan' => '',
+                'nim' => null,
+                'fakultas' => null,
+                'jurusan' => null,
+                'angkatan' => null,
             ]);
         }
 
