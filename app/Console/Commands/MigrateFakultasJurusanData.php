@@ -3,9 +3,12 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Traits\NormalizesFakultasJurusan;
 
 class MigrateFakultasJurusanData extends Command
 {
+    use NormalizesFakultasJurusan;
+
     /**
      * The name and signature of the console command.
      *
@@ -18,65 +21,38 @@ class MigrateFakultasJurusanData extends Command
      *
      * @var string
      */
-    protected $description = 'Migrasi data dari kolom teks fakultas dan jurusan ke master data';
+    protected $description = 'Migrasi data text fakultas & jurusan di profil mahasiswa ke tabel master (tahap transisi).';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $profiles = \App\Models\MahasiswaProfile::whereNotNull('fakultas')
-            ->orWhereNotNull('jurusan')
+        $this->info("Memulai migrasi data fakultas & jurusan...");
+
+        // Ambil semua profil yang fakultas/jurusannya belum null (masih pakai string lama)
+        // dan id relasi-nya masih kosong
+        $profiles = \App\Models\MahasiswaProfile::where(function($q) {
+                $q->whereNotNull('fakultas')->orWhereNotNull('jurusan');
+            })
+            ->whereNull('fakultas_id')
+            ->whereNull('jurusan_id')
             ->get();
 
         $this->info("Menemukan {$profiles->count()} profil untuk dimigrasi.");
 
         $migratedCount = 0;
 
-        $aliasMap = [
-            'fisip' => 'Fakultas Ilmu Sosial dan Ilmu Politik',
-            'feb' => 'Fakultas Ekonomi dan Bisnis',
-            'ft' => 'Fakultas Teknik',
-            'fikes' => 'Fakultas Ilmu-Ilmu Kesehatan',
-            'fk' => 'Fakultas Kedokteran',
-            'fh' => 'Fakultas Hukum',
-            'fapet' => 'Fakultas Peternakan',
-            'faperta' => 'Fakultas Pertanian',
-            'fib' => 'Fakultas Ilmu Budaya',
-            'fmipa' => 'Fakultas Matematika dan Ilmu Pengetahuan Alam',
-            'fpik' => 'Fakultas Perikanan dan Ilmu Kelautan',
-            'bio' => 'Fakultas Biologi',
-        ];
-
         foreach ($profiles as $profile) {
-            $fakultasName = trim($profile->fakultas ?? '');
-            $jurusanName = trim($profile->jurusan ?? '');
-
             $fakultasId = null;
             $jurusanId = null;
 
-            if (!empty($fakultasName)) {
-                // Cek map singkatan
-                $lowerName = strtolower($fakultasName);
-                if (array_key_exists($lowerName, $aliasMap)) {
-                    $fakultasName = $aliasMap[$lowerName];
-                } else {
-                    // Normalisasi nama fakultas jika tidak ada di map
-                    if (!str_contains($lowerName, 'fakultas')) {
-                        $fakultasName = 'Fakultas ' . $fakultasName;
-                    }
-                }
-
-                // Cari atau buat Fakultas (case-insensitive di database by default)
-                $fakultas = \App\Models\Fakultas::firstOrCreate(['nama_fakultas' => $fakultasName]);
+            $fakultas = $this->normalizeFakultas($profile->fakultas ?? '');
+            if ($fakultas) {
                 $fakultasId = $fakultas->id;
-
-                if (!empty($jurusanName)) {
-                    // Cari atau buat Jurusan (terikat pada Fakultas ini)
-                    $jurusan = \App\Models\Jurusan::firstOrCreate([
-                        'fakultas_id' => $fakultasId,
-                        'nama_jurusan' => $jurusanName,
-                    ]);
+                
+                $jurusan = $this->normalizeJurusan($profile->jurusan ?? '', $fakultas);
+                if ($jurusan) {
                     $jurusanId = $jurusan->id;
                 }
             }

@@ -14,6 +14,8 @@ class Ormawa extends Model
         'tingkat',
         'fakultas',
         'jurusan',
+        'fakultas_id',
+        'jurusan_id',
         'deskripsi',
         'visi',
         'misi',
@@ -41,4 +43,6 @@ class Ormawa extends Model
     public function recruitments() { return $this->hasMany(Recruitment::class); }
     public function prestasis() { return $this->hasMany(OrmawaPrestasi::class); }
     public function programKerjas() { return $this->hasMany(OrmawaProgramKerja::class); }
+    public function fakultasRel() { return $this->belongsTo(Fakultas::class, 'fakultas_id'); }
+    public function jurusanRel() { return $this->belongsTo(Jurusan::class, 'jurusan_id'); }
 }
