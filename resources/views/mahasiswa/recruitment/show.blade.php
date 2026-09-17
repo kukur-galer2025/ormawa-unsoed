@@ -32,7 +32,7 @@
                 </h3>
                 <ul class="space-y-3">
                     @foreach($ormawa->prestasis->take(3) as $prestasi)
-                    <li @click="mediaModalOpen = true; modalTitle = '{{ addslashes($prestasi->judul) }}'; modalImage = '{{ $prestasi->foto ? Storage::url($prestasi->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $prestasi->deskripsi)) }}'; modalYear = '{{ $prestasi->tahun }}'" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
+                    <li @click="mediaModalOpen = true; modalTitle = '{{ addslashes($prestasi->judul) }}'; modalImage = '{{ $prestasi->foto ? Storage::url($prestasi->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $prestasi->deskripsi ?? '')) }}'; modalYear = '{{ $prestasi->tahun }}'" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
                         @if($prestasi->foto)
                             <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
                                 <img src="{{ Storage::url($prestasi->foto) }}" alt="{{ $prestasi->judul }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
@@ -61,7 +61,7 @@
                 </h3>
                 <div class="grid grid-cols-1 gap-3">
                     @foreach($ormawa->programKerjas as $proker)
-                    <div @click="mediaModalOpen = true; modalTitle = '{{ addslashes($proker->nama) }}'; modalImage = '{{ $proker->foto ? Storage::url($proker->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $proker->deskripsi)) }}'; modalYear = ''" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
+                    <div @click="mediaModalOpen = true; modalTitle = '{{ addslashes($proker->nama) }}'; modalImage = '{{ $proker->foto ? Storage::url($proker->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $proker->deskripsi ?? '')) }}'; modalYear = ''" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
                         @if($proker->foto)
                             <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
                                 <img src="{{ Storage::url($proker->foto) }}" alt="{{ $proker->nama }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
