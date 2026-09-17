@@ -13,7 +13,7 @@ class OrmawaController extends Controller
 {
     public function index()
     {
-        $ormawas = Ormawa::withCount(['recruitments', 'admins'])->latest()->paginate(10);
+        $ormawas = Ormawa::with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments', 'admins'])->latest()->paginate(10);
         return view('superadmin.ormawa.index', compact('ormawas'));
     }
 

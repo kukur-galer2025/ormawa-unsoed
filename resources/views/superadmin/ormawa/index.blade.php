@@ -33,8 +33,8 @@
                     <td class="px-6 py-4 font-medium text-slate-800">{{ $o->nama }}</td>
                     <td class="px-6 py-4">
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{{ $o->tingkat }}</span>
-                        @if($o->fakultas)
-                            <div class="text-xs text-slate-500 mt-1">{{ $o->fakultas }} {{ $o->jurusan ? ' - ' . $o->jurusan : '' }}</div>
+                        @if($o->fakultas_id || $o->jurusan_id)
+                            <div class="text-xs text-slate-500 mt-1">{{ $o->fakultasRel->nama_fakultas ?? '-' }}{{ $o->jurusan_id ? ' - ' . $o->jurusanRel->nama_jurusan : '' }}</div>
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center text-sm">{{ $o->admins_count }}</td>
