@@ -15,7 +15,13 @@ class RecruitmentMonitoringController extends Controller
 
         // Filter by status
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'dibuka') {
+                $query->reallyOpen();
+            } elseif ($request->status === 'ditutup') {
+                $query->reallyClosed();
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // Search by judul or ormawa name
@@ -31,8 +37,8 @@ class RecruitmentMonitoringController extends Controller
 
         $stats = [
             'total' => Recruitment::count(),
-            'dibuka' => Recruitment::where('status', 'dibuka')->count(),
-            'ditutup' => Recruitment::where('status', 'ditutup')->count(),
+            'dibuka' => Recruitment::reallyOpen()->count(),
+            'ditutup' => Recruitment::reallyClosed()->count(),
             'selesai' => Recruitment::where('status', 'selesai')->count(),
         ];
 

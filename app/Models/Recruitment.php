@@ -34,6 +34,25 @@ class Recruitment extends Model
         return $this->status === 'dibuka' && now()->between($this->tanggal_buka, $this->tanggal_tutup->endOfDay());
     }
 
+    public function scopeReallyOpen($query)
+    {
+        return $query->where('status', 'dibuka')
+                     ->where(function ($q) {
+                         $q->whereNull('tanggal_tutup')
+                           ->orWhere('tanggal_tutup', '>=', now()->startOfDay());
+                     });
+    }
+
+    public function scopeReallyClosed($query)
+    {
+        return $query->where('status', 'ditutup')
+                     ->orWhere(function ($q) {
+                         $q->where('status', 'dibuka')
+                           ->whereNotNull('tanggal_tutup')
+                           ->where('tanggal_tutup', '<', now()->startOfDay());
+                     });
+    }
+
     /**
      * Mengembalikan pesan spesifik mengapa rekrutmen tidak bisa dilamar.
      * Dipakai di controller sebagai pengganti pengecekan manual tanggal.

@@ -15,7 +15,7 @@ class DashboardController extends Controller
             'total_ormawa' => Ormawa::count(),
             'total_admin' => User::where('role', 'admin')->count(),
             'total_mahasiswa' => User::where('role', 'mahasiswa')->count(),
-            'rekrutmen_aktif' => Recruitment::where('status', 'dibuka')->count(),
+            'rekrutmen_aktif' => Recruitment::reallyOpen()->count(),
         ];
 
         $recentRecruitments = Recruitment::with('ormawa')
