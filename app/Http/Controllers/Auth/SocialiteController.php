@@ -36,7 +36,7 @@ class SocialiteController extends Controller
                      ->first();
 
         if ($user) {
-            // Update google_id and avatar if not set yet (e.g., existing user linking Google)
+            // Selalu sinkronkan google_id dan avatar terbaru setiap kali user login via Google
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'google_avatar' => $googleUser->getAvatar(),
