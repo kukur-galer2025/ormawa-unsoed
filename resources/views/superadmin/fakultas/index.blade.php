@@ -5,13 +5,14 @@
     @include('layouts.partials.sidebar-superadmin')
 @endsection
 @section('content')
-<div class="mb-6 flex justify-between items-center">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
     <div>
         <h2 class="text-xl font-bold text-slate-800">Daftar Fakultas</h2>
         <p class="text-sm text-slate-500">Kelola master data fakultas</p>
     </div>
-    <a href="{{ route('superadmin.fakultas.create') }}" class="px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700">
-        + Tambah Fakultas
+    <a href="{{ route('superadmin.fakultas.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Tambah Fakultas
     </a>
 </div>
 
