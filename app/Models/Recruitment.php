@@ -33,4 +33,25 @@ class Recruitment extends Model
     {
         return $this->status === 'dibuka' && now()->between($this->tanggal_buka, $this->tanggal_tutup->endOfDay());
     }
+
+    /**
+     * Mengembalikan pesan spesifik mengapa rekrutmen tidak bisa dilamar.
+     * Dipakai di controller sebagai pengganti pengecekan manual tanggal.
+     */
+    public function getClosureMessageAttribute(): ?string
+    {
+        if ($this->status !== 'dibuka') {
+            return 'Rekrutmen ini sedang tidak aktif atau belum dipublikasikan sepenuhnya.';
+        }
+
+        if (now()->startOfDay() < $this->tanggal_buka->startOfDay()) {
+            return 'Rekrutmen ini belum dibuka. Pendaftaran baru dimulai pada ' . $this->tanggal_buka->format('d M Y') . '.';
+        }
+
+        if (now()->startOfDay() > $this->tanggal_tutup->endOfDay()) {
+            return 'Rekrutmen ini sudah ditutup sejak ' . $this->tanggal_tutup->format('d M Y') . '.';
+        }
+
+        return null; // Rekrutmen sedang buka
+    }
 }
