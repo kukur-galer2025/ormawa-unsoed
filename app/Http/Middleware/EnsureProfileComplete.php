@@ -26,8 +26,8 @@ class EnsureProfileComplete
         // Cek apakah profil belum ada, atau NIM/fakultas/jurusan masih kosong
         $isIncomplete = !$profile
             || empty($profile->nim)
-            || empty($profile->fakultas)
-            || empty($profile->jurusan);
+            || empty($profile->fakultas_id)
+            || empty($profile->jurusan_id);
 
         if ($isIncomplete) {
             // Izinkan akses ke halaman edit profil, update profil, dan logout

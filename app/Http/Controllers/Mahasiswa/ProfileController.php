@@ -13,7 +13,10 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $profile = $user->mahasiswaProfile ?? new MahasiswaProfile(['user_id' => $user->id]);
-        return view('mahasiswa.profile.edit', compact('user', 'profile'));
+        $fakultasList = \App\Models\Fakultas::orderBy('nama_fakultas')->get();
+        $jurusanList = \App\Models\Jurusan::orderBy('nama_jurusan')->get();
+
+        return view('mahasiswa.profile.edit', compact('user', 'profile', 'fakultasList', 'jurusanList'));
     }
 
     public function update(Request $request)
@@ -28,23 +31,23 @@ class ProfileController extends Controller
                 'max:20',
                 Rule::unique('profil_mahasiswa', 'nim')->ignore($user->id, 'user_id'),
             ],
-            'fakultas' => 'required|string|max:255',
-            'jurusan' => 'required|string|max:255',
-            'angkatan' => 'required|string|size:4',
+            'fakultas_id' => 'required|exists:fakultas,id',
+            'jurusan_id' => 'required|exists:jurusan,id',
+            'angkatan' => 'required|integer|digits:4|min:2015|max:' . now()->year,
             'no_hp' => 'nullable|string|max:20',
             'foto' => 'nullable|image|max:2048',
         ]);
 
         $user->update(['name' => $request->name]);
 
-        $profileData = $request->only(['nim', 'fakultas', 'jurusan', 'angkatan', 'no_hp']);
+        $profileData = $request->only(['nim', 'fakultas_id', 'jurusan_id', 'angkatan', 'no_hp']);
 
         if ($request->hasFile('foto')) {
             $profileData['foto'] = $request->file('foto')->store('mahasiswa-photos', 'public');
         }
 
         // Cek apakah ini pertama kali profil dilengkapi (untuk redirect yang tepat)
-        $wasIncomplete = !$user->mahasiswaProfile || empty($user->mahasiswaProfile->nim);
+        $wasIncomplete = !$user->mahasiswaProfile || empty($user->mahasiswaProfile->nim) || empty($user->mahasiswaProfile->fakultas_id) || empty($user->mahasiswaProfile->jurusan_id);
 
         $user->mahasiswaProfile()->updateOrCreate(
             ['user_id' => $user->id],

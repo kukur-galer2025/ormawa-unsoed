@@ -56,6 +56,10 @@ Route::get('/', function () {
 Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Superadmin\DashboardController::class, 'index'])->name('dashboard');
 
+    // Master Data Fakultas & Jurusan
+    Route::resource('fakultas', \App\Http\Controllers\Superadmin\FakultasController::class)->except(['show']);
+    Route::resource('jurusan', \App\Http\Controllers\Superadmin\JurusanController::class)->except(['show']);
+
     // Ormawa CRUD
     Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class);
 

@@ -37,7 +37,11 @@
                     <td class="px-6 py-4 text-slate-500">{{ $app->user->mahasiswaProfile->nim ?? '-' }}</td>
                     <td class="px-6 py-4">
                         <p class="font-bold text-slate-800">{{ $app->user->name }}</p>
-                        <p class="text-xs text-slate-500">{{ $app->user->mahasiswaProfile->jurusan ?? '-' }}</p>
+                        <p class="text-xs text-slate-500">
+                            {{ $app->user->mahasiswaProfile->fakultasRel->nama_fakultas ?? '-' }} 
+                            &mdash; 
+                            {{ $app->user->mahasiswaProfile->jurusanRel->nama_jurusan ?? '-' }}
+                        </p>
                     </td>
                     <td class="px-6 py-4">
                         <span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold">{{ $app->division->nama }}</span>

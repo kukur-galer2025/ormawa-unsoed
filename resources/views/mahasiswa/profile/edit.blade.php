@@ -12,7 +12,16 @@
 </div>
 @endif
 
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" 
+     x-data="{
+        fakultas_id: '{{ old('fakultas_id', $profile->fakultas_id ?? '') }}',
+        jurusan_id: '{{ old('jurusan_id', $profile->jurusan_id ?? '') }}',
+        allJurusan: {{ $jurusanList->toJson() }},
+        get filteredJurusan() {
+            if (!this.fakultas_id) return [];
+            return this.allJurusan.filter(j => j.fakultas_id == this.fakultas_id);
+        }
+     }">
 <form method="POST" action="{{ route('mahasiswa.profile.update') }}" enctype="multipart/form-data" class="space-y-5">@csrf @method('PUT')
 
 <div>
@@ -36,23 +45,33 @@
             Fakultas
             <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Wajib diisi</span>
         </label>
-        <input type="text" name="fakultas" value="{{ old('fakultas', $profile->fakultas) }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-        @error('fakultas')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        <select name="fakultas_id" x-model="fakultas_id" @change="jurusan_id = ''" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white">
+            <option value="">Pilih Fakultas</option>
+            @foreach($fakultasList as $f)
+                <option value="{{ $f->id }}">{{ $f->nama_fakultas }}</option>
+            @endforeach
+        </select>
+        @error('fakultas_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
     <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">
             Jurusan
             <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Wajib diisi</span>
         </label>
-        <input type="text" name="jurusan" value="{{ old('jurusan', $profile->jurusan) }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-        @error('jurusan')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        <select name="jurusan_id" x-model="jurusan_id" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white" :disabled="!fakultas_id || filteredJurusan.length === 0">
+            <option value="">Pilih Jurusan</option>
+            <template x-for="j in filteredJurusan" :key="j.id">
+                <option :value="j.id" x-text="j.nama_jurusan"></option>
+            </template>
+        </select>
+        @error('jurusan_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
 </div>
 
 <div class="grid grid-cols-2 gap-4">
     <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">Angkatan</label>
-        <input type="text" name="angkatan" value="{{ old('angkatan', $profile->angkatan) }}" required maxlength="4" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+        <input type="number" name="angkatan" value="{{ old('angkatan', $profile->angkatan) }}" required min="2015" max="{{ now()->year }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
         @error('angkatan')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
     <div>

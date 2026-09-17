@@ -42,7 +42,7 @@
             <div class="space-y-4 text-sm flex-1">
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Nama Lengkap</span><p class="font-bold text-slate-800 text-base">{{ $application->user->name }}</p></div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">NIM</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->nim ?? '-' }}</p></div>
-                <div><span class="block text-xs font-medium text-slate-500 mb-1">Fakultas / Jurusan</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->fakultas ?? '-' }} &mdash; {{ $application->user->mahasiswaProfile->jurusan ?? '-' }}</p></div>
+                <div><span class="block text-xs font-medium text-slate-500 mb-1">Fakultas / Jurusan</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->fakultasRel->nama_fakultas ?? '-' }} &mdash; {{ $application->user->mahasiswaProfile->jurusanRel->nama_jurusan ?? '-' }}</p></div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Angkatan</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->angkatan ?? '-' }}</p></div>
             </div>
         </div>
