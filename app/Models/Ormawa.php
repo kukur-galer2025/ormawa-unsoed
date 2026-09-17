@@ -12,8 +12,6 @@ class Ormawa extends Model
         'nama',
         'slug',
         'tingkat',
-        'fakultas',
-        'jurusan',
         'fakultas_id',
         'jurusan_id',
         'deskripsi',

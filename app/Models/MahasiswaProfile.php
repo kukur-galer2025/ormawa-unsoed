@@ -10,8 +10,6 @@ class MahasiswaProfile extends Model
     protected $fillable = [
         'user_id',
         'nim',
-        'fakultas', // TODO: hapus setelah migrasi selesai
-        'jurusan',  // TODO: hapus setelah migrasi selesai
         'fakultas_id',
         'jurusan_id',
         'angkatan',

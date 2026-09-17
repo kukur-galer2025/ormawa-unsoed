@@ -93,7 +93,7 @@
         <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 pt-12 pb-10 sm:pt-32 sm:pb-28">
             <div class="text-center max-w-4xl mx-auto">
                 {{-- Headline --}}
-                <h1 class="text-3xl sm:text-6xl lg:text-7xl font-black leading-[1.15] tracking-tight mb-4 sm:mb-6 text-white">
+                <h1 class="text-2xl sm:text-5xl lg:text-7xl font-black leading-[1.15] tracking-tight mb-3 sm:mb-6 text-white">
                     Sistem Rekrutmen <br>
                     <span class="relative inline-block mt-2">
                         <span class="relative z-10 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Ormawa UNSOED</span>
@@ -111,17 +111,17 @@
                 </div>
 
                 {{-- Subtitle --}}
-                <p class="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed font-medium px-2 sm:px-0">
+                <p class="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-medium px-2 sm:px-0">
                     Satu portal terpusat untuk mendaftar, mengelola, dan memantau seleksi pengurus organisasi mahasiswa di lingkungan <strong class="text-white">Universitas Jenderal Soedirman</strong>.
                 </p>
 
                 {{-- CTA Buttons --}}
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-2 sm:px-0">
-                    <a href="{{ route('register') }}" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-white text-blue-700 font-bold text-base sm:text-lg rounded-xl sm:rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-xl shadow-black/20 hover:-translate-y-1">
+                    <a href="{{ route('register') }}" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-5 py-3 sm:px-8 sm:py-4 bg-white text-blue-700 font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-xl shadow-black/20 hover:-translate-y-1">
                         Daftar Sebagai Mahasiswa
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
-                    <a href="{{ route('login') }}" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 text-white font-bold text-base sm:text-lg bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 shadow-lg hover:-translate-y-1">
+                    <a href="{{ route('login') }}" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-8 sm:py-4 text-white font-bold text-sm sm:text-lg bg-white/10 backdrop-blur-sm border border-white/30 rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 shadow-lg hover:-translate-y-1">
                         Masuk ke Dasbor
                     </a>
                 </div>
@@ -129,15 +129,15 @@
                 {{-- Stats bar inside hero --}}
                 <div class="grid grid-cols-3 gap-2 sm:gap-8 max-w-2xl mx-auto mt-8 sm:mt-14 pt-6 sm:pt-10 border-t border-white/15">
                     <div class="text-center">
-                        <p class="text-2xl sm:text-4xl font-black text-white">{{ $stats['ormawa'] }}</p>
+                        <p class="text-xl sm:text-4xl font-black text-white">{{ $stats['ormawa'] }}</p>
                         <p class="text-[9px] sm:text-xs font-semibold text-white/50 mt-0.5 sm:mt-1 uppercase tracking-wider sm:tracking-widest">Ormawa Aktif</p>
                     </div>
                     <div class="text-center border-x border-white/15">
-                        <p class="text-2xl sm:text-4xl font-black text-white">{{ $stats['rekrutmen'] }}</p>
+                        <p class="text-xl sm:text-4xl font-black text-white">{{ $stats['rekrutmen'] }}</p>
                         <p class="text-[9px] sm:text-xs font-semibold text-white/50 mt-0.5 sm:mt-1 uppercase tracking-wider sm:tracking-widest">Rekrutmen</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-2xl sm:text-4xl font-black text-white">{{ $stats['mahasiswa'] }}</p>
+                        <p class="text-xl sm:text-4xl font-black text-white">{{ $stats['mahasiswa'] }}</p>
                         <p class="text-[9px] sm:text-xs font-semibold text-white/50 mt-0.5 sm:mt-1 uppercase tracking-wider sm:tracking-widest">Pendaftar</p>
                     </div>
                 </div>

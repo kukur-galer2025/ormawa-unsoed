@@ -6,7 +6,7 @@
 @endsection
 
 @section('content')
-<h2 class="text-2xl font-black text-slate-900 mb-1 tracking-tight">Daftar Akun Baru</h2>
+<h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1 tracking-tight">Daftar Akun Baru</h2>
 <p class="text-slate-500 text-sm mb-6 font-medium">Lengkapi data diri Anda di bawah ini untuk memulai</p>
 
 @error('throttle')

@@ -12,7 +12,7 @@
 </div>
 @endif
 
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" 
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6" 
      x-data="{
         fakultas_id: '{{ old('fakultas_id', $profile->fakultas_id ?? '') }}',
         jurusan_id: '{{ old('jurusan_id', $profile->jurusan_id ?? '') }}',
@@ -106,7 +106,7 @@
 </div>
 
 <div class="pt-2">
-    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25">Simpan Profil</button>
+    <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25">Simpan Profil</button>
 </div>
 
 </form></div></div>

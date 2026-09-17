@@ -6,7 +6,7 @@
 @endsection
 
 @section('content')
-<h2 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">Selamat Datang Kembali</h2>
+<h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-2 tracking-tight">Selamat Datang Kembali</h2>
 <p class="text-slate-500 text-sm mb-8 font-medium">Masuk ke akun Anda untuk melanjutkan</p>
 
 @error('throttle')
