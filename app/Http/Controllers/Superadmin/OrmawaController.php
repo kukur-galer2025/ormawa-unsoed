@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ormawa;
+use App\Models\Fakultas;
+use App\Models\Jurusan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -17,7 +19,8 @@ class OrmawaController extends Controller
 
     public function create()
     {
-        return view('superadmin.ormawa.create');
+        $fakultas = Fakultas::with('jurusans')->get();
+        return view('superadmin.ormawa.create', compact('fakultas'));
     }
 
     public function store(Request $request)
@@ -25,8 +28,8 @@ class OrmawaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'tingkat' => 'required|in:Universitas,Fakultas,Jurusan',
-            'fakultas' => 'nullable|string|max:255',
-            'jurusan' => 'nullable|string|max:255',
+            'fakultas_id' => 'required_if:tingkat,Fakultas,Jurusan|nullable|exists:fakultas,id',
+            'jurusan_id' => 'required_if:tingkat,Jurusan|nullable|exists:jurusan,id',
             'deskripsi' => 'nullable|string',
             'visi_misi' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
@@ -36,6 +39,13 @@ class OrmawaController extends Controller
 
         $data = $request->except('logo');
         $data['slug'] = Str::slug($request->nama);
+        
+        if ($data['tingkat'] === 'Universitas') {
+            $data['fakultas_id'] = null;
+            $data['jurusan_id'] = null;
+        } elseif ($data['tingkat'] === 'Fakultas') {
+            $data['jurusan_id'] = null;
+        }
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
@@ -54,7 +64,8 @@ class OrmawaController extends Controller
 
     public function edit(Ormawa $ormawa)
     {
-        return view('superadmin.ormawa.edit', compact('ormawa'));
+        $fakultas = Fakultas::with('jurusans')->get();
+        return view('superadmin.ormawa.edit', compact('ormawa', 'fakultas'));
     }
 
     public function update(Request $request, Ormawa $ormawa)
@@ -62,8 +73,8 @@ class OrmawaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'tingkat' => 'required|in:Universitas,Fakultas,Jurusan',
-            'fakultas' => 'nullable|string|max:255',
-            'jurusan' => 'nullable|string|max:255',
+            'fakultas_id' => 'required_if:tingkat,Fakultas,Jurusan|nullable|exists:fakultas,id',
+            'jurusan_id' => 'required_if:tingkat,Jurusan|nullable|exists:jurusan,id',
             'deskripsi' => 'nullable|string',
             'visi_misi' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
@@ -73,6 +84,13 @@ class OrmawaController extends Controller
 
         $data = $request->except('logo');
         $data['slug'] = Str::slug($request->nama);
+        
+        if ($data['tingkat'] === 'Universitas') {
+            $data['fakultas_id'] = null;
+            $data['jurusan_id'] = null;
+        } elseif ($data['tingkat'] === 'Fakultas') {
+            $data['jurusan_id'] = null;
+        }
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');

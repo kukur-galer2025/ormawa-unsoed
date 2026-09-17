@@ -21,7 +21,7 @@
                 <tr class="hover:bg-slate-50/50 transition-colors">
                     <td class="px-6 py-4">
                         <p class="font-bold text-slate-800">{{ $app->recruitment->ormawa->nama }}</p>
-                        <p class="text-xs text-slate-500">{{ $app->recruitment->ormawa->fakultas }}</p>
+                        <p class="text-xs text-slate-500">{{ $app->recruitment->ormawa->fakultasRel->nama_fakultas ?? '' }}</p>
                     </td>
                     <td class="px-6 py-4">
                         <p class="font-semibold text-slate-700">{{ $app->recruitment->judul }}</p>

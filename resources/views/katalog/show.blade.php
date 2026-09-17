@@ -48,10 +48,11 @@
                         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
                             Tingkat {{ $ormawa->tingkat }}
                         </span>
-                        @if($ormawa->fakultas)
+                        @if($ormawa->fakultas_id || $ormawa->jurusan_id)
                             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-                                {{ $ormawa->fakultas }} {{ $ormawa->jurusan ? ' • ' . $ormawa->jurusan : '' }}
+                                {{ $ormawa->fakultasRel->nama_fakultas ?? '' }} {{ $ormawa->jurusan_id ? ' • ' . $ormawa->jurusanRel->nama_jurusan : '' }}
                             </span>
+
                         @endif
                     </div>
                     

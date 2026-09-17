@@ -15,7 +15,7 @@
             </div>
             <div class="text-white mb-2">
                 <h1 class="text-3xl font-black mb-1">{{ $ormawa->nama }}</h1>
-                <p class="text-blue-100 font-medium text-sm">{{ $ormawa->fakultas }} • {{ $ormawa->jurusan }}</p>
+                <p class="text-blue-100 font-medium text-sm">{{ $ormawa->fakultasRel->nama_fakultas ?? '' }} {{ $ormawa->jurusanRel ? ' • ' . $ormawa->jurusanRel->nama_jurusan : '' }}</p>
             </div>
         </div>
     </div>

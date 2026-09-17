@@ -132,10 +132,9 @@
                                 </div>
                             </div>
                             
-                            @if($ormawa->fakultas || $ormawa->jurusan)
-                            <div class="text-xs font-semibold text-slate-500 mb-3 bg-slate-50 p-2 rounded-lg border border-slate-100 line-clamp-1">
-                                <span class="text-slate-700">Area:</span> 
-                                {{ $ormawa->fakultas }} {{ $ormawa->jurusan ? ' • ' . $ormawa->jurusan : '' }}
+                            @if($ormawa->fakultas_id || $ormawa->jurusan_id)
+                            <div class="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                                <span class="line-clamp-1">{{ $ormawa->fakultasRel->nama_fakultas ?? '' }} {{ $ormawa->jurusan_id ? ' • ' . $ormawa->jurusanRel->nama_jurusan : '' }}</span>
                             </div>
                             @endif
 

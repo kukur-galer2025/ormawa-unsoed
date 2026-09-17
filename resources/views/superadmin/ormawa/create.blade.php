@@ -16,22 +16,35 @@
                 @error('nama')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-data="{ tingkat: '{{ old('tingkat', 'Universitas') }}', fakultas_id: '{{ old('fakultas_id', '') }}', jurusan_id: '{{ old('jurusan_id', '') }}', fakultasList: {{ Js::from($fakultas) }}, get filteredJurusan() { const f = this.fakultasList.find(f => f.id == this.fakultas_id); return f ? f.jurusans : []; } }">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tingkat *</label>
-                    <select name="tingkat" id="tingkat" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                        @foreach(['Universitas','Fakultas','Jurusan'] as $t)
-                        <option value="{{ $t }}" {{ old('tingkat')==$t?'selected':'' }}>{{ $t }}</option>
-                        @endforeach
+                    <select name="tingkat" x-model="tingkat" @change="if(tingkat === 'Universitas') { fakultas_id = ''; jurusan_id = ''; } else if(tingkat === 'Fakultas') { jurusan_id = ''; }" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white">
+                        <option value="Universitas">Universitas</option>
+                        <option value="Fakultas">Fakultas</option>
+                        <option value="Jurusan">Jurusan</option>
                     </select>
+                    @error('tingkat')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Fakultas <span class="text-xs text-slate-400 font-normal">(opsional)</span></label>
-                    <input type="text" name="fakultas" id="fakultas" value="{{ old('fakultas') }}" placeholder="MIPA" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <div x-show="tingkat === 'Fakultas' || tingkat === 'Jurusan'" x-cloak>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Fakultas *</label>
+                    <select name="fakultas_id" x-model="fakultas_id" @change="jurusan_id = ''" :required="tingkat === 'Fakultas' || tingkat === 'Jurusan'" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white">
+                        <option value="">-- Pilih Fakultas --</option>
+                        <template x-for="f in fakultasList" :key="f.id">
+                            <option :value="f.id" x-text="f.nama_fakultas" :selected="f.id == fakultas_id"></option>
+                        </template>
+                    </select>
+                    @error('fakultas_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Jurusan <span class="text-xs text-slate-400 font-normal">(opsional)</span></label>
-                    <input type="text" name="jurusan" id="jurusan" value="{{ old('jurusan') }}" placeholder="Informatika" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <div x-show="tingkat === 'Jurusan'" x-cloak>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Jurusan *</label>
+                    <select name="jurusan_id" x-model="jurusan_id" :required="tingkat === 'Jurusan'" :disabled="!fakultas_id || filteredJurusan.length === 0" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white">
+                        <option value="">-- Pilih Jurusan --</option>
+                        <template x-for="j in filteredJurusan" :key="j.id">
+                            <option :value="j.id" x-text="j.nama_jurusan" :selected="j.id == jurusan_id"></option>
+                        </template>
+                    </select>
+                    @error('jurusan_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
             </div>
 

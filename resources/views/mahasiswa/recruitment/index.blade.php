@@ -95,10 +95,10 @@
                             </div>
                         </div>
                         
-                        @if($ormawa->fakultas || $ormawa->jurusan)
+                        @if($ormawa->fakultas_id || $ormawa->jurusan_id)
                         <div class="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 bg-slate-50/80 px-3 py-1.5 rounded-xl border border-slate-100/50">
                             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <span class="line-clamp-1">{{ $ormawa->fakultas }} {{ $ormawa->jurusan ? ' • ' . $ormawa->jurusan : '' }}</span>
+                            <span class="line-clamp-1">{{ $ormawa->fakultasRel->nama_fakultas ?? '' }} {{ $ormawa->jurusan_id ? ' • ' . $ormawa->jurusanRel->nama_jurusan : '' }}</span>
                         </div>
                         @endif
 
