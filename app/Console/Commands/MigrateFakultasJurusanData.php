@@ -33,17 +33,38 @@ class MigrateFakultasJurusanData extends Command
 
         $migratedCount = 0;
 
+        $aliasMap = [
+            'fisip' => 'Fakultas Ilmu Sosial dan Ilmu Politik',
+            'feb' => 'Fakultas Ekonomi dan Bisnis',
+            'ft' => 'Fakultas Teknik',
+            'fikes' => 'Fakultas Ilmu-Ilmu Kesehatan',
+            'fk' => 'Fakultas Kedokteran',
+            'fh' => 'Fakultas Hukum',
+            'fapet' => 'Fakultas Peternakan',
+            'faperta' => 'Fakultas Pertanian',
+            'fib' => 'Fakultas Ilmu Budaya',
+            'fmipa' => 'Fakultas Matematika dan Ilmu Pengetahuan Alam',
+            'fpik' => 'Fakultas Perikanan dan Ilmu Kelautan',
+            'bio' => 'Fakultas Biologi',
+        ];
+
         foreach ($profiles as $profile) {
-            $fakultasName = trim($profile->fakultas);
-            $jurusanName = trim($profile->jurusan);
+            $fakultasName = trim($profile->fakultas ?? '');
+            $jurusanName = trim($profile->jurusan ?? '');
 
             $fakultasId = null;
             $jurusanId = null;
 
             if (!empty($fakultasName)) {
-                // Normalisasi nama fakultas
-                if (!str_contains(strtolower($fakultasName), 'fakultas')) {
-                    $fakultasName = 'Fakultas ' . $fakultasName;
+                // Cek map singkatan
+                $lowerName = strtolower($fakultasName);
+                if (array_key_exists($lowerName, $aliasMap)) {
+                    $fakultasName = $aliasMap[$lowerName];
+                } else {
+                    // Normalisasi nama fakultas jika tidak ada di map
+                    if (!str_contains($lowerName, 'fakultas')) {
+                        $fakultasName = 'Fakultas ' . $fakultasName;
+                    }
                 }
 
                 // Cari atau buat Fakultas (case-insensitive di database by default)
@@ -72,7 +93,7 @@ class MigrateFakultasJurusanData extends Command
         $this->info("Berhasil memigrasi {$migratedCount} profil.");
 
         $this->info("\n--- CONTOH HASIL MIGRASI ---");
-        $sample = \App\Models\MahasiswaProfile::with(['fakultasRel', 'jurusanRel'])->take(5)->get();
+        $sample = \App\Models\MahasiswaProfile::with(['fakultasRel', 'jurusanRel'])->take(20)->get();
         $headers = ['NIM', 'Fakultas (String Lama)', 'Jurusan (String Lama)', 'Fakultas (Relasi Baru)', 'Jurusan (Relasi Baru)'];
         $data = $sample->map(function ($p) {
             return [
