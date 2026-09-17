@@ -21,4 +21,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Rate Limiting: tangkap 429 Too Many Requests dan tampilkan pesan ramah
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Terlalu banyak percobaan. Silakan coba lagi dalam beberapa menit.',
+                ], 429);
+            }
+
+            $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors([
+                    'throttle' => "Terlalu banyak percobaan. Silakan coba lagi dalam {$retryAfter} detik.",
+                ]);
+        });
     })->create();

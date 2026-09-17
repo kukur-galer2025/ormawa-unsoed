@@ -9,6 +9,12 @@
 <h2 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">Selamat Datang Kembali</h2>
 <p class="text-slate-500 text-sm mb-8 font-medium">Masuk ke akun Anda untuk melanjutkan</p>
 
+@error('throttle')
+<div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">
+    {{ $message }}
+</div>
+@enderror
+
 <form method="POST" action="{{ route('login') }}" class="space-y-4">
     @csrf
     <div>

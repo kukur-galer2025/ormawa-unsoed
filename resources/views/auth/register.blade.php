@@ -9,6 +9,12 @@
 <h2 class="text-2xl font-black text-slate-900 mb-1 tracking-tight">Daftar Akun Baru</h2>
 <p class="text-slate-500 text-sm mb-6 font-medium">Lengkapi data diri Anda di bawah ini untuk memulai</p>
 
+@error('throttle')
+<div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">
+    {{ $message }}
+</div>
+@enderror
+
 <form method="POST" action="{{ route('register') }}" class="space-y-4">
     @csrf
     <div class="grid grid-cols-2 gap-4">
