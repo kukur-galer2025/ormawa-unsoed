@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'ormawa.access' => \App\Http\Middleware\EnsureOrmawaAccess::class,
+            'profile.complete' => \App\Http\Middleware\EnsureProfileComplete::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

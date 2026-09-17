@@ -130,19 +130,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin', 'ormaw
 // MAHASISWA ROUTES
 // ============================================================
 Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Mahasiswa\DashboardController::class, 'index'])->name('dashboard');
-
-    // Profile
+    // Profile routes — TIDAK pakai middleware profile.complete (mencegah infinite redirect)
     Route::get('/profile', [\App\Http\Controllers\Mahasiswa\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [\App\Http\Controllers\Mahasiswa\ProfileController::class, 'update'])->name('profile.update');
 
-    // Browse Recruitments (Catalog)
-    Route::get('/recruitment', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'index'])->name('recruitment.index');
-    Route::get('/recruitment/{ormawa:slug}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'show'])->name('recruitment.show');
+    // Semua route lain — WAJIB profil lengkap
+    Route::middleware('profile.complete')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Mahasiswa\DashboardController::class, 'index'])->name('dashboard');
 
-    // Apply (per division)
-    Route::post('/recruitment/{recruitment}/apply', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'store'])->name('recruitment.apply');
+        // Browse Recruitments (Catalog)
+        Route::get('/recruitment', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'index'])->name('recruitment.index');
+        Route::get('/recruitment/{ormawa:slug}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'show'])->name('recruitment.show');
 
-    // Application History
-    Route::get('/applications', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'history'])->name('applications.history');
+        // Apply (per division)
+        Route::post('/recruitment/{recruitment}/apply', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'store'])->name('recruitment.apply');
+
+        // Application History
+        Route::get('/applications', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'history'])->name('applications.history');
+    });
 });
