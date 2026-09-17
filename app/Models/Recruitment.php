@@ -45,12 +45,14 @@ class Recruitment extends Model
 
     public function scopeReallyClosed($query)
     {
-        return $query->where('status', 'ditutup')
-                     ->orWhere(function ($q) {
-                         $q->where('status', 'dibuka')
-                           ->whereNotNull('tanggal_tutup')
-                           ->where('tanggal_tutup', '<', now()->startOfDay());
-                     });
+        return $query->where(function ($q) {
+            $q->where('status', 'ditutup')
+              ->orWhere(function ($q2) {
+                  $q2->where('status', 'dibuka')
+                     ->whereNotNull('tanggal_tutup')
+                     ->where('tanggal_tutup', '<', now()->startOfDay());
+              });
+        });
     }
 
     /**
