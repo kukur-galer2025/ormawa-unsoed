@@ -59,11 +59,7 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 relative">
-            <!-- Desktop Toggle Button -->
-            <button @click="sidebarOpen = !sidebarOpen" class="hidden lg:flex absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-white border border-slate-200 rounded-full items-center justify-center text-slate-400 hover:text-slate-700 hover:border-slate-300 shadow-sm z-[60] transition-colors cursor-pointer focus:outline-none">
-                <svg x-show="sidebarOpen" class="w-4 h-4 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                <svg x-show="!sidebarOpen" style="display: none;" class="w-4 h-4 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-            </button>
+
 
             <!-- Top Navbar -->
             @include('layouts.partials.navbar')

@@ -58,7 +58,7 @@ class ApplicationController extends Controller
         $application = Application::create($data);
 
         // Create empty score entries for each criteria in this division
-        $criteria = $division->criteria;
+        $criteria = $division->allCriteria()->get();
         foreach ($criteria as $c) {
             ApplicationScore::create([
                 'application_id' => $application->id,

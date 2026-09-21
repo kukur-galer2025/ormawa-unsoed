@@ -40,7 +40,7 @@
                 <select name="fakultas" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
                     <option value="">Semua Fakultas</option>
                     @foreach($fakultasList as $fak)
-                        <option value="{{ $fak }}" {{ request('fakultas') == $fak ? 'selected' : '' }}>{{ $fak }}</option>
+                        <option value="{{ $fak->id }}" {{ request('fakultas') == $fak->id ? 'selected' : '' }}>{{ $fak->nama_fakultas }}</option>
                     @endforeach
                 </select>
             </div>
@@ -51,7 +51,7 @@
                 <select name="jurusan" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
                     <option value="">Semua Jurusan</option>
                     @foreach($jurusanList as $jur)
-                        <option value="{{ $jur }}" {{ request('jurusan') == $jur ? 'selected' : '' }}>{{ $jur }}</option>
+                        <option value="{{ $jur->id }}" {{ request('jurusan') == $jur->id ? 'selected' : '' }}>{{ $jur->nama_jurusan }} ({{ $jur->fakultas->nama_fakultas }})</option>
                     @endforeach
                 </select>
             </div>

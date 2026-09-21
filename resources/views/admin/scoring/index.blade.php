@@ -22,14 +22,30 @@
                 <p class="text-xs text-slate-500">Pilih divisi untuk menginput nilai pelamar</p>
             </div>
         </div>
-        <form method="GET" action="{{ route('admin.scoring.index', $recruitment) }}" class="flex items-center gap-2">
-            <span class="text-sm font-medium text-slate-600">Pilih Divisi:</span>
-            <select name="division_id" onchange="this.form.submit()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-w-[200px]">
-                <option value="">-- Pilih Divisi --</option>
-                @foreach($recruitment->divisions as $div)
-                    <option value="{{ $div->id }}" {{ ($division && $division->id == $div->id) ? 'selected' : '' }}>{{ $div->nama }}</option>
-                @endforeach
-            </select>
+        <form method="GET" action="{{ route('admin.scoring.index', $recruitment) }}" class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-slate-600">Divisi:</span>
+                <select name="division_id" onchange="this.form.submit()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-w-[150px]">
+                    <option value="">-- Pilih Divisi --</option>
+                    @foreach($recruitment->divisions as $div)
+                        <option value="{{ $div->id }}" {{ ($division && $division->id == $div->id) ? 'selected' : '' }}>{{ $div->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+            @if($division && $allDivisionApplications->isNotEmpty())
+            <div class="flex items-center gap-2 md:border-l md:border-slate-200 md:pl-4">
+                <span class="text-sm font-medium text-slate-600">Pelamar:</span>
+                <select name="application_id" onchange="this.form.submit()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 min-w-[200px]">
+                    <option value="">Semua Pelamar ({{ $allDivisionApplications->count() }})</option>
+                    @foreach($allDivisionApplications as $appDropdown)
+                        <option value="{{ $appDropdown->id }}" {{ request('application_id') == $appDropdown->id ? 'selected' : '' }}>
+                            {{ $appDropdown->user->name }} {{ $appDropdown->status === 'pending' ? '(Belum Dinilai)' : '(Selesai)' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
         </form>
     </div>
 

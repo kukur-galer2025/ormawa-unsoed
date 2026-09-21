@@ -18,11 +18,11 @@ class RecruitmentBrowseController extends Controller
         }
 
         if ($request->filled('fakultas')) {
-            $query->where('fakultas', 'LIKE', '%' . $request->fakultas . '%');
+            $query->where('fakultas_id', $request->fakultas);
         }
 
         if ($request->filled('jurusan')) {
-            $query->where('jurusan', 'LIKE', '%' . $request->jurusan . '%');
+            $query->where('jurusan_id', $request->jurusan);
         }
 
         if ($request->filled('search')) {
@@ -31,8 +31,8 @@ class RecruitmentBrowseController extends Controller
 
         $ormawas = $query->paginate(12)->withQueryString();
 
-        $fakultasList = Ormawa::whereNotNull('fakultas')->where('fakultas', '!=', '')->distinct()->pluck('fakultas');
-        $jurusanList = Ormawa::whereNotNull('jurusan')->where('jurusan', '!=', '')->distinct()->pluck('jurusan');
+        $fakultasList = \App\Models\Fakultas::orderBy('nama_fakultas')->get();
+        $jurusanList = \App\Models\Jurusan::orderBy('nama_jurusan')->get();
 
         return view('mahasiswa.recruitment.index', compact('ormawas', 'fakultasList', 'jurusanList'));
     }

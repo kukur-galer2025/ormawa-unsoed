@@ -27,13 +27,22 @@ class ScoringController extends Controller
         $division = $recruitment->divisions->find($divisionId);
 
         $applications = collect();
+        $allDivisionApplications = collect();
         $aspects = collect();
 
         if ($division) {
-            $applications = $division->applications()
+            $baseQuery = $division->applications()
                 ->with(['user.mahasiswaProfile', 'scores.criteria'])
-                ->latest()
-                ->get();
+                ->latest();
+
+            // All applications for this division (for the dropdown list)
+            $allDivisionApplications = (clone $baseQuery)->get();
+
+            if (request('application_id')) {
+                $baseQuery->where('id', request('application_id'));
+            }
+
+            $applications = $baseQuery->get();
 
             // Load aspects with criteria and value labels
             $aspects = $division->aspects()
@@ -42,7 +51,7 @@ class ScoringController extends Controller
                 ->get();
         }
 
-        return view('admin.scoring.index', compact('recruitment', 'applications', 'aspects', 'division'));
+        return view('admin.scoring.index', compact('recruitment', 'applications', 'allDivisionApplications', 'aspects', 'division'));
     }
 
     public function store(Request $request, Recruitment $recruitment, Application $application)
