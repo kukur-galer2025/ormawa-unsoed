@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\SocialiteController;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:6,1');
+    Route::get('/forgot-password', function () { return view('auth.forgot-password'); })->name('password.request');
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:6,1');
 
@@ -145,6 +146,8 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
         // Browse Recruitments (Catalog)
         Route::get('/recruitment', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'index'])->name('recruitment.index');
         Route::get('/recruitment/{ormawa:slug}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'show'])->name('recruitment.show');
+        Route::get('/recruitment/{ormawa:slug}/prestasi', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'prestasi'])->name('recruitment.prestasi');
+        Route::get('/recruitment/{ormawa:slug}/program-kerja', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'programKerja'])->name('recruitment.proker');
 
         // Apply (per division)
         Route::post('/recruitment/{recruitment}/apply', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'store'])->name('recruitment.apply');

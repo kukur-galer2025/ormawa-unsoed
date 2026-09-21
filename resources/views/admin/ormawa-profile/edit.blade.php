@@ -78,22 +78,46 @@
                 </div>
 
                 <!-- Logo -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
+                <div class="md:col-span-2" x-data="{ 
+                    previewUrl: '{{ $ormawa->logo ? asset('storage/' . $ormawa->logo) : '' }}',
+                    fileChosen(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            this.previewUrl = URL.createObjectURL(file);
+                        }
+                    }
+                }">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Upload Logo Baru
+                        Logo Organisasi
                     </label>
-                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl hover:bg-slate-50 hover:border-blue-400 transition-colors">
-                        <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-10 w-10 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                            <div class="flex text-sm text-slate-600 justify-center">
-                                <label for="logo" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                    <span>Pilih file</span>
-                                    <input id="logo" name="logo" type="file" class="sr-only" accept="image/*">
-                                </label>
-                                <p class="pl-1">atau drag and drop</p>
-                            </div>
-                            <p class="text-xs text-slate-500">PNG, JPG, GIF max 2MB</p>
+                    <div class="flex items-center gap-6">
+                        <!-- Preview Image -->
+                        <div class="shrink-0">
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" alt="Preview Logo" class="h-24 w-24 object-contain rounded-xl border border-slate-200 shadow-sm bg-white p-2">
+                            </template>
+                            <template x-if="!previewUrl">
+                                <div class="h-24 w-24 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <!-- File Input -->
+                        <div class="flex-1">
+                            <label class="block">
+                                <span class="sr-only">Pilih file logo</span>
+                                <input type="file" name="logo" id="logo" accept="image/*" @change="fileChosen"
+                                    class="block w-full text-sm text-slate-500
+                                    file:mr-4 file:py-2.5 file:px-4
+                                    file:rounded-xl file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100 transition-all cursor-pointer border border-slate-200 rounded-xl"
+                                />
+                            </label>
+                            <p class="mt-2 text-xs text-slate-500">Maksimal 2MB. Format yang didukung: PNG, JPG, GIF.</p>
                         </div>
                     </div>
                 </div>

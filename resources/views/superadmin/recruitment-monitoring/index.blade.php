@@ -88,7 +88,6 @@
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4">
                         <p class="text-sm font-medium text-slate-800">{{ $r->judul }}</p>
-                        <p class="text-xs text-slate-400 mt-0.5">CF: {{ $r->cf_percentage }}% | SF: {{ $r->sf_percentage }}%</p>
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">

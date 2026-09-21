@@ -8,7 +8,7 @@
 @section('content')
 <div class="flex flex-col lg:flex-row gap-8">
     {{-- SIDEBAR FILTER --}}
-    <div class="w-full lg:w-80 shrink-0">
+    <div class="w-full lg:w-80 shrink-0" x-data="filterPicker()">
         <form action="{{ route('mahasiswa.recruitment.index') }}" method="GET" class="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24 lg:top-6">
             <h3 class="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
                 <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md shadow-blue-500/20">
@@ -26,34 +26,39 @@
             {{-- Tingkat --}}
             <div class="mb-5">
                 <label class="block text-sm font-bold text-slate-700 mb-2">Tingkat</label>
-                <select name="tingkat" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
+                <select name="tingkat" x-model="selectedTingkat" @change="onTingkatChange()" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
                     <option value="">Semua Tingkat</option>
-                    <option value="Universitas" {{ request('tingkat') == 'Universitas' ? 'selected' : '' }}>Universitas (Pusat)</option>
-                    <option value="Fakultas" {{ request('tingkat') == 'Fakultas' ? 'selected' : '' }}>Fakultas</option>
-                    <option value="Jurusan" {{ request('tingkat') == 'Jurusan' ? 'selected' : '' }}>Jurusan</option>
+                    <option value="Universitas">Universitas (Pusat)</option>
+                    <option value="Fakultas">Fakultas</option>
+                    <option value="Jurusan">Jurusan</option>
                 </select>
             </div>
 
-            {{-- Fakultas --}}
-            <div class="mb-5">
+            {{-- Fakultas (Modal Picker) — hidden when Universitas --}}
+            <div class="mb-5" x-show="showFakultas" x-transition>
                 <label class="block text-sm font-bold text-slate-700 mb-2">Fakultas</label>
-                <select name="fakultas" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
-                    <option value="">Semua Fakultas</option>
-                    @foreach($fakultasList as $fak)
-                        <option value="{{ $fak->id }}" {{ request('fakultas') == $fak->id ? 'selected' : '' }}>{{ $fak->nama_fakultas }}</option>
-                    @endforeach
-                </select>
+                <input type="hidden" name="fakultas" :value="showFakultas ? selectedFakultas : ''">
+                <button type="button" @click="openModal('fakultas')"
+                        class="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/20 transition-all text-left"
+                        :class="selectedFakultasName ? 'text-slate-900' : 'text-slate-400'">
+                    <span class="truncate" x-text="selectedFakultasName || 'Semua Fakultas'"></span>
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
             </div>
 
-            {{-- Jurusan --}}
-            <div class="mb-8">
+            {{-- Jurusan (Modal Picker) — only when Jurusan or Semua --}}
+            <div class="mb-8" x-show="showJurusan" x-transition>
                 <label class="block text-sm font-bold text-slate-700 mb-2">Jurusan</label>
-                <select name="jurusan" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
-                    <option value="">Semua Jurusan</option>
-                    @foreach($jurusanList as $jur)
-                        <option value="{{ $jur->id }}" {{ request('jurusan') == $jur->id ? 'selected' : '' }}>{{ $jur->nama_jurusan }} ({{ $jur->fakultas->nama_fakultas }})</option>
-                    @endforeach
-                </select>
+                <input type="hidden" name="jurusan" :value="showJurusan ? selectedJurusan : ''">
+                <button type="button" @click="selectedFakultas ? openModal('jurusan') : null"
+                        class="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium shadow-sm transition-all text-left"
+                        :class="[
+                            selectedJurusanName ? 'text-slate-900' : 'text-slate-400',
+                            selectedFakultas ? 'hover:border-blue-400 hover:ring-2 hover:ring-blue-500/20 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        ]">
+                    <span class="truncate" x-text="selectedJurusanName || (selectedFakultas ? 'Semua Jurusan' : 'Pilih Fakultas dulu')"></span>
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
             </div>
 
             <div class="flex gap-3">
@@ -61,6 +66,62 @@
                 <a href="{{ route('mahasiswa.recruitment.index') }}" class="py-3 px-6 bg-slate-100 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-200 transition-all text-center">Reset</a>
             </div>
         </form>
+
+        {{-- ==================== MODAL PICKER ==================== --}}
+        <template x-teleport="body">
+            <div x-show="modalOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-[9999] flex items-center justify-center p-4" style="display:none;">
+                {{-- Backdrop --}}
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closeModal()"></div>
+                
+                {{-- Modal Content --}}
+                <div x-show="modalOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                     class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden">
+                    
+                    {{-- Modal Header --}}
+                    <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+                        <h3 class="font-bold text-slate-800 text-base" x-text="modalType === 'fakultas' ? 'Pilih Fakultas' : 'Pilih Jurusan'"></h3>
+                        <button type="button" @click="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    
+                    {{-- Search --}}
+                    <div class="p-3 border-b border-slate-100 shrink-0">
+                        <div class="relative">
+                            <input type="text" x-model="modalSearch" x-ref="modalSearchInput" placeholder="Cari..."
+                                   class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- Options List --}}
+                    <div class="overflow-y-auto flex-1 p-2">
+                        {{-- "Semua" option --}}
+                        <button type="button" @click="selectItem(null)"
+                                class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-between"
+                                :class="!isSelected(null) ? 'text-slate-500 hover:bg-slate-50 border border-transparent' : 'bg-blue-50 text-blue-700 border border-blue-200'">
+                            <span x-text="modalType === 'fakultas' ? 'Semua Fakultas' : 'Semua Jurusan'"></span>
+                            <svg x-show="isSelected(null)" class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+
+                        <template x-for="item in filteredModalItems" :key="item.id">
+                            <button type="button" @click="selectItem(item)"
+                                    class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-between"
+                                    :class="isSelected(item) ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50 border border-transparent'">
+                                <span x-text="modalType === 'fakultas' ? item.nama_fakultas : item.nama_jurusan"></span>
+                                <svg x-show="isSelected(item)" class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </template>
+                        <div x-show="filteredModalItems.length === 0" class="text-center py-8 text-slate-400 text-sm">
+                            Tidak ditemukan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     {{-- CATALOG GRID --}}
@@ -145,4 +206,125 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function filterPicker() {
+        const fakultasData = @json($fakultasList);
+        const oldFakultas = '{{ request("fakultas", "") }}';
+        const oldJurusan = '{{ request("jurusan", "") }}';
+        const oldTingkat = '{{ request("tingkat", "") }}';
+
+        return {
+            selectedFakultas: oldFakultas,
+            selectedFakultasName: '',
+            selectedJurusan: oldJurusan,
+            selectedJurusanName: '',
+            selectedTingkat: oldTingkat,
+            fakultasData: fakultasData,
+
+            modalOpen: false,
+            modalType: '',
+            modalSearch: '',
+
+            get showFakultas() {
+                return this.selectedTingkat !== 'Universitas';
+            },
+
+            get showJurusan() {
+                return this.selectedTingkat !== 'Universitas' && this.selectedTingkat !== 'Fakultas';
+            },
+
+            onTingkatChange() {
+                if (!this.showFakultas) {
+                    this.selectedFakultas = '';
+                    this.selectedFakultasName = '';
+                }
+                if (!this.showJurusan) {
+                    this.selectedJurusan = '';
+                    this.selectedJurusanName = '';
+                }
+            },
+
+            init() {
+                if (this.selectedFakultas) {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    if (fak) this.selectedFakultasName = fak.nama_fakultas;
+                }
+                if (this.selectedJurusan && this.selectedFakultas) {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    if (fak) {
+                        const jur = fak.jurusans.find(j => j.id == this.selectedJurusan);
+                        if (jur) this.selectedJurusanName = jur.nama_jurusan;
+                    }
+                }
+            },
+
+            openModal(type) {
+                this.modalType = type;
+                this.modalSearch = '';
+                this.modalOpen = true;
+                this.$nextTick(() => {
+                    if (this.$refs.modalSearchInput) this.$refs.modalSearchInput.focus();
+                });
+            },
+
+            closeModal() {
+                this.modalOpen = false;
+            },
+
+            get filteredModalItems() {
+                let items = [];
+                if (this.modalType === 'fakultas') {
+                    items = this.fakultasData;
+                    if (this.modalSearch) {
+                        const q = this.modalSearch.toLowerCase();
+                        items = items.filter(f => f.nama_fakultas.toLowerCase().includes(q));
+                    }
+                } else {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    items = fak ? fak.jurusans : [];
+                    if (this.modalSearch) {
+                        const q = this.modalSearch.toLowerCase();
+                        items = items.filter(j => j.nama_jurusan.toLowerCase().includes(q));
+                    }
+                }
+                return items;
+            },
+
+            isSelected(item) {
+                if (item === null) {
+                    if (this.modalType === 'fakultas') return !this.selectedFakultas;
+                    return !this.selectedJurusan;
+                }
+                if (this.modalType === 'fakultas') return item.id == this.selectedFakultas;
+                return item.id == this.selectedJurusan;
+            },
+
+            selectItem(item) {
+                if (this.modalType === 'fakultas') {
+                    if (item === null) {
+                        this.selectedFakultas = '';
+                        this.selectedFakultasName = '';
+                    } else {
+                        this.selectedFakultas = item.id;
+                        this.selectedFakultasName = item.nama_fakultas;
+                    }
+                    this.selectedJurusan = '';
+                    this.selectedJurusanName = '';
+                } else {
+                    if (item === null) {
+                        this.selectedJurusan = '';
+                        this.selectedJurusanName = '';
+                    } else {
+                        this.selectedJurusan = item.id;
+                        this.selectedJurusanName = item.nama_jurusan;
+                    }
+                }
+                this.closeModal();
+            }
+        };
+    }
+</script>
+@endpush
 @endsection

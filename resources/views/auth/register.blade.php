@@ -15,10 +15,11 @@
 </div>
 @enderror
 
-<form method="POST" action="{{ route('register') }}" class="space-y-4">
+<form method="POST" action="{{ route('register') }}" class="space-y-4" x-data="registerForm()">
     @csrf
-    <div class="grid grid-cols-2 gap-4">
-        <div class="col-span-2 sm:col-span-1">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {{-- Nama Lengkap --}}
+        <div>
             <label for="name" class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
             <div class="relative flex items-center">
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required placeholder="Misal: Budi Santoso"
@@ -30,10 +31,11 @@
             @error('name')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1">
-            <label for="nim" class="block text-xs font-bold text-slate-700 mb-1.5">NIM</label>
+        {{-- NIM --}}
+        <div>
+            <label for="nim" class="block text-xs font-bold text-slate-700 mb-1.5">NIM <span class="font-normal text-slate-400">(maks. 9 digit)</span></label>
             <div class="relative flex items-center">
-                <input type="text" id="nim" name="nim" value="{{ old('nim') }}" required placeholder="Misal: H1D020001"
+                <input type="text" id="nim" name="nim" value="{{ old('nim') }}" required maxlength="9" placeholder="Misal: H1D020001"
                        class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
@@ -42,31 +44,43 @@
             @error('nim')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1">
-            <label for="fakultas" class="block text-xs font-bold text-slate-700 mb-1.5">Fakultas</label>
-            <div class="relative flex items-center">
-                <input type="text" id="fakultas" name="fakultas" value="{{ old('fakultas') }}" required placeholder="MIPA"
-                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
+        {{-- Fakultas (Modal Picker) --}}
+        <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Fakultas</label>
+            <input type="hidden" name="fakultas_id" :value="selectedFakultas">
+            <button type="button" @click="openModal('fakultas')"
+                    class="w-full flex items-center gap-2 pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-left transition-all duration-300 hover:border-blue-400 hover:ring-2 hover:ring-blue-500/20 relative"
+                    :class="selectedFakultasName ? 'text-slate-900' : 'text-slate-400'">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 </div>
-            </div>
-            @error('fakultas')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
+                <span class="flex-1 truncate" x-text="selectedFakultasName || '-- Pilih Fakultas --'"></span>
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            @error('fakultas_id')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1">
-            <label for="jurusan" class="block text-xs font-bold text-slate-700 mb-1.5">Jurusan</label>
-            <div class="relative flex items-center">
-                <input type="text" id="jurusan" name="jurusan" value="{{ old('jurusan') }}" required placeholder="Informatika"
-                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
+        {{-- Jurusan (Modal Picker) --}}
+        <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Jurusan</label>
+            <input type="hidden" name="jurusan_id" :value="selectedJurusan">
+            <button type="button" @click="selectedFakultas ? openModal('jurusan') : null"
+                    class="w-full flex items-center gap-2 pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-left transition-all duration-300 relative"
+                    :class="[
+                        selectedJurusanName ? 'text-slate-900' : 'text-slate-400',
+                        selectedFakultas ? 'hover:border-blue-400 hover:ring-2 hover:ring-blue-500/20 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                    ]">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
-            </div>
-            @error('jurusan')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
+                <span class="flex-1 truncate" x-text="selectedJurusanName || (selectedFakultas ? '-- Pilih Jurusan --' : 'Pilih Fakultas dulu')"></span>
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            @error('jurusan_id')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1">
+        {{-- Angkatan --}}
+        <div>
             <label for="angkatan" class="block text-xs font-bold text-slate-700 mb-1.5">Angkatan</label>
             <div class="relative flex items-center">
                 <input type="text" id="angkatan" name="angkatan" value="{{ old('angkatan') }}" required maxlength="4" placeholder="Misal: 2022"
@@ -78,7 +92,8 @@
             @error('angkatan')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1">
+        {{-- No. HP --}}
+        <div>
             <label for="no_hp" class="block text-xs font-bold text-slate-700 mb-1.5">No. HP <span class="font-normal text-slate-400">(Opsional)</span></label>
             <div class="relative flex items-center">
                 <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08123456789"
@@ -89,10 +104,11 @@
             </div>
         </div>
         
-        <div class="col-span-2">
+        {{-- Email --}}
+        <div class="col-span-1 sm:col-span-2">
             <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">Email</label>
             <div class="relative flex items-center">
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="email@mhs.unsoed.ac.id"
+                <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="contoh@gmail.com"
                        class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
@@ -101,7 +117,8 @@
             @error('email')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1" x-data="{ show: false }">
+        {{-- Kata Sandi --}}
+        <div x-data="{ show: false }">
             <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
             <div class="relative flex items-center">
                 <input :type="show ? 'text' : 'password'" id="password" name="password" required placeholder="••••••••"
@@ -114,10 +131,12 @@
                     <svg x-show="show" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                 </button>
             </div>
-            @error('password')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
+            <p class="mt-1 text-[10px] text-slate-400 font-medium">Min. 8 karakter, harus ada huruf besar & simbol</p>
+            @error('password')<p class="mt-0.5 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
-        <div class="col-span-2 sm:col-span-1" x-data="{ show: false }">
+        {{-- Konfirmasi Sandi --}}
+        <div x-data="{ show: false }">
             <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-1.5">Konfirmasi Sandi</label>
             <div class="relative flex items-center">
                 <input :type="show ? 'text' : 'password'" id="password_confirmation" name="password_confirmation" required placeholder="••••••••"
@@ -136,6 +155,54 @@
     <button type="submit" class="w-full py-3 px-4 mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all shadow-md shadow-blue-500/25 hover:-translate-y-0.5">
         Daftar Sekarang
     </button>
+
+    {{-- ==================== MODAL PICKER ==================== --}}
+    <template x-teleport="body">
+        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-[9999] flex items-center justify-center p-4" style="display:none;">
+            {{-- Backdrop --}}
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closeModal()"></div>
+            
+            {{-- Modal Content --}}
+            <div x-show="modalOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                 class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden">
+                
+                {{-- Modal Header --}}
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+                    <h3 class="font-bold text-slate-800 text-base" x-text="modalType === 'fakultas' ? 'Pilih Fakultas' : 'Pilih Jurusan'"></h3>
+                    <button type="button" @click="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                
+                {{-- Search --}}
+                <div class="p-3 border-b border-slate-100 shrink-0">
+                    <div class="relative">
+                        <input type="text" x-model="modalSearch" x-ref="modalSearchInput" placeholder="Cari..."
+                               class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                
+                {{-- Options List --}}
+                <div class="overflow-y-auto flex-1 p-2">
+                    <template x-for="item in filteredModalItems" :key="item.id">
+                        <button type="button" @click="selectItem(item)"
+                                class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-between group"
+                                :class="isSelected(item) ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50 border border-transparent'">
+                            <span x-text="modalType === 'fakultas' ? item.nama_fakultas : item.nama_jurusan"></span>
+                            <svg x-show="isSelected(item)" class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                    </template>
+                    <div x-show="filteredModalItems.length === 0" class="text-center py-8 text-slate-400 text-sm">
+                        Tidak ditemukan
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 </form>
 
 {{-- Divider --}}
@@ -161,4 +228,92 @@
         Sudah punya akun? <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 font-bold transition-colors">Masuk di sini</a>
     </p>
 </div>
+
+@push('scripts')
+<script>
+    function registerForm() {
+        const fakultasData = @json($fakultas);
+        const oldFakultas = '{{ old("fakultas_id", "") }}';
+        const oldJurusan = '{{ old("jurusan_id", "") }}';
+
+        return {
+            selectedFakultas: oldFakultas,
+            selectedFakultasName: '',
+            selectedJurusan: oldJurusan,
+            selectedJurusanName: '',
+            fakultasData: fakultasData,
+
+            modalOpen: false,
+            modalType: '', // 'fakultas' or 'jurusan'
+            modalSearch: '',
+
+            init() {
+                // Restore old values on page load
+                if (this.selectedFakultas) {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    if (fak) this.selectedFakultasName = fak.nama_fakultas;
+                }
+                if (this.selectedJurusan && this.selectedFakultas) {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    if (fak) {
+                        const jur = fak.jurusans.find(j => j.id == this.selectedJurusan);
+                        if (jur) this.selectedJurusanName = jur.nama_jurusan;
+                    }
+                }
+            },
+
+            openModal(type) {
+                this.modalType = type;
+                this.modalSearch = '';
+                this.modalOpen = true;
+                this.$nextTick(() => {
+                    if (this.$refs.modalSearchInput) this.$refs.modalSearchInput.focus();
+                });
+            },
+
+            closeModal() {
+                this.modalOpen = false;
+            },
+
+            get filteredModalItems() {
+                let items = [];
+                if (this.modalType === 'fakultas') {
+                    items = this.fakultasData;
+                    if (this.modalSearch) {
+                        const q = this.modalSearch.toLowerCase();
+                        items = items.filter(f => f.nama_fakultas.toLowerCase().includes(q));
+                    }
+                } else {
+                    const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
+                    items = fak ? fak.jurusans : [];
+                    if (this.modalSearch) {
+                        const q = this.modalSearch.toLowerCase();
+                        items = items.filter(j => j.nama_jurusan.toLowerCase().includes(q));
+                    }
+                }
+                return items;
+            },
+
+            isSelected(item) {
+                if (this.modalType === 'fakultas') return item.id == this.selectedFakultas;
+                return item.id == this.selectedJurusan;
+            },
+
+            selectItem(item) {
+                if (this.modalType === 'fakultas') {
+                    this.selectedFakultas = item.id;
+                    this.selectedFakultasName = item.nama_fakultas;
+                    // Reset jurusan when fakultas changes
+                    this.selectedJurusan = '';
+                    this.selectedJurusanName = '';
+                } else {
+                    this.selectedJurusan = item.id;
+                    this.selectedJurusanName = item.nama_jurusan;
+                }
+                this.closeModal();
+            }
+        };
+    }
+</script>
+@endpush
 @endsection

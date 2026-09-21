@@ -50,6 +50,10 @@
             <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 transition-colors">
             <span class="text-sm font-bold text-slate-600 group-hover:text-slate-900 transition-colors">Ingat saya</span>
         </label>
+        
+        <a href="{{ route('password.request') }}" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+            Lupa sandi?
+        </a>
     </div>
     
     <button type="submit" class="w-full py-3 px-4 mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all shadow-lg shadow-blue-500/25 hover:-translate-y-0.5">

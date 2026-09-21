@@ -31,10 +31,9 @@ class RecruitmentBrowseController extends Controller
 
         $ormawas = $query->paginate(12)->withQueryString();
 
-        $fakultasList = \App\Models\Fakultas::orderBy('nama_fakultas')->get();
-        $jurusanList = \App\Models\Jurusan::orderBy('nama_jurusan')->get();
+        $fakultasList = \App\Models\Fakultas::with('jurusans')->orderBy('nama_fakultas')->get();
 
-        return view('mahasiswa.recruitment.index', compact('ormawas', 'fakultasList', 'jurusanList'));
+        return view('mahasiswa.recruitment.index', compact('ormawas', 'fakultasList'));
     }
 
     public function show(Ormawa $ormawa)
@@ -56,5 +55,29 @@ class RecruitmentBrowseController extends Controller
         $appliedDivisionIds = auth()->user()->applications()->pluck('recruitment_division_id')->toArray();
 
         return view('mahasiswa.recruitment.show', compact('ormawa', 'appliedDivisionIds'));
+    }
+
+    public function prestasi(Ormawa $ormawa)
+    {
+        if (!$ormawa->is_active) {
+            abort(404);
+        }
+
+        $ormawa->load(['prestasis' => function($query) {
+            $query->orderBy('tahun', 'desc')->latest();
+        }]);
+
+        return view('mahasiswa.recruitment.prestasi', compact('ormawa'));
+    }
+
+    public function programKerja(Ormawa $ormawa)
+    {
+        if (!$ormawa->is_active) {
+            abort(404);
+        }
+
+        $ormawa->load('programKerjas');
+
+        return view('mahasiswa.recruitment.program-kerja', compact('ormawa'));
     }
 }

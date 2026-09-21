@@ -4,8 +4,6 @@
 @section("content")
 <div class="mb-6"><a href="{{ route('mahasiswa.recruitment.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali ke Katalog</a></div>
 
-<div x-data="{ mediaModalOpen: false, modalTitle: '', modalImage: '', modalDesc: '', modalYear: '' }">
-
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
     <div class="h-48 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
         <div class="absolute inset-0 bg-black/20"></div>
@@ -23,64 +21,34 @@
     <div class="p-4 sm:p-6 md:p-8">
         <p class="text-sm sm:text-base text-slate-600 mb-6 leading-relaxed">{{ $ormawa->deskripsi }}</p>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Navigation Buttons for Prestasi & Program Kerja --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             @if($ormawa->prestasis->count() > 0)
-            <div>
-                <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                    Prestasi Unggulan
-                </h3>
-                <ul class="space-y-3">
-                    @foreach($ormawa->prestasis->take(3) as $prestasi)
-                    <li @click="mediaModalOpen = true; modalTitle = '{{ addslashes($prestasi->judul) }}'; modalImage = '{{ $prestasi->foto ? Storage::url($prestasi->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $prestasi->deskripsi ?? '')) }}'; modalYear = '{{ $prestasi->tahun }}'" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
-                        @if($prestasi->foto)
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
-                                <img src="{{ Storage::url($prestasi->foto) }}" alt="{{ $prestasi->judul }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                            </div>
-                        @endif
-                        <div class="flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2 mb-1">
-                                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded shrink-0">{{ $prestasi->tahun }}</span>
-                                <p class="font-semibold text-slate-800 text-xs sm:text-sm leading-tight group-hover:text-amber-600 transition-colors truncate w-full sm:w-auto sm:flex-1">{{ $prestasi->judul }}</p>
-                            </div>
-                            @if($prestasi->deskripsi)
-                                <p class="text-xs text-slate-500 line-clamp-2">{{ $prestasi->deskripsi }}</p>
-                            @endif
-                        </div>
-                    </li>
-                    @endforeach
-                </ul>
-            </div>
+            <a href="{{ route('mahasiswa.recruitment.prestasi', $ormawa->slug) }}" class="group relative flex items-center gap-4 p-5 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl hover:shadow-lg hover:shadow-amber-100/50 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-200/30 to-orange-200/30 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="relative shrink-0 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-amber-200/50 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                </div>
+                <div class="relative flex-1 min-w-0">
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base group-hover:text-amber-700 transition-colors">Prestasi Organisasi</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">{{ $ormawa->prestasis->count() }} prestasi tercatat</p>
+                </div>
+                <svg class="relative w-5 h-5 text-amber-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </a>
             @endif
 
             @if($ormawa->programKerjas->count() > 0)
-            <div>
-                <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                    Program Kerja
-                </h3>
-                <div class="grid grid-cols-1 gap-3">
-                    @foreach($ormawa->programKerjas as $proker)
-                    <div @click="mediaModalOpen = true; modalTitle = '{{ addslashes($proker->nama) }}'; modalImage = '{{ $proker->foto ? Storage::url($proker->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $proker->deskripsi ?? '')) }}'; modalYear = ''" class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors group">
-                        @if($proker->foto)
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200">
-                                <img src="{{ Storage::url($proker->foto) }}" alt="{{ $proker->nama }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                            </div>
-                        @else
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg bg-blue-100 flex items-center justify-center text-blue-500">
-                                <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                            </div>
-                        @endif
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-slate-800 text-xs sm:text-sm group-hover:text-blue-600 transition-colors truncate">{{ $proker->nama }}</p>
-                            @if($proker->deskripsi)
-                                <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">{{ $proker->deskripsi }}</p>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
+            <a href="{{ route('mahasiswa.recruitment.proker', $ormawa->slug) }}" class="group relative flex items-center gap-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/60 rounded-2xl hover:shadow-lg hover:shadow-blue-100/50 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="relative shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-200/50 group-hover:scale-110 transition-transform duration-300">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                 </div>
-            </div>
+                <div class="relative flex-1 min-w-0">
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base group-hover:text-blue-700 transition-colors">Program Kerja</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">{{ $ormawa->programKerjas->count() }} program kerja</p>
+                </div>
+                <svg class="relative w-5 h-5 text-blue-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </a>
             @endif
         </div>
     </div>
@@ -206,32 +174,4 @@
     </div>
 @endif
 
-<!-- Modal Prestasi/Proker Viewer -->
-<div x-show="mediaModalOpen" class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div x-show="mediaModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-sm" @click="mediaModalOpen = false"></div>
-
-        <div x-show="mediaModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative inline-block w-full max-w-2xl overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
-            <button @click="mediaModalOpen = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 text-slate-800 rounded-full transition-colors z-10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            
-            <div class="flex flex-col max-h-[85vh]">
-                <div x-show="modalImage" class="w-full bg-slate-100 border-b border-slate-200 flex items-center justify-center relative overflow-hidden" style="min-h: 200px; max-h: 400px;">
-                    <img :src="modalImage" class="w-full h-full object-cover">
-                </div>
-                
-                <div class="p-4 sm:p-6 overflow-y-auto">
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <span x-show="modalYear" x-text="modalYear" class="self-start px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded"></span>
-                        <h3 class="text-lg sm:text-xl font-bold text-slate-800" x-text="modalTitle"></h3>
-                    </div>
-                    <p class="text-slate-600 leading-relaxed whitespace-pre-line mt-4" x-text="modalDesc"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-</div>
 @endsection
