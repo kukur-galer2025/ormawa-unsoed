@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class MahasiswaManagementController extends Controller
 {
@@ -32,5 +33,18 @@ class MahasiswaManagementController extends Controller
         $mahasiswa->update(['is_active' => !$mahasiswa->is_active]);
         $status = $mahasiswa->is_active ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Akun mahasiswa berhasil $status.");
+    }
+
+    public function resetPassword(Request $request, User $mahasiswa)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $mahasiswa->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return back()->with('success', 'Password mahasiswa berhasil direset.');
     }
 }
