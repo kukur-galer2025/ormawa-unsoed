@@ -38,11 +38,10 @@ Route::get('/', function () {
 
     $stats = [
         'ormawa' => \App\Models\Ormawa::where('is_active', true)->count(),
-        'rekrutmen' => \App\Models\Recruitment::where('status', 'dibuka')->count(),
+        'rekrutmen' => \App\Models\Recruitment::reallyOpen()->count(),
         'mahasiswa' => \App\Models\User::where('role', 'mahasiswa')->count(),
     ];
-    $openCount = \App\Models\Recruitment::where('status', 'dibuka')
-        ->where('tanggal_tutup', '>=', now())->count();
+    $openCount = \App\Models\Recruitment::reallyOpen()->count();
     $ormawas = \App\Models\Ormawa::where('is_active', true)
         ->withCount('recruitments')->take(6)->get();
 
