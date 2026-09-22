@@ -14,7 +14,7 @@
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-xs tracking-wider">
-                <tr><th class="px-6 py-4">Organisasi</th><th class="px-6 py-4">Rekrutmen & Divisi</th><th class="px-6 py-4">Tanggal Daftar</th><th class="px-6 py-4 text-center">Ranking</th><th class="px-6 py-4">Status</th></tr>
+                <tr><th class="px-6 py-4">Organisasi</th><th class="px-6 py-4">Rekrutmen & Divisi</th><th class="px-6 py-4">Tanggal Daftar</th><th class="px-6 py-4">Status</th></tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @foreach($applications as $app)
@@ -28,13 +28,6 @@
                         <span class="inline-block mt-1 px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs border border-slate-200">{{ $app->division->nama }}</span>
                     </td>
                     <td class="px-6 py-4 text-slate-500 font-medium">{{ $app->created_at->format('d/m/Y') }}</td>
-                    <td class="px-6 py-4 text-center">
-                        @if($app->profileMatchingResult)
-                            <span class="font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">#{{ $app->profileMatchingResult->ranking }}</span>
-                        @else
-                            <span class="text-slate-400 text-xs">-</span>
-                        @endif
-                    </td>
                     <td class="px-6 py-4">
                         <span class="px-3 py-1 rounded-full text-xs font-bold 
                             {{ $app->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
