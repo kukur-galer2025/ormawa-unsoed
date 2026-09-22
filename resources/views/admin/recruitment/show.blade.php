@@ -6,7 +6,7 @@
 <div class="lg:col-span-2 space-y-6">
 {{-- Info Umum --}}
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-<div class="flex justify-between items-start mb-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $recruitment->status === 'dibuka' ? 'bg-green-50 text-green-700' : ($recruitment->status === 'ditutup' ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600') }}">{{ ucfirst($recruitment->status) }}</span><a href="{{ route('admin.recruitment.edit', $recruitment) }}" class="text-sm text-blue-600 hover:text-blue-500">Edit</a></div>
+<div class="flex justify-between items-start mb-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $recruitment->status === 'dibuka' ? 'bg-green-50 text-green-700' : ($recruitment->status === 'ditutup' ? 'bg-red-50 text-red-700' : ($recruitment->status === 'selesai' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-600')) }}">{{ ucfirst($recruitment->status) }}</span><a href="{{ route('admin.recruitment.edit', $recruitment) }}" class="text-sm text-blue-600 hover:text-blue-500">Edit</a></div>
 <p class="text-slate-600 mb-4">{{ $recruitment->deskripsi }}</p>
 <div class="text-sm"><div><span class="text-slate-500">Periode:</span><p class="font-medium">{{ $recruitment->tanggal_buka->format('d M Y') }} — {{ $recruitment->tanggal_tutup->format('d M Y') }}</p></div></div>
 @if($recruitment->persyaratan)<div class="mt-4 pt-4 border-t border-slate-100"><h4 class="text-sm font-semibold text-slate-700 mb-2">Persyaratan</h4><div class="text-sm text-slate-600 whitespace-pre-line">{{ $recruitment->persyaratan }}</div></div>@endif
