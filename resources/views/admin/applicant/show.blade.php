@@ -29,7 +29,7 @@
             </div>
             
             @if($application->berkas_pendukung)
-            <div class="mt-4"><span class="block text-xs font-medium text-slate-500 mb-2">Berkas Pendukung</span>
+            <div class="mt-4"><span class="block text-xs font-medium text-slate-500 mb-2">Berkas Persyaratan</span>
                 <a href="{{ Storage::url($application->berkas_pendukung) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-100 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Lihat Berkas
                 </a>

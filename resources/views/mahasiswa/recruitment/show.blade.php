@@ -159,7 +159,7 @@
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Berkas Pendukung (CV/Portofolio)</label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Berkas Persyaratan (jadi satu)</label>
                             <input type="file" name="berkas_pendukung" accept=".pdf,.doc,.docx" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                             <p class="text-xs text-slate-500 mt-1">Format PDF/DOC/DOCX, maksimal 5MB. Opsional.</p>
                         </div>
