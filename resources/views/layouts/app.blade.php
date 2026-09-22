@@ -130,7 +130,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 title: 'Berhasil!',
-                text: '{{ addslashes(session('success')) }}',
+                text: {!! json_encode(session('success')) !!},
                 icon: 'success',
                 confirmButtonColor: '#2563eb',
                 confirmButtonText: 'OK',
@@ -145,9 +145,35 @@
         document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 title: 'Gagal!',
-                text: '{{ addslashes(session('error')) }}',
+                text: {!! json_encode(session('error')) !!},
                 icon: 'error',
                 confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
+            });
+        });
+        @endif
+
+        @if(session('warning'))
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Perhatian!',
+                text: {!! json_encode(session('warning')) !!},
+                icon: 'warning',
+                confirmButtonColor: '#f59e0b',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
+            });
+        });
+        @endif
+
+        @if(session('info'))
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Informasi',
+                text: {!! json_encode(session('info')) !!},
+                icon: 'info',
+                confirmButtonColor: '#3b82f6',
                 confirmButtonText: 'Tutup',
                 customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
             });
