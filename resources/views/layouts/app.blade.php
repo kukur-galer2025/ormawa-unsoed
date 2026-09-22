@@ -64,20 +64,6 @@
             <!-- Top Navbar -->
             @include('layouts.partials.navbar')
 
-            <!-- Page Content -->
-            <main class="flex-1 p-4 lg:p-8">
-                @if(session('success'))
-                    <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
-                        <svg class="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3">
-                        <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        {{ session('error') }}
-                    </div>
-                @endif
                 @yield('content')
             </main>
         </div>
@@ -137,6 +123,51 @@
                 }
             });
         }
+
+        // Flash messages sebagai popup
+        @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '{{ addslashes(session('success')) }}',
+                icon: 'success',
+                confirmButtonColor: '#2563eb',
+                confirmButtonText: 'OK',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
+                timer: 4000,
+                timerProgressBar: true,
+            });
+        });
+        @endif
+
+        @if(session('error'))
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Gagal!',
+                text: '{{ addslashes(session('error')) }}',
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
+            });
+        });
+        @endif
+
+        // Validation errors sebagai popup
+        @if($errors->any())
+        document.addEventListener('DOMContentLoaded', () => {
+            const errorList = @json($errors->all());
+            const errorHtml = errorList.map(e => `<li style="text-align:left;margin-bottom:4px;">• ${e}</li>`).join('');
+            Swal.fire({
+                title: 'Data Tidak Valid',
+                html: `<ul style="font-size:14px;color:#374151;">${errorHtml}</ul>`,
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Perbaiki',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' },
+            });
+        });
+        @endif
     </script>
     @stack('scripts')
 </body>
