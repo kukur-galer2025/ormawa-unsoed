@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\Traits\ChecksRecruitmentOwnership;
+use App\Models\Application;
 use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
 use App\Services\ProfileMatchingService;
@@ -81,6 +82,10 @@ class ProfileMatchingController extends Controller
 
         abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Kalkulasi belum diizinkan.');
 
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Tidak bisa menghitung ulang.');
+        }
+
         if ($division->applications()->count() === 0) {
             return back()->with('error', 'Tidak ada pelamar di divisi ini.');
         }
@@ -122,5 +127,92 @@ class ProfileMatchingController extends Controller
         $allDivisions = $recruitment->divisions()->withCount('applications')->get();
 
         return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions'));
+    }
+
+    public function finalize(Request $request, Recruitment $recruitment, RecruitmentDivision $division)
+    {
+        $this->ensureRecruitmentOwnership($recruitment);
+        $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
+
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi sebelumnya.');
+        }
+
+        // Harus sudah ada hasil PM
+        if ($division->profileMatchingResults()->count() === 0) {
+            return back()->with('error', 'Belum ada hasil Profile Matching. Hitung ranking terlebih dahulu.');
+        }
+
+        $request->validate([
+            'accepted_ids' => 'required|array|min:1',
+            'accepted_ids.*' => 'integer|exists:pendaftaran,id',
+        ], [
+            'accepted_ids.required' => 'Pilih minimal satu pelamar yang diterima.',
+            'accepted_ids.min' => 'Pilih minimal satu pelamar yang diterima.',
+        ]);
+
+        $acceptedIds = $request->accepted_ids;
+
+        // Validasi: semua ID harus milik divisi ini
+        $validCount = $division->applications()
+            ->whereIn('id', $acceptedIds)
+            ->count();
+
+        if ($validCount !== count($acceptedIds)) {
+            return back()->with('error', 'Ada pelamar yang tidak valid untuk divisi ini.');
+        }
+
+        // Validasi: jumlah yang dipilih tidak boleh melebihi kuota
+        if ($division->kuota > 0 && count($acceptedIds) > $division->kuota) {
+            return back()->with('error', 'Jumlah yang dipilih melebihi kuota divisi (' . $division->kuota . ').');
+        }
+
+        // Eksekusi dalam transaction
+        \DB::transaction(function () use ($division, $acceptedIds) {
+            // Yang dipilih → diterima
+            Application::where('recruitment_division_id', $division->id)
+                ->whereIn('id', $acceptedIds)
+                ->update(['status' => 'diterima']);
+
+            // Sisanya → ditolak
+            Application::where('recruitment_division_id', $division->id)
+                ->whereNotIn('id', $acceptedIds)
+                ->update(['status' => 'ditolak']);
+
+            // Lock divisi
+            $division->update(['is_finalized' => true]);
+        });
+
+        return redirect()->route('admin.profile-matching.result', [$recruitment, $division])
+            ->with('success', 'Keputusan untuk divisi "' . $division->nama . '" telah difinalisasi. ' . count($acceptedIds) . ' pelamar diterima.');
+    }
+
+    public function announce(Recruitment $recruitment)
+    {
+        $this->ensureRecruitmentOwnership($recruitment);
+
+        if ($recruitment->is_announced) {
+            return back()->with('error', 'Hasil rekrutmen ini sudah diumumkan sebelumnya.');
+        }
+
+        // Cek semua divisi sudah difinalisasi
+        $totalDivisions = $recruitment->divisions()->count();
+        $finalizedDivisions = $recruitment->divisions()->where('is_finalized', true)->count();
+
+        if ($totalDivisions === 0) {
+            return back()->with('error', 'Rekrutmen ini belum memiliki divisi.');
+        }
+
+        if ($finalizedDivisions < $totalDivisions) {
+            $remaining = $totalDivisions - $finalizedDivisions;
+            return back()->with('error', "Masih ada {$remaining} divisi yang belum difinalisasi. Selesaikan semua divisi terlebih dahulu.");
+        }
+
+        $recruitment->update([
+            'is_announced' => true,
+            'status' => 'selesai',
+        ]);
+
+        return back()->with('success', 'Hasil rekrutmen "' . $recruitment->judul . '" telah diumumkan! Mahasiswa sekarang dapat melihat status kelulusannya.');
     }
 }

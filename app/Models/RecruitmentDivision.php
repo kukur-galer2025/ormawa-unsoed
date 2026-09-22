@@ -8,7 +8,11 @@ class RecruitmentDivision extends Model
 {
     protected $table = 'divisi_rekrutmen';
     protected $fillable = [
-        'recruitment_id', 'nama', 'deskripsi', 'kuota',
+        'recruitment_id', 'nama', 'deskripsi', 'kuota', 'is_finalized',
+    ];
+
+    protected $casts = [
+        'is_finalized' => 'boolean',
     ];
 
     public function recruitment() { return $this->belongsTo(Recruitment::class); }

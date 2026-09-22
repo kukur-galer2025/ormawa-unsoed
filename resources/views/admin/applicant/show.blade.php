@@ -279,7 +279,7 @@
                     Pelamar ini {{ ucfirst($application->status) }}
                 </p>
                 <p class="text-xs mt-1 {{ $application->status === 'diterima' ? 'text-green-600' : 'text-red-600' }}">
-                    Ditentukan secara otomatis berdasarkan hasil ranking Profile Matching.
+                    Ditentukan berdasarkan finalisasi keputusan di halaman Profile Matching.
                 </p>
             </div>
         @else

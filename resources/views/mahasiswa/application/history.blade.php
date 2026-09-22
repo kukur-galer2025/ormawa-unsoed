@@ -29,11 +29,17 @@
                     </td>
                     <td class="px-6 py-4 text-slate-500 font-medium">{{ $app->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-4">
+                        @php
+                            $showStatus = $app->status;
+                            if (in_array($app->status, ['diterima', 'ditolak']) && !$app->recruitment->is_announced) {
+                                $showStatus = 'diproses';
+                            }
+                        @endphp
                         <span class="px-3 py-1 rounded-full text-xs font-bold 
-                            {{ $app->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
-                               ($app->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
-                               ($app->status === 'diterima' ? 'bg-green-100 text-green-700 shadow-sm shadow-green-500/20' : 'bg-red-100 text-red-700')) }}">
-                            {{ $app->status === 'pending' ? 'TERKIRIM' : strtoupper($app->status) }}
+                            {{ $showStatus === 'pending' ? 'bg-amber-100 text-amber-700' : 
+                               ($showStatus === 'diproses' ? 'bg-blue-100 text-blue-700' : 
+                               ($showStatus === 'diterima' ? 'bg-green-100 text-green-700 shadow-sm shadow-green-500/20' : 'bg-red-100 text-red-700')) }}">
+                            {{ $showStatus === 'pending' ? 'TERKIRIM' : strtoupper($showStatus) }}
                         </span>
                     </td>
                 </tr>

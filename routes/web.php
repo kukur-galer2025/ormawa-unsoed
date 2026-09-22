@@ -129,6 +129,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin', 'ormaw
     Route::get('/profile-matching/{recruitment}', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'show'])->name('profile-matching.show');
     Route::post('/profile-matching/{recruitment}/division/{division}/calculate', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'calculate'])->name('profile-matching.calculate');
     Route::get('/profile-matching/{recruitment}/division/{division}/result', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'result'])->name('profile-matching.result');
+    Route::post('/profile-matching/{recruitment}/division/{division}/finalize', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'finalize'])->name('profile-matching.finalize');
+    Route::post('/profile-matching/{recruitment}/announce', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'announce'])->name('profile-matching.announce');
 });
 
 // ============================================================

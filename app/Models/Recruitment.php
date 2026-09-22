@@ -9,12 +9,13 @@ class Recruitment extends Model
     protected $table = 'rekrutmen';
     protected $fillable = [
         'ormawa_id', 'judul', 'deskripsi', 'persyaratan',
-        'tanggal_buka', 'tanggal_tutup', 'status',
+        'tanggal_buka', 'tanggal_tutup', 'status', 'is_announced',
     ];
 
     protected $casts = [
         'tanggal_buka' => 'date',
         'tanggal_tutup' => 'date',
+        'is_announced' => 'boolean',
     ];
 
     public function ormawa() { return $this->belongsTo(Ormawa::class); }
