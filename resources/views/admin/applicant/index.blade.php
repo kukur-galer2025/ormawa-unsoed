@@ -52,7 +52,7 @@
                             {{ $app->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
                                ($app->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($app->status === 'diterima' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')) }}">
-                            {{ ucfirst($app->status) }}
+                            {{ $app->status === 'pending' ? 'Terkirim' : ucfirst($app->status) }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">

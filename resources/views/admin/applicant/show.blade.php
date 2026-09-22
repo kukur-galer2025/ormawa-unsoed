@@ -17,7 +17,7 @@
                             {{ $application->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
                                ($application->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($application->status === 'diterima' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')) }}">
-                            {{ ucfirst($application->status) }}
+                            {{ $application->status === 'pending' ? 'Terkirim' : ucfirst($application->status) }}
                     </span>
                 </div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Tanggal Melamar</span><p class="text-sm text-slate-800 font-medium">{{ $application->created_at->format('d F Y, H:i') }}</p></div>

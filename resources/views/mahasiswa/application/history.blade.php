@@ -40,7 +40,7 @@
                             {{ $app->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
                                ($app->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($app->status === 'diterima' ? 'bg-green-100 text-green-700 shadow-sm shadow-green-500/20' : 'bg-red-100 text-red-700')) }}">
-                            {{ strtoupper($app->status) }}
+                            {{ $app->status === 'pending' ? 'TERKIRIM' : strtoupper($app->status) }}
                         </span>
                     </td>
                 </tr>
