@@ -58,12 +58,13 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 relative">
-
+        <div class="flex-1 flex flex-col min-w-0 relative overflow-x-hidden">
 
             <!-- Top Navbar -->
             @include('layouts.partials.navbar')
 
+            <!-- Page Content -->
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-full">
                 @yield('content')
             </main>
         </div>
