@@ -28,13 +28,14 @@ class ProfileController extends Controller
             'nim' => [
                 'required',
                 'string',
-                'max:20',
+                'size:9',
+                'regex:/^[A-Z0-9]{9}$/',
                 Rule::unique('profil_mahasiswa', 'nim')->ignore($user->id, 'user_id'),
             ],
             'fakultas_id' => 'required|exists:fakultas,id',
             'jurusan_id' => 'required|exists:jurusan,id',
             'angkatan' => 'required|integer|digits:4|min:2015|max:' . now()->year,
-            'no_hp' => 'nullable|string|max:20',
+            'no_hp' => 'nullable|string|regex:/^[0-9]{10,13}$/',
             'foto' => 'nullable|image|max:2048',
         ]);
 
