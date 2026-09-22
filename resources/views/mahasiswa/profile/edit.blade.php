@@ -35,7 +35,7 @@
         NIM
         <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Wajib diisi</span>
     </label>
-    <input type="text" name="nim" value="{{ old('nim', $profile->nim) }}" required placeholder="Contoh: H1A020001" maxlength="9" pattern="[A-Z0-9]{9}" style="text-transform: uppercase" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+    <input type="text" name="nim" value="{{ old('nim', $profile->nim) }}" required placeholder="Contoh: H1A020001" maxlength="9" pattern="[a-zA-Z0-9]{9}" oninput="this.value = this.value.toUpperCase()" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
     <p class="mt-1 text-xs text-slate-400">Tepat 9 karakter huruf kapital & angka.</p>
     @error('nim')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
 </div>

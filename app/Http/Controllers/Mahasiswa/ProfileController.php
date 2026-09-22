@@ -23,6 +23,10 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
+        if ($request->has('nim')) {
+            $request->merge(['nim' => strtoupper($request->nim)]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'nim' => [
