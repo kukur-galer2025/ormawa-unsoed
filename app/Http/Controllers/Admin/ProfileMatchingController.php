@@ -99,6 +99,23 @@ class ProfileMatchingController extends Controller
             return back()->with('error', 'Total bobot semua aspek harus = 100% (1.0). Saat ini: ' . round($totalBobot * 100) . '%.');
         }
 
+        // Validasi: semua pelamar harus sudah dinilai lengkap
+        $allCriteriaIds = $division->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
+        $unscoredApplicants = [];
+        foreach ($division->applications()->with(['scores', 'user'])->get() as $app) {
+            foreach ($allCriteriaIds as $cId) {
+                $score = $app->scores->firstWhere('criteria_id', $cId);
+                if (!$score || $score->actual_value === null) {
+                    $unscoredApplicants[] = $app->user->name;
+                    break;
+                }
+            }
+        }
+        if (!empty($unscoredApplicants)) {
+            $names = implode(', ', $unscoredApplicants);
+            return back()->with('error', 'Tidak bisa menghitung ranking. Pelamar berikut belum dinilai lengkap: ' . $names . '. Silakan input nilai mereka di menu Data Pelamar terlebih dahulu.');
+        }
+
         try {
             $this->service->processDivision($recruitment, $division);
         } catch (\InvalidArgumentException $e) {
@@ -126,7 +143,24 @@ class ProfileMatchingController extends Controller
         // Load all divisions for the dropdown filter
         $allDivisions = $recruitment->divisions()->withCount('applications')->get();
 
-        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions'));
+        // Cek apakah semua pelamar sudah dinilai lengkap
+        $allScored = true;
+        $unscoredNames = [];
+        $allCriteriaIds = $division->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
+        if ($allCriteriaIds->isNotEmpty()) {
+            foreach ($division->applications()->with(['scores', 'user'])->get() as $app) {
+                foreach ($allCriteriaIds as $cId) {
+                    $score = $app->scores->firstWhere('criteria_id', $cId);
+                    if (!$score || $score->actual_value === null) {
+                        $allScored = false;
+                        $unscoredNames[] = $app->user->name;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions', 'allScored', 'unscoredNames'));
     }
 
     public function finalize(Request $request, Recruitment $recruitment, RecruitmentDivision $division)

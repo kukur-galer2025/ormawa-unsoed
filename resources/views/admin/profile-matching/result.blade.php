@@ -8,17 +8,42 @@
     </div>
     <div class="flex gap-2 flex-wrap">
         @if(!$division->is_finalized)
-        <form action="{{ route('admin.profile-matching.calculate', [$recruitment, $division]) }}" method="POST">
-            @csrf
-            <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Hitung Ulang
+            @if($allScored)
+            <form action="{{ route('admin.profile-matching.calculate', [$recruitment, $division]) }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Hitung Ulang
+                </button>
+            </form>
+            @else
+            <button disabled class="px-4 py-2 bg-slate-200 text-slate-400 text-sm font-semibold rounded-xl cursor-not-allowed flex items-center gap-2" title="Ada pelamar yang belum dinilai">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Nilai Belum Lengkap
             </button>
-        </form>
+            @endif
         @endif
         <a href="{{ route('admin.profile-matching.show', $recruitment) }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali</a>
     </div>
 </div>
+
+{{-- Warning: Pelamar belum dinilai --}}
+@if(!$allScored && !$division->is_finalized)
+<div class="mb-6 p-4 rounded-2xl border border-amber-200 bg-amber-50 flex items-start gap-3">
+    <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    </div>
+    <div>
+        <p class="font-bold text-sm text-amber-800">⚠️ Ada Pelamar yang Belum Dinilai</p>
+        <p class="text-xs text-amber-700 mt-1">Pelamar berikut belum memiliki nilai lengkap: <strong>{{ implode(', ', $unscoredNames) }}</strong></p>
+        <p class="text-xs text-amber-600 mt-1">Silakan masuk ke menu <strong>Kelola Rekrutmen → Data Pelamar</strong> dan input nilai mereka sebelum melakukan Hitung Ulang.</p>
+        <a href="{{ route('admin.applicants.index', $recruitment) }}" class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-lg hover:bg-amber-700 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Input Nilai Pelamar
+        </a>
+    </div>
+</div>
+@endif
 
 {{-- Banner Status Finalisasi --}}
 @if($division->is_finalized)

@@ -92,7 +92,7 @@
                     @elseif($div->allScored)
                         <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">Lengkap</span>
                     @else
-                        <span class="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded">Belum Lengkap</span>
+                        <a href="{{ route('admin.applicants.index', $recruitment) }}" class="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded hover:bg-amber-200 transition-colors" title="Klik untuk input nilai pelamar">Belum Lengkap →</a>
                     @endif
                 </div>
             </div>
