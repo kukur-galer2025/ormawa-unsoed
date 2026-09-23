@@ -29,7 +29,9 @@ class RecruitmentBrowseController extends Controller
             $query->where('nama', 'LIKE', '%' . $request->search . '%');
         }
 
-        $ormawas = $query->paginate(12)->withQueryString();
+        $ormawas = $query->with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments' => function($q) {
+            $q->where('status', 'dibuka')->where('tanggal_tutup', '>=', now());
+        }])->paginate(12)->withQueryString();
 
         $fakultasList = \App\Models\Fakultas::with('jurusans')->orderBy('nama_fakultas')->get();
 

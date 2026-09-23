@@ -40,9 +40,10 @@ class ScoringController extends Controller
 
             if (request('application_id')) {
                 $baseQuery->where('id', request('application_id'));
+                $applications = $baseQuery->get();
+            } else {
+                $applications = collect(); // Force user to select an applicant
             }
-
-            $applications = $baseQuery->get();
 
             // Load aspects with criteria and value labels
             $aspects = $division->aspects()
@@ -51,18 +52,38 @@ class ScoringController extends Controller
                 ->get();
         }
 
-        return view('admin.scoring.index', compact('recruitment', 'applications', 'allDivisionApplications', 'aspects', 'division'));
+        $divisionsJson = $recruitment->divisions()->with(['applications.user.mahasiswaProfile.jurusanRel'])->get()->map(function($div) {
+            return [
+                'id' => $div->id,
+                'nama' => $div->nama,
+                'applications' => $div->applications->map(function($app) {
+                    $profile = $app->user->mahasiswaProfile;
+                    return [
+                        'id' => $app->id,
+                        'name' => $app->user->name,
+                        'nim' => $profile->nim ?? '-',
+                        'jurusan' => $profile->jurusanRel->nama_jurusan ?? '-',
+                        'status_text' => $app->status === 'pending' ? 'Belum Dinilai' : 'Sudah Dinilai'
+                    ];
+                })
+            ];
+        })->toJson();
+
+        return view('admin.scoring.index', compact('recruitment', 'applications', 'allDivisionApplications', 'aspects', 'division', 'divisionsJson'));
     }
 
     public function store(Request $request, Recruitment $recruitment, Application $application)
     {
         $this->ensureFullOwnership($recruitment, $application);
 
-        if (!in_array($recruitment->status, ['ditutup', 'selesai'])) {
-            return back()->with('error', 'Input nilai hanya bisa dilakukan setelah rekrutmen ditutup.');
+        if ($recruitment->status !== 'ditutup') {
+            return back()->with('error', 'Input nilai hanya bisa dilakukan saat status rekrutmen sedang "ditutup".');
         }
 
         $division = $application->division;
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Nilai tidak dapat diubah lagi.');
+        }
         $allCriteria = $division->allCriteria()->get();
 
         $rules = [];

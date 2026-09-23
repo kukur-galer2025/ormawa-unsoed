@@ -13,10 +13,9 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $profile = $user->mahasiswaProfile ?? new MahasiswaProfile(['user_id' => $user->id]);
-        $fakultasList = \App\Models\Fakultas::orderBy('nama_fakultas')->get();
-        $jurusanList = \App\Models\Jurusan::orderBy('nama_jurusan')->get();
+        $fakultasList = \App\Models\Fakultas::with('jurusans')->orderBy('nama_fakultas')->get();
 
-        return view('mahasiswa.profile.edit', compact('user', 'profile', 'fakultasList', 'jurusanList'));
+        return view('mahasiswa.profile.edit', compact('user', 'profile', 'fakultasList'));
     }
 
     public function update(Request $request)

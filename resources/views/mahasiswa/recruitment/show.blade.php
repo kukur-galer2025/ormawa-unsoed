@@ -5,8 +5,11 @@
 <div class="mb-6"><a href="{{ route('mahasiswa.recruitment.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali ke Katalog</a></div>
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-    <div class="h-48 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
-        <div class="absolute inset-0 bg-black/20"></div>
+    <div class="w-full aspect-video sm:aspect-[21/9] lg:aspect-[3/1] max-h-96 relative {{ $ormawa->cover_photo ? 'bg-slate-100' : 'bg-gradient-to-r from-blue-600 to-indigo-700' }}">
+        @if($ormawa->cover_photo)
+            <img src="{{ asset('storage/' . $ormawa->cover_photo) }}" alt="Cover {{ $ormawa->nama }}" class="absolute inset-0 w-full h-full object-cover">
+        @endif
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div class="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 flex items-end gap-3 sm:gap-5">
             <div class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 shrink-0 rounded-2xl bg-white p-1.5 sm:p-2 shadow-xl">
                 <img src="{{ $ormawa->logo ? Storage::url($ormawa->logo) : asset('images/default-logo.png') }}" class="w-full h-full object-contain rounded-xl">

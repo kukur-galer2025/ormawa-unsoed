@@ -121,6 +121,52 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Cover Photo -->
+                <div class="md:col-span-2 mt-4" x-data="{ 
+                    previewUrl: '{{ $ormawa->cover_photo ? asset('storage/' . $ormawa->cover_photo) : '' }}',
+                    fileChosen(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            this.previewUrl = URL.createObjectURL(file);
+                        }
+                    }
+                }">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Foto Sampul (Cover)
+                    </label>
+                    <div class="flex items-center gap-6">
+                        <!-- Preview Image -->
+                        <div class="shrink-0">
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" alt="Preview Cover" class="w-48 h-24 object-cover rounded-xl border border-slate-200 shadow-sm bg-white p-1">
+                            </template>
+                            <template x-if="!previewUrl">
+                                <div class="w-48 h-24 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <!-- File Input -->
+                        <div class="flex-1">
+                            <label class="block">
+                                <span class="sr-only">Pilih file cover</span>
+                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*" @change="fileChosen"
+                                    class="block w-full text-sm text-slate-500
+                                    file:mr-4 file:py-2.5 file:px-4
+                                    file:rounded-xl file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100 transition-all cursor-pointer border border-slate-200 rounded-xl"
+                                />
+                            </label>
+                            <p class="mt-2 text-xs text-slate-500">Gambar landscape untuk banner organisasi di katalog. Maksimal 4MB.</p>
+                            @error('cover_photo')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="pt-4 border-t border-slate-100 flex justify-end">

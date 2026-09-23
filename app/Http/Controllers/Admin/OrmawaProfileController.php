@@ -20,6 +20,7 @@ class OrmawaProfileController extends Controller
             'visi' => 'nullable|string',
             'misi' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
+            'cover_photo' => 'nullable|image|max:4096',
             'kontak_email' => 'nullable|email|max:255',
             'kontak_instagram' => 'nullable|string|max:255',
         ]);
@@ -29,6 +30,13 @@ class OrmawaProfileController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
+        }
+
+        if ($request->hasFile('cover_photo')) {
+            if ($ormawa->cover_photo && \Storage::disk('public')->exists($ormawa->cover_photo)) {
+                \Storage::disk('public')->delete($ormawa->cover_photo);
+            }
+            $data['cover_photo'] = $request->file('cover_photo')->store('ormawa-covers', 'public');
         }
 
         $ormawa->update($data);

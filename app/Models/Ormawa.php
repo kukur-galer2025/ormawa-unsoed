@@ -18,6 +18,7 @@ class Ormawa extends Model
         'visi',
         'misi',
         'logo',
+        'cover_photo',
         'kontak_email',
         'kontak_instagram',
         'is_active',

@@ -33,11 +33,12 @@ class OrmawaController extends Controller
             'deskripsi' => 'nullable|string',
             'visi_misi' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
+            'cover_photo' => 'nullable|image|max:4096',
             'kontak_email' => 'nullable|email',
             'kontak_instagram' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->except('logo');
+        $data = $request->except(['logo', 'cover_photo']);
         $data['slug'] = Str::slug($request->nama);
         
         if ($data['tingkat'] === 'Universitas') {
@@ -49,6 +50,10 @@ class OrmawaController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
+        }
+
+        if ($request->hasFile('cover_photo')) {
+            $data['cover_photo'] = $request->file('cover_photo')->store('ormawa-covers', 'public');
         }
 
         Ormawa::create($data);
@@ -78,11 +83,12 @@ class OrmawaController extends Controller
             'deskripsi' => 'nullable|string',
             'visi_misi' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
+            'cover_photo' => 'nullable|image|max:4096',
             'kontak_email' => 'nullable|email',
             'kontak_instagram' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->except('logo');
+        $data = $request->except(['logo', 'cover_photo']);
         $data['slug'] = Str::slug($request->nama);
         
         if ($data['tingkat'] === 'Universitas') {
@@ -94,6 +100,14 @@ class OrmawaController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
+        }
+
+        if ($request->hasFile('cover_photo')) {
+            // Delete old cover if exists
+            if ($ormawa->cover_photo && \Storage::disk('public')->exists($ormawa->cover_photo)) {
+                \Storage::disk('public')->delete($ormawa->cover_photo);
+            }
+            $data['cover_photo'] = $request->file('cover_photo')->store('ormawa-covers', 'public');
         }
 
         $ormawa->update($data);
