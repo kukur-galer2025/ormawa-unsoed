@@ -10,6 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Sembunyikan ikon mata (reveal password) bawaan browser Edge */
+        input::-ms-reveal, input::-ms-clear {
+            display: none;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-50 flex font-sans text-slate-800 selection:bg-blue-200 selection:text-blue-900" style="font-family: 'Plus Jakarta Sans', sans-serif;">
     
