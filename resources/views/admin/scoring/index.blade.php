@@ -82,7 +82,7 @@
                                 <h4 class="font-bold text-slate-700 border-b border-slate-100 pb-2 mb-4 flex items-center gap-2">
                                     <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
                                     Aspek: {{ $aspect->nama }} 
-                                    <span class="text-xs font-normal text-slate-500 ml-2">(Bobot {{ round($aspect->bobot * 100) }}%)</span>
+                                    <span class="text-xs font-normal text-slate-500 ml-2">(Bobot {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%)</span>
                                 </h4>
                                 
                                 @if($aspect->criteria->isEmpty())

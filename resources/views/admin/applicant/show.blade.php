@@ -55,7 +55,7 @@
             <div class="mb-4">
                 <div class="p-4 bg-green-50 rounded-xl border border-green-100 text-center max-w-sm mx-auto">
                     <p class="text-xs text-green-600 font-semibold uppercase mb-1">Total Score Final</p>
-                    <p class="text-3xl font-black text-green-800">{{ $application->profileMatchingResult->total_score }}</p>
+                    <p class="text-3xl font-black text-green-800">{{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 4), '0'), '.') }}</p>
                 </div>
             </div>
             
@@ -144,7 +144,7 @@
                                     <h5 class="font-bold text-slate-800 flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
                                         Aspek: {{ $aspekData['nama'] }} 
-                                        <span class="text-xs font-normal text-slate-500 ml-1">(Bobot Aspek: {{ round($aspekData['bobot'] * 100) }}%)</span>
+                                        <span class="text-xs font-normal text-slate-500 ml-1">(Bobot Aspek: {{ rtrim(rtrim(number_format($aspekData['bobot'], 2), '0'), '.') }}%)</span>
                                     </h5>
                                     <div class="text-xs font-mono bg-white px-2 py-1 rounded border border-slate-200 text-slate-600 shadow-sm">
                                         Rasio: CF {{ $aspekData['cf_percentage'] }}% | SF {{ $aspekData['sf_percentage'] }}%
@@ -238,7 +238,7 @@
                                 @php
                                     $parts = [];
                                     foreach($application->profileMatchingResult->detail_per_aspek as $aspek) {
-                                        $parts[] = "({$aspek['nama']}: " . number_format($aspek['nilai_aspek'], 2) . " × " . round($aspek['bobot'] * 100) . "%)";
+                                        $parts[] = "({$aspek['nama']}: " . number_format($aspek['nilai_aspek'], 2) . " × " . rtrim(rtrim(number_format($aspek['bobot'], 2), '0'), '.') . "%)";
                                     }
                                     echo implode(' + ', $parts);
                                 @endphp
@@ -246,7 +246,7 @@
                             <div class="flex items-center justify-between border-t border-green-200/50 pt-4">
                                 <span class="font-bold text-green-800 text-lg">Maka Total Akhir adalah:</span>
                                 <span class="text-4xl font-black text-green-700 bg-white px-4 py-2 rounded-xl shadow-sm border border-green-200">
-                                    {{ $application->profileMatchingResult->total_score }}
+                                    {{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 4), '0'), '.') }}
                                 </span>
                             </div>
                         </div>
@@ -283,15 +283,27 @@
                 </p>
             </div>
         @else
+            @if($application->status === 'pending')
+            <div class="p-4 rounded-xl text-center border bg-slate-50 border-slate-200 max-w-lg mx-auto">
+                <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 bg-slate-100 text-slate-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                <p class="font-bold text-sm text-slate-700">Menunggu Penilaian</p>
+                <p class="text-xs mt-1 text-slate-500">
+                    Pelamar ini belum dinilai. Silakan input nilai di halaman Data Pelamar terlebih dahulu.
+                </p>
+            </div>
+            @else
             <div class="p-4 rounded-xl text-center border bg-amber-50 border-amber-200 max-w-lg mx-auto">
                 <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 bg-amber-100 text-amber-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <p class="font-bold text-sm text-amber-800">Menunggu Perhitungan</p>
+                <p class="font-bold text-sm text-amber-800">Menunggu Finalisasi</p>
                 <p class="text-xs mt-1 text-amber-600">
-                    Status akan ditentukan otomatis saat admin menjalankan "Hitung Ranking" di halaman Profile Matching.
+                    Nilai sudah diinput dan ranking sudah dihitung. Status diterima/ditolak akan ditentukan saat admin melakukan finalisasi keputusan di halaman Profile Matching.
                 </p>
             </div>
+            @endif
         @endif
     </div>
 </div>

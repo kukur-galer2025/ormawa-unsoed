@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('recruitment_division_id')
                   ->constrained('divisi_rekrutmen')->onDelete('cascade');
             $table->string('nama');
-            $table->decimal('bobot', 5, 2)->comment('Bobot aspek, e.g. 0.30 = 30%');
+            $table->decimal('bobot', 5, 2)->comment('Bobot aspek dalam %, e.g. 30.5 = 30.5%');
             $table->decimal('cf_percentage', 5, 2)->default(60.00);
             $table->decimal('sf_percentage', 5, 2)->default(40.00);
             $table->integer('urutan')->default(0);

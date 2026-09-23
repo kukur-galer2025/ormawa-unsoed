@@ -50,7 +50,7 @@
                     @elseif($div->bobotValid)
                         <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">Valid</span>
                     @else
-                        <span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-1 rounded">{{ round($div->aspects->sum('bobot') * 100) }}% / 100%</span>
+                        <span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-1 rounded">{{ rtrim(rtrim(number_format($div->aspects->sum('bobot'), 2), '0'), '.') }}% / 100%</span>
                     @endif
                 </div>
                 
@@ -76,8 +76,8 @@
                 {{-- Cek Penilaian --}}
                 <div class="flex items-center justify-between p-3 rounded-xl border {{ ($div->applications_count > 0 && !$div->allScored) ? 'bg-amber-50 border-amber-100' : 'bg-slate-50 border-slate-100' }}">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $div->applications_count == 0 ? 'bg-slate-200 text-slate-400' : ($div->allScored ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600') }}">
-                            @if($div->applications_count == 0)
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center {{ ($div->applications_count == 0 || !$div->hasAspects) ? 'bg-slate-200 text-slate-400' : ($div->allScored ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600') }}">
+                            @if($div->applications_count == 0 || !$div->hasAspects)
                                 <span class="font-bold">-</span>
                             @elseif($div->allScored)
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -89,6 +89,8 @@
                     </div>
                     @if($div->applications_count == 0)
                         <span class="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded">Kosong</span>
+                    @elseif(!$div->hasAspects)
+                        <span class="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-1 rounded" title="Tambahkan aspek dan kriteria terlebih dahulu">Belum Bisa Dinilai</span>
                     @elseif($div->allScored)
                         <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">Lengkap</span>
                     @else

@@ -46,9 +46,9 @@ class ProfileMatchingController extends Controller
             $div->bobotValid = false;
 
             if ($div->hasAspects) {
-                // Check total bobot = 1.0
+                // Check total bobot = 100%
                 $totalBobot = $div->aspects->sum('bobot');
-                $div->bobotValid = abs($totalBobot - 1.0) < 0.01;
+                $div->bobotValid = abs($totalBobot - 100) < 0.1;
 
                 // Check each aspect has at least one core and one secondary
                 $div->aspectsReady = $div->aspects->every(function ($aspect) {
@@ -95,8 +95,8 @@ class ProfileMatchingController extends Controller
         }
 
         $totalBobot = $division->aspects->sum('bobot');
-        if (abs($totalBobot - 1.0) > 0.01) {
-            return back()->with('error', 'Total bobot semua aspek harus = 100% (1.0). Saat ini: ' . round($totalBobot * 100) . '%.');
+        if (abs($totalBobot - 100) > 0.1) {
+            return back()->with('error', 'Total bobot semua aspek harus = 100%. Saat ini: ' . rtrim(rtrim(number_format($totalBobot, 2), '0'), '.') . '%.');
         }
 
         // Validasi: semua pelamar harus sudah dinilai lengkap

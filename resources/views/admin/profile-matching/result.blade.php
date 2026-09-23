@@ -193,7 +193,7 @@
                                 @if($res->detail_per_aspek)
                                     <button @click="expanded = !expanded" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 mb-2">
                                         <svg class="w-4 h-4 transition-transform" :class="expanded ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                        Lihat Rincian
+                                        Ringkasan Aspek
                                     </button>
                                     <div x-show="expanded" x-collapse>
                                         <div class="space-y-2 mt-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -201,7 +201,7 @@
                                                 <div class="flex justify-between items-center text-xs">
                                                     <div>
                                                         <span class="font-bold text-slate-700">{{ $aspek['nama'] }}</span>
-                                                        <span class="text-slate-400"> (Bobot {{ round($aspek['bobot'] * 100) }}%)</span>
+                                                        <span class="text-slate-400"> (Bobot {{ rtrim(rtrim(number_format($aspek['bobot'], 2), '0'), '.') }}%)</span>
                                                     </div>
                                                     <div class="font-mono text-slate-600 bg-white px-2 py-1 rounded border border-slate-200">
                                                         <span title="NCF ({{ $aspek['cf_percentage'] }}%)">CF: {{ number_format($aspek['ncf'], 2) }}</span> | 
@@ -210,12 +210,18 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+                                            <div class="pt-2 mt-2 border-t border-slate-200">
+                                                <a href="{{ route('admin.applicants.show', [$recruitment, $app]) }}" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                    Lihat Detail Lengkap →
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center font-black text-indigo-700 text-lg align-top">
-                                {{ $res->total_score }}
+                                {{ rtrim(rtrim(number_format($res->total_score, 4), '0'), '.') }}
                             </td>
                             <td class="px-6 py-4 text-center align-top">
                                 @if($division->is_finalized)

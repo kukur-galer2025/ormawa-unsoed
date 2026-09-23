@@ -26,7 +26,7 @@ class OrmawaSeeder extends Seeder
                 'nama' => 'BEM Fakultas Teknik',
                 'slug' => Str::slug('BEM Fakultas Teknik'),
                 'tingkat' => 'Fakultas',
-                'fakultas' => 'Teknik',
+                'fakultas_id' => \App\Models\Fakultas::where('nama_fakultas', 'Fakultas Teknik')->first()?->id,
                 'deskripsi' => 'Badan Eksekutif Mahasiswa Fakultas Teknik Universitas Jenderal Soedirman.',
                 'visi' => 'Teknik Solid, Teknik Jaya!',
                 'misi' => "1. Menyatukan mahasiswa teknik.\n2. Mengabdi pada masyarakat.",

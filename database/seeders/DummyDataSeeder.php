@@ -63,12 +63,15 @@ class DummyDataSeeder extends Seeder
                 ]
             );
 
+            $fakultasId = \App\Models\Fakultas::where('nama_fakultas', 'like', '%' . $data['fakultas'] . '%')->first()?->id;
+            $jurusanId = \App\Models\Jurusan::where('nama_jurusan', 'like', '%' . $data['jurusan'] . '%')->first()?->id;
+
             MahasiswaProfile::updateOrCreate(
                 ['user_id' => $user->id],
                 [
                     'nim' => $data['nim'],
-                    'fakultas' => $data['fakultas'],
-                    'jurusan' => $data['jurusan'],
+                    'fakultas_id' => $fakultasId,
+                    'jurusan_id' => $jurusanId,
                     'angkatan' => $data['angkatan'],
                     'no_hp' => '08' . rand(1000000000, 9999999999),
                 ]
@@ -106,11 +109,11 @@ class DummyDataSeeder extends Seeder
                 // Create aspects for division
                 $aspekKecerdasan = \App\Models\Aspect::updateOrCreate(
                     ['recruitment_division_id' => $division->id, 'nama' => 'Kecerdasan'],
-                    ['bobot' => 0.40, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
+                    ['bobot' => 40, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
                 );
                 $aspekKepribadian = \App\Models\Aspect::updateOrCreate(
                     ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian'],
-                    ['bobot' => 0.60, 'cf_percentage' => 70, 'sf_percentage' => 30, 'urutan' => 2]
+                    ['bobot' => 60, 'cf_percentage' => 70, 'sf_percentage' => 30, 'urutan' => 2]
                 );
 
                 // Create criteria per aspect

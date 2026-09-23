@@ -14,7 +14,7 @@
             <optgroup label="Divisi: {{ $div->nama }}">
                 @foreach($div->aspects as $aspect)
                     <option value="{{ $aspect->id }}" {{ old('aspect_id', $criterion->aspect_id) == $aspect->id ? 'selected' : '' }}>
-                        {{ $aspect->nama }} (Bobot {{ round($aspect->bobot * 100) }}%)
+                        {{ $aspect->nama }} (Bobot {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%)
                     </option>
                 @endforeach
             </optgroup>

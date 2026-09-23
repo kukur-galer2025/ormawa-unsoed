@@ -13,7 +13,7 @@ class ProfileMatchingResult extends Model
 
     protected $casts = [
         'detail_per_aspek' => 'array',
-        'total_score' => 'decimal:2',
+        'total_score' => 'decimal:4',
     ];
 
     public function application() { return $this->belongsTo(Application::class); }

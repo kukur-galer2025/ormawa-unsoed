@@ -140,8 +140,8 @@ class ProfileMatchingService
                     (float) $aspect->sf_percentage
                 );
 
-                // Step 5: Kontribusi ke total = bobot × nilai_aspek
-                $totalScore += (float) $aspect->bobot * $nilaiAspek;
+                // Step 5: Kontribusi ke total = (bobot/100) × nilai_aspek
+                $totalScore += ((float) $aspect->bobot / 100) * $nilaiAspek;
 
                 $detailPerAspek[] = [
                     'aspect_id' => $aspect->id,

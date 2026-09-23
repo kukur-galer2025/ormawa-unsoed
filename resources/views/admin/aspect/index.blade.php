@@ -35,8 +35,8 @@
             <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
             @php $totalBobot = $div->aspects->sum('bobot'); @endphp
             <p class="text-xs text-slate-500 mt-1">
-                Total Bobot: <span class="{{ abs($totalBobot - 1.0) < 0.01 ? 'text-green-600 font-bold' : 'text-red-500 font-bold' }}">{{ round($totalBobot * 100) }}%</span>
-                @if(abs($totalBobot - 1.0) > 0.01)
+                Total Bobot: <span class="{{ abs($totalBobot - 100) < 0.1 ? 'text-green-600 font-bold' : 'text-red-500 font-bold' }}">{{ rtrim(rtrim(number_format($totalBobot, 2), '0'), '.') }}%</span>
+                @if(abs($totalBobot - 100) > 0.1)
                     <span class="text-red-500"> (harus 100%)</span>
                 @else
                     <span class="text-green-600"> ✓</span>
@@ -56,9 +56,9 @@
                     <div>
                         <p class="font-bold text-slate-800">{{ $aspect->nama }}</p>
                         <div class="flex gap-3 mt-1 text-xs text-slate-500">
-                            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded font-semibold">Bobot: {{ round($aspect->bobot * 100) }}%</span>
-                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded">CF: {{ $aspect->cf_percentage }}%</span>
-                            <span class="px-2 py-0.5 bg-amber-50 text-amber-600 rounded">SF: {{ $aspect->sf_percentage }}%</span>
+                            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded font-semibold">Bobot: {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%</span>
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded">CF: {{ rtrim(rtrim(number_format($aspect->cf_percentage, 2), '0'), '.') }}%</span>
+                            <span class="px-2 py-0.5 bg-amber-50 text-amber-600 rounded">SF: {{ rtrim(rtrim(number_format($aspect->sf_percentage, 2), '0'), '.') }}%</span>
                             <span class="text-slate-400">{{ $aspect->criteria->count() }} kriteria</span>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (%)</label>
-                            <input type="number" name="bobot" value="{{ $aspect->bobot * 100 }}" step="1" min="1" max="100" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                            <input type="number" name="bobot" value="{{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}" step="0.01" min="0.01" max="100" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">CF %</label>
@@ -118,7 +118,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Bobot (%) *</label>
-                    <input type="number" name="bobot" step="1" min="1" max="100" required placeholder="30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                    <input type="number" name="bobot" step="0.01" min="0.01" max="100" required placeholder="30.5" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">CF % *</label>

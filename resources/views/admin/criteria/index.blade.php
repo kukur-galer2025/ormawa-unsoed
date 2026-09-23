@@ -30,8 +30,8 @@
             <div class="px-6 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold">{{ $aspect->nama }}</span>
-                    <span class="text-xs text-slate-500">Bobot: {{ round($aspect->bobot * 100) }}%</span>
-                    <span class="text-xs text-slate-500">CF: {{ $aspect->cf_percentage }}% / SF: {{ $aspect->sf_percentage }}%</span>
+                    <span class="text-xs text-slate-500">Bobot: {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%</span>
+                    <span class="text-xs text-slate-500">CF: {{ rtrim(rtrim(number_format($aspect->cf_percentage, 2), '0'), '.') }}% / SF: {{ rtrim(rtrim(number_format($aspect->sf_percentage, 2), '0'), '.') }}%</span>
                 </div>
             </div>
 

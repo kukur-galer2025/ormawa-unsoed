@@ -33,7 +33,7 @@ class AspectController extends Controller
         $request->validate([
             'recruitment_division_id' => 'required|exists:divisi_rekrutmen,id',
             'nama' => 'required|string|max:255',
-            'bobot' => 'required|numeric|min:1|max:100',
+            'bobot' => 'required|numeric|min:0.01|max:100',
             'cf_percentage' => 'required|numeric|min:0|max:100',
             'sf_percentage' => 'required|numeric|min:0|max:100',
         ]);
@@ -48,11 +48,12 @@ class AspectController extends Controller
             ->where('recruitment_id', $recruitment->id)
             ->firstOrFail();
 
+        // Bobot sekarang disimpan langsung sebagai persen (30.5 = 30.5%)
         $currentTotalBobot = $division->aspects()->sum('bobot');
-        $newBobotDecimal = $request->bobot / 100;
+        $newBobot = (float) $request->bobot;
 
-        if (($currentTotalBobot + $newBobotDecimal) > 1.001) {
-            $sisa = round((1 - $currentTotalBobot) * 100);
+        if (($currentTotalBobot + $newBobot) > 100.1) {
+            $sisa = rtrim(rtrim(number_format(100 - $currentTotalBobot, 2), '0'), '.');
             return back()->with('error', 'Total bobot aspek dalam divisi "' . $division->nama . '" tidak boleh melebihi 100%. Sisa bobot yang tersedia: ' . $sisa . '%')->withInput();
         }
 
@@ -60,7 +61,7 @@ class AspectController extends Controller
 
         $division->aspects()->create([
             'nama' => $request->nama,
-            'bobot' => $newBobotDecimal,
+            'bobot' => $newBobot,
             'cf_percentage' => $cf,
             'sf_percentage' => $sf,
             'urutan' => $maxUrutan + 1,
@@ -80,7 +81,7 @@ class AspectController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'bobot' => 'required|numeric|min:1|max:100',
+            'bobot' => 'required|numeric|min:0.01|max:100',
             'cf_percentage' => 'required|numeric|min:0|max:100',
             'sf_percentage' => 'required|numeric|min:0|max:100',
         ]);
@@ -93,16 +94,16 @@ class AspectController extends Controller
 
         $division = $aspect->division;
         $currentTotalBobot = $division->aspects()->where('id', '!=', $aspect->id)->sum('bobot');
-        $newBobotDecimal = $request->bobot / 100;
+        $newBobot = (float) $request->bobot;
 
-        if (($currentTotalBobot + $newBobotDecimal) > 1.001) {
-            $sisa = round((1 - $currentTotalBobot) * 100);
+        if (($currentTotalBobot + $newBobot) > 100.1) {
+            $sisa = rtrim(rtrim(number_format(100 - $currentTotalBobot, 2), '0'), '.');
             return back()->with('error', 'Total bobot aspek dalam divisi "' . $division->nama . '" tidak boleh melebihi 100%. Sisa bobot yang tersedia: ' . $sisa . '%')->withInput();
         }
 
         $aspect->update([
             'nama' => $request->nama,
-            'bobot' => $newBobotDecimal,
+            'bobot' => $newBobot,
             'cf_percentage' => $cf,
             'sf_percentage' => $sf,
         ]);
