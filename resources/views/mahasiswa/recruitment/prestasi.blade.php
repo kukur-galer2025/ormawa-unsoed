@@ -3,7 +3,7 @@
 @section("sidebar")@include("layouts.partials.sidebar-mahasiswa")@endsection
 @section("content")
 
-<div x-data="{ modalOpen: false, modalTitle: '', modalImage: '', modalDesc: '', modalYear: '' }">
+<div class="relative">
 
 {{-- Breadcrumb --}}
 <div class="mb-6 flex items-center gap-2 text-sm">
@@ -43,8 +43,8 @@
 @else
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($ormawa->prestasis as $prestasi)
-        <div @click="modalOpen = true; modalTitle = '{{ addslashes($prestasi->judul) }}'; modalImage = '{{ $prestasi->foto ? Storage::url($prestasi->foto) : '' }}'; modalDesc = '{{ addslashes(str_replace(["\r", "\n"], ' ', $prestasi->deskripsi ?? '')) }}'; modalYear = '{{ $prestasi->tahun }}'"
-             class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        <a href="{{ route('mahasiswa.recruitment.prestasi.show', [$ormawa->slug, $prestasi->id]) }}"
+             class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer block">
             
             {{-- Image --}}
             @if($prestasi->foto)
@@ -67,45 +67,17 @@
             {{-- Content --}}
             <div class="p-5">
                 <h3 class="font-bold text-slate-800 text-base leading-snug mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">{{ $prestasi->judul }}</h3>
-                @if($prestasi->deskripsi)
-                    <p class="text-sm text-slate-500 line-clamp-3 leading-relaxed">{{ $prestasi->deskripsi }}</p>
-                @endif
                 <div class="mt-4 flex items-center gap-2 text-xs font-semibold text-amber-600">
                     <span>Lihat Detail</span>
                     <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </div>
             </div>
-        </div>
+        </a>
         @endforeach
     </div>
 @endif
 
-{{-- Modal Detail --}}
-<div x-show="modalOpen" class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-        <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-sm" @click="modalOpen = false"></div>
 
-        <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative inline-block w-full max-w-2xl overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
-            <button @click="modalOpen = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/10 hover:bg-black/20 text-white rounded-full transition-colors z-10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            
-            <div class="flex flex-col max-h-[85vh]">
-                <div x-show="modalImage" class="w-full bg-slate-100 border-b border-slate-200 flex items-center justify-center relative overflow-hidden" style="max-height: 400px;">
-                    <img :src="modalImage" class="w-full h-full object-cover">
-                </div>
-                
-                <div class="p-5 sm:p-6 overflow-y-auto">
-                    <div class="flex flex-wrap items-center gap-2 mb-3">
-                        <span x-show="modalYear" x-text="modalYear" class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg"></span>
-                    </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-3" x-text="modalTitle"></h3>
-                    <p class="text-slate-600 leading-relaxed whitespace-pre-line" x-text="modalDesc"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 </div>
 

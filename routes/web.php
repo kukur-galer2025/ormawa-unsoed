@@ -61,7 +61,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     Route::resource('jurusan', \App\Http\Controllers\Superadmin\JurusanController::class)->except(['show']);
 
     // Ormawa CRUD
-    Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class);
+    Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class)->except(['create']);
 
     // Admin Management
     Route::get('/admin', [\App\Http\Controllers\Superadmin\AdminManagementController::class, 'index'])->name('admin.index');
@@ -102,27 +102,30 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin', 'ormaw
     // Recruitment CRUD (includes divisions)
     Route::resource('recruitment', \App\Http\Controllers\Admin\RecruitmentController::class);
 
-    // Criteria (nested under recruitment)
-    Route::get('/recruitment/{recruitment}/criteria', [\App\Http\Controllers\Admin\CriteriaController::class, 'index'])->name('criteria.index');
-    Route::get('/recruitment/{recruitment}/criteria/create', [\App\Http\Controllers\Admin\CriteriaController::class, 'create'])->name('criteria.create');
-    Route::post('/recruitment/{recruitment}/criteria', [\App\Http\Controllers\Admin\CriteriaController::class, 'store'])->name('criteria.store');
-    Route::get('/recruitment/{recruitment}/criteria/{criterion}/edit', [\App\Http\Controllers\Admin\CriteriaController::class, 'edit'])->name('criteria.edit');
-    Route::put('/recruitment/{recruitment}/criteria/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'update'])->name('criteria.update');
-    Route::delete('/recruitment/{recruitment}/criteria/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'destroy'])->name('criteria.destroy');
+    // Criteria
+    Route::get('/criteria', [\App\Http\Controllers\Admin\CriteriaController::class, 'selectRecruitment'])->name('criteria.select');
+    Route::get('/criteria/{recruitment}', [\App\Http\Controllers\Admin\CriteriaController::class, 'index'])->name('criteria.index');
+    Route::get('/criteria/{recruitment}/create', [\App\Http\Controllers\Admin\CriteriaController::class, 'create'])->name('criteria.create');
+    Route::post('/criteria/{recruitment}', [\App\Http\Controllers\Admin\CriteriaController::class, 'store'])->name('criteria.store');
+    Route::get('/criteria/{recruitment}/{criterion}/edit', [\App\Http\Controllers\Admin\CriteriaController::class, 'edit'])->name('criteria.edit');
+    Route::put('/criteria/{recruitment}/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'update'])->name('criteria.update');
+    Route::delete('/criteria/{recruitment}/{criterion}', [\App\Http\Controllers\Admin\CriteriaController::class, 'destroy'])->name('criteria.destroy');
 
-    // Aspects (nested under recruitment)
-    Route::get('/recruitment/{recruitment}/aspects', [\App\Http\Controllers\Admin\AspectController::class, 'index'])->name('aspect.index');
-    Route::post('/recruitment/{recruitment}/aspects', [\App\Http\Controllers\Admin\AspectController::class, 'store'])->name('aspect.store');
-    Route::put('/recruitment/{recruitment}/aspects/{aspect}', [\App\Http\Controllers\Admin\AspectController::class, 'update'])->name('aspect.update');
-    Route::delete('/recruitment/{recruitment}/aspects/{aspect}', [\App\Http\Controllers\Admin\AspectController::class, 'destroy'])->name('aspect.destroy');
+    // Aspects
+    Route::get('/aspects/{recruitment}', [\App\Http\Controllers\Admin\AspectController::class, 'index'])->name('aspect.index');
+    Route::post('/aspects/{recruitment}', [\App\Http\Controllers\Admin\AspectController::class, 'store'])->name('aspect.store');
+    Route::put('/aspects/{recruitment}/{aspect}', [\App\Http\Controllers\Admin\AspectController::class, 'update'])->name('aspect.update');
+    Route::delete('/aspects/{recruitment}/{aspect}', [\App\Http\Controllers\Admin\AspectController::class, 'destroy'])->name('aspect.destroy');
 
     // Applicants
-    Route::get('/recruitment/{recruitment}/applicants', [\App\Http\Controllers\Admin\ApplicantController::class, 'index'])->name('applicants.index');
-    Route::get('/recruitment/{recruitment}/applicants/{application}', [\App\Http\Controllers\Admin\ApplicantController::class, 'show'])->name('applicants.show');
+    Route::get('/applicants', [\App\Http\Controllers\Admin\ApplicantController::class, 'selectRecruitment'])->name('applicants.select');
+    Route::get('/applicants/{recruitment}', [\App\Http\Controllers\Admin\ApplicantController::class, 'index'])->name('applicants.index');
+    Route::get('/applicants/{recruitment}/{application}', [\App\Http\Controllers\Admin\ApplicantController::class, 'show'])->name('applicants.show');
 
     // Scoring
-    Route::get('/recruitment/{recruitment}/scoring', [\App\Http\Controllers\Admin\ScoringController::class, 'index'])->name('scoring.index');
-    Route::post('/recruitment/{recruitment}/scoring/{application}', [\App\Http\Controllers\Admin\ScoringController::class, 'store'])->name('scoring.store');
+    Route::get('/scoring', [\App\Http\Controllers\Admin\ScoringController::class, 'selectRecruitment'])->name('scoring.select');
+    Route::get('/scoring/{recruitment}', [\App\Http\Controllers\Admin\ScoringController::class, 'index'])->name('scoring.index');
+    Route::post('/scoring/{recruitment}/{application}', [\App\Http\Controllers\Admin\ScoringController::class, 'store'])->name('scoring.store');
 
     // Profile Matching (SEPARATE MENU — not nested under recruitment)
     Route::get('/profile-matching', [\App\Http\Controllers\Admin\ProfileMatchingController::class, 'index'])->name('profile-matching.index');
@@ -149,7 +152,9 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
         Route::get('/recruitment', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'index'])->name('recruitment.index');
         Route::get('/recruitment/{ormawa:slug}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'show'])->name('recruitment.show');
         Route::get('/recruitment/{ormawa:slug}/prestasi', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'prestasi'])->name('recruitment.prestasi');
+        Route::get('/recruitment/{ormawa:slug}/prestasi/{prestasi}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'prestasiShow'])->name('recruitment.prestasi.show');
         Route::get('/recruitment/{ormawa:slug}/program-kerja', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'programKerja'])->name('recruitment.proker');
+        Route::get('/recruitment/{ormawa:slug}/program-kerja/{proker}', [\App\Http\Controllers\Mahasiswa\RecruitmentBrowseController::class, 'programKerjaShow'])->name('recruitment.proker.show');
 
         // Apply (per division)
         Route::post('/recruitment/{recruitment}/apply', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'store'])->name('recruitment.apply');

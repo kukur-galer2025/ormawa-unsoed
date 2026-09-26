@@ -79,26 +79,54 @@
     </div>
 </div>
 
-<div x-data="{ photoPreview: '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}' }">
+<div x-data="{ 
+    photoPreview: '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}', 
+    errorMsg: '',
+    fileChosen(event) {
+        const file = event.target.files[0];
+        this.errorMsg = '';
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                this.errorMsg = 'Format file tidak valid. Harap pilih gambar (JPG/PNG).';
+                this.photoPreview = '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}';
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                this.errorMsg = 'Ukuran file terlalu besar. Maksimal 2MB.';
+                this.photoPreview = '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}';
+                event.target.value = '';
+                return;
+            }
+            this.photoPreview = URL.createObjectURL(file);
+        } else {
+            this.photoPreview = '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}';
+        }
+    }
+}">
     <label class="block text-sm font-medium text-slate-700 mb-2">Foto Profil</label>
     <div class="flex items-center gap-4">
         <!-- Preview Box -->
-        <template x-if="photoPreview">
-            <img :src="photoPreview" class="h-16 w-16 object-cover rounded-xl border border-slate-200 shrink-0">
-        </template>
-        <template x-if="!photoPreview">
-            <div class="h-16 w-16 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </div>
-        </template>
+        <div class="shrink-0">
+            <template x-if="photoPreview">
+                <img :src="photoPreview" class="h-16 w-16 object-cover rounded-xl border border-slate-200 p-0.5 shadow-sm">
+            </template>
+            <template x-if="!photoPreview">
+                <div class="h-16 w-16 bg-slate-100 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+            </template>
+        </div>
 
         <!-- Input File -->
-        <div class="flex-1">
-            <input type="file" name="foto" accept="image/jpeg,image/png,image/jpg" 
-                   @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { photoPreview = e.target.result; }; reader.readAsDataURL(file); } else { photoPreview = '{{ $profile->foto ? asset('storage/' . $profile->foto) : '' }}'; }" 
-                   class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            <p class="mt-1.5 text-xs text-slate-500">Format: JPG/PNG/JPEG. Ukuran maksimal: 2MB.</p>
-            @error('foto')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        <div class="flex-1 min-w-0">
+            <input type="file" name="foto" accept="image/jpeg,image/png,image/jpg" @change="fileChosen"
+                   class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors cursor-pointer border border-slate-200">
+            <p class="mt-1.5 text-xs text-slate-500">Format: JPG/PNG. Maksimal 2MB.</p>
+            <template x-if="errorMsg">
+                <p class="mt-1 text-xs text-red-500 font-medium" x-text="errorMsg"></p>
+            </template>
+            @error('foto')<p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>@enderror
         </div>
     </div>
 </div>

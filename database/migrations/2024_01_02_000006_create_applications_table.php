@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('motivasi')->nullable();
             $table->string('berkas_pendukung')->nullable();
-            $table->enum('status', ['pending', 'diproses', 'diterima', 'ditolak'])->default('pending');
+            $table->enum('status', ['terkirim', 'diproses', 'diterima', 'ditolak'])->default('terkirim');
             $table->timestamps();
             $table->unique(['recruitment_division_id', 'user_id']);
         });

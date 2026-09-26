@@ -14,14 +14,11 @@ class OrmawaController extends Controller
     public function index()
     {
         $ormawas = Ormawa::with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments', 'admins'])->latest()->paginate(10);
-        return view('superadmin.ormawa.index', compact('ormawas'));
+        $fakultas = Fakultas::with('jurusans')->get();
+        return view('superadmin.ormawa.index', compact('ormawas', 'fakultas'));
     }
 
-    public function create()
-    {
-        $fakultas = Fakultas::with('jurusans')->get();
-        return view('superadmin.ormawa.create', compact('fakultas'));
-    }
+
 
     public function store(Request $request)
     {
@@ -30,30 +27,16 @@ class OrmawaController extends Controller
             'tingkat' => 'required|in:Universitas,Fakultas,Jurusan',
             'fakultas_id' => 'required_if:tingkat,Fakultas,Jurusan|nullable|exists:fakultas,id',
             'jurusan_id' => 'required_if:tingkat,Jurusan|nullable|exists:jurusan,id',
-            'deskripsi' => 'nullable|string',
-            'visi_misi' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-            'cover_photo' => 'nullable|image|max:4096',
-            'kontak_email' => 'nullable|email',
-            'kontak_instagram' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->except(['logo', 'cover_photo']);
+        $data = $request->only(['nama', 'tingkat', 'fakultas_id', 'jurusan_id']);
         $data['slug'] = Str::slug($request->nama);
-        
+
         if ($data['tingkat'] === 'Universitas') {
             $data['fakultas_id'] = null;
             $data['jurusan_id'] = null;
         } elseif ($data['tingkat'] === 'Fakultas') {
             $data['jurusan_id'] = null;
-        }
-
-        if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
-        }
-
-        if ($request->hasFile('cover_photo')) {
-            $data['cover_photo'] = $request->file('cover_photo')->store('ormawa-covers', 'public');
         }
 
         Ormawa::create($data);

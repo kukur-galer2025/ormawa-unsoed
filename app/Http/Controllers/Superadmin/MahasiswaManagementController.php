@@ -30,8 +30,17 @@ class MahasiswaManagementController extends Controller
 
     public function toggle(User $mahasiswa)
     {
-        $mahasiswa->update(['is_active' => !$mahasiswa->is_active]);
-        $status = $mahasiswa->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        $newStatus = !$mahasiswa->is_active;
+        $mahasiswa->update(['is_active' => $newStatus]);
+        
+        // Auto-reject pendaftaran yang masih pending/diproses jika dinonaktifkan
+        if (!$newStatus) {
+            \App\Models\Application::where('user_id', $mahasiswa->id)
+                ->whereIn('status', ['terkirim', 'diproses'])
+                ->update(['status' => 'ditolak']);
+        }
+
+        $status = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Akun mahasiswa berhasil $status.");
     }
 

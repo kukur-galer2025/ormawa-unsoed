@@ -49,10 +49,10 @@
                     <td class="px-6 py-4 text-slate-500">{{ $app->created_at->format('d/m/Y H:i') }}</td>
                     <td class="px-6 py-4">
                         <span class="px-2.5 py-1 rounded-full text-xs font-medium 
-                            {{ $app->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
+                            {{ $app->status === 'terkirim' ? 'bg-amber-100 text-amber-700' : 
                                ($app->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($app->status === 'diterima' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')) }}">
-                            {{ $app->status === 'pending' ? 'Terkirim' : ucfirst($app->status) }}
+                            {{ ucfirst($app->status) }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-center">

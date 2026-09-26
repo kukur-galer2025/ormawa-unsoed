@@ -17,13 +17,8 @@ class AdminManagementController extends Controller
             ->with('ormawas')
             ->latest()
             ->paginate(10);
-        return view('superadmin.admin-management.index', compact('admins'));
-    }
-
-    public function create()
-    {
         $ormawas = Ormawa::where('is_active', true)->get();
-        return view('superadmin.admin-management.create', compact('ormawas'));
+        return view('superadmin.admin-management.index', compact('admins', 'ormawas'));
     }
 
     public function store(Request $request)
@@ -32,8 +27,7 @@ class AdminManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'ormawa_ids' => 'required|array|min:1',
-            'ormawa_ids.*' => 'exists:ormawa,id',
+            'ormawa_id' => 'required|exists:ormawa,id',
         ]);
 
         $user = User::create([
@@ -43,12 +37,10 @@ class AdminManagementController extends Controller
             'role' => 'admin',
         ]);
 
-        foreach ($request->ormawa_ids as $ormawaId) {
-            OrmawaAdmin::create([
-                'user_id' => $user->id,
-                'ormawa_id' => $ormawaId,
-            ]);
-        }
+        OrmawaAdmin::create([
+            'user_id' => $user->id,
+            'ormawa_id' => $request->ormawa_id,
+        ]);
 
         return redirect()->route('superadmin.admin.index')->with('success', 'Akun admin berhasil dibuat.');
     }
@@ -56,8 +48,8 @@ class AdminManagementController extends Controller
     public function edit(User $admin)
     {
         $ormawas = Ormawa::where('is_active', true)->get();
-        $assignedOrmawaIds = $admin->ormawas->pluck('id')->toArray();
-        return view('superadmin.admin-management.edit', compact('admin', 'ormawas', 'assignedOrmawaIds'));
+        $assignedOrmawaId = $admin->ormawas->first()->id ?? null;
+        return view('superadmin.admin-management.edit', compact('admin', 'ormawas', 'assignedOrmawaId'));
     }
 
     public function update(Request $request, User $admin)
@@ -66,8 +58,7 @@ class AdminManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $admin->id,
             'password' => 'nullable|string|min:8',
-            'ormawa_ids' => 'required|array|min:1',
-            'ormawa_ids.*' => 'exists:ormawa,id',
+            'ormawa_id' => 'required|exists:ormawa,id',
         ]);
 
         $admin->update([
@@ -78,9 +69,7 @@ class AdminManagementController extends Controller
 
         // Sync ormawa assignments
         OrmawaAdmin::where('user_id', $admin->id)->delete();
-        foreach ($request->ormawa_ids as $ormawaId) {
-            OrmawaAdmin::create(['user_id' => $admin->id, 'ormawa_id' => $ormawaId]);
-        }
+        OrmawaAdmin::create(['user_id' => $admin->id, 'ormawa_id' => $request->ormawa_id]);
 
         return redirect()->route('superadmin.admin.index')->with('success', 'Akun admin berhasil diperbarui.');
     }

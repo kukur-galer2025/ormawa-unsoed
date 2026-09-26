@@ -10,6 +10,7 @@ class Recruitment extends Model
     protected $fillable = [
         'ormawa_id', 'judul', 'deskripsi', 'persyaratan',
         'tanggal_buka', 'tanggal_tutup', 'status', 'is_announced',
+        'pesan_setelah_mendaftar',
     ];
 
     protected $casts = [

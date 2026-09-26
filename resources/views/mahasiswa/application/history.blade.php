@@ -16,35 +16,75 @@
             <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-xs tracking-wider">
                 <tr><th class="px-6 py-4">Organisasi</th><th class="px-6 py-4">Rekrutmen & Divisi</th><th class="px-6 py-4">Tanggal Daftar</th><th class="px-6 py-4">Status</th></tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
-                @foreach($applications as $app)
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4">
-                        <p class="font-bold text-slate-800">{{ $app->recruitment->ormawa->nama }}</p>
-                        <p class="text-xs text-slate-500">{{ $app->recruitment->ormawa->fakultasRel->nama_fakultas ?? '' }}</p>
+            @foreach($applications->groupBy('recruitment_id') as $recId => $group)
+            @php
+                $firstApp = $group->first();
+                $recruitment = $firstApp->recruitment;
+                $ormawa = $recruitment->ormawa;
+            @endphp
+            <tbody class="border-b-[6px] border-slate-100 last:border-0 hover:bg-slate-50/10 transition-colors">
+                {{-- Baris Header Rekrutmen --}}
+                <tr class="bg-slate-50/80">
+                    <td colspan="4" class="px-6 py-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                            <div>
+                                <p class="font-bold text-slate-800 text-lg">{{ $ormawa->nama }}</p>
+                                <p class="text-sm font-semibold text-indigo-700 mt-0.5">{{ $recruitment->judul }}</p>
+                            </div>
+                            <span class="px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">
+                                Mendaftar di {{ $group->count() }} Divisi
+                            </span>
+                        </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <p class="font-semibold text-slate-700">{{ $app->recruitment->judul }}</p>
-                        <span class="inline-block mt-1 px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs border border-slate-200">{{ $app->division->nama }}</span>
+                </tr>
+
+                {{-- Baris Divisi --}}
+                @foreach($group as $app)
+                <tr class="border-t border-slate-100 bg-white">
+                    <td class="px-6 py-4 sm:pl-10" colspan="2">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-300 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="inline-block px-2.5 py-1 bg-slate-100/80 text-slate-700 font-semibold rounded text-sm border border-slate-200">
+                                {{ $app->division->nama }}
+                            </span>
+                        </div>
                     </td>
-                    <td class="px-6 py-4 text-slate-500 font-medium">{{ $app->created_at->format('d/m/Y') }}</td>
+                    <td class="px-6 py-4 text-slate-500 font-medium">
+                        {{ $app->created_at->format('d/m/Y') }}
+                    </td>
                     <td class="px-6 py-4">
                         @php
                             $showStatus = $app->status;
-                            if (in_array($app->status, ['diterima', 'ditolak']) && !$app->recruitment->is_announced) {
+                            if (in_array($app->status, ['diterima', 'ditolak']) && !$recruitment->is_announced) {
                                 $showStatus = 'diproses';
                             }
                         @endphp
                         <span class="px-3 py-1 rounded-full text-xs font-bold 
-                            {{ $showStatus === 'pending' ? 'bg-amber-100 text-amber-700' : 
+                            {{ $showStatus === 'terkirim' ? 'bg-amber-100 text-amber-700' : 
                                ($showStatus === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($showStatus === 'diterima' ? 'bg-green-100 text-green-700 shadow-sm shadow-green-500/20' : 'bg-red-100 text-red-700')) }}">
-                            {{ $showStatus === 'pending' ? 'TERKIRIM' : strtoupper($showStatus) }}
+                            {{ strtoupper($showStatus) }}
                         </span>
                     </td>
                 </tr>
                 @endforeach
+
+                {{-- Pesan Panitia (Cukup 1 kali per Rekrutmen) --}}
+                @if($recruitment->pesan_setelah_mendaftar)
+                <tr class="bg-white">
+                    <td colspan="4" class="px-6 pb-5 pt-2 border-t border-slate-50">
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 flex gap-3 text-sm shadow-sm sm:ml-6">
+                            <svg class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="flex-1">
+                                <strong class="block text-blue-800 mb-1">Catatan Panitia / Instruksi Lanjutan:</strong>
+                                <div class="text-blue-700/90 whitespace-pre-wrap leading-relaxed">{{ $recruitment->pesan_setelah_mendaftar }}</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                @endif
             </tbody>
+            @endforeach
         </table>
     </div>
     <div class="p-4 border-t border-slate-100">

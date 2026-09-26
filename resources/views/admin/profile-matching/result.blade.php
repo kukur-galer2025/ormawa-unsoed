@@ -13,7 +13,7 @@
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                    Hitung Ulang
+                    {{ $results->isEmpty() ? 'Mulai Perhitungan' : 'Hitung Ulang' }}
                 </button>
             </form>
             @else
@@ -73,27 +73,7 @@
 </div>
 @endif
 
-{{-- Tombol Umumkan Hasil (jika semua divisi sudah finalisasi tapi belum diumumkan) --}}
-@php
-    $allFinalized = $recruitment->divisions->every(fn($d) => $d->is_finalized);
-@endphp
-@if($allFinalized && !$recruitment->is_announced && $division->is_finalized)
-<div class="mb-6 p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-            <p class="font-bold text-emerald-800 text-sm">✅ Semua divisi sudah difinalisasi!</p>
-            <p class="text-xs text-emerald-600 mt-1">Klik tombol di bawah untuk mengumumkan hasil rekrutmen ke seluruh mahasiswa.</p>
-        </div>
-        <form action="{{ route('admin.profile-matching.announce', $recruitment) }}" method="POST" onsubmit="return confirmAnnounce(event)">
-            @csrf
-            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 whitespace-nowrap">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                Umumkan Hasil Rekrutmen
-            </button>
-        </form>
-    </div>
-</div>
-@endif
+
 
 {{-- Dropdown Filter Divisi --}}
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
@@ -126,7 +106,7 @@
         <div class="p-12 text-center text-slate-500 flex flex-col items-center">
             <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             <p class="font-medium">Belum ada hasil kalkulasi.</p>
-            <p class="text-xs mt-1">Silakan klik "Hitung Ulang" untuk memproses data pelamar.</p>
+            <p class="text-xs mt-1">Silakan klik tombol "Mulai Perhitungan" di pojok kanan atas untuk memproses data pelamar.</p>
         </div>
     @else
         {{-- Counter untuk mode seleksi --}}
@@ -221,7 +201,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center font-black text-indigo-700 text-lg align-top">
-                                {{ rtrim(rtrim(number_format($res->total_score, 4), '0'), '.') }}
+                                {{ rtrim(rtrim(number_format($res->total_score, 5), '0'), '.') }}
                             </td>
                             <td class="px-6 py-4 text-center align-top">
                                 @if($division->is_finalized)
@@ -260,8 +240,8 @@
                     </p>
                     <button type="button" 
                         @click="submitFinalize()"
-                        :disabled="selectedCount === 0 || selectedCount > {{ $division->kuota }}"
-                        :class="selectedCount === 0 || selectedCount > {{ $division->kuota }} ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'"
+                        :disabled="selectedCount > {{ $division->kuota }}"
+                        :class="selectedCount > {{ $division->kuota }} ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'"
                         class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center gap-2 whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Finalisasi Divisi Ini
@@ -292,12 +272,16 @@ function finalizePicker() {
             return this.selectedIds.length;
         },
         submitFinalize() {
-            if (this.selectedCount === 0) return;
             if (this.selectedCount > {{ $division->kuota }}) return;
+
+            let htmlMsg = `<p>Anda akan menerima <b>${this.selectedCount}</b> pelamar dan menolak sisanya.</p><p class="text-red-600 font-bold mt-2">Keputusan ini TIDAK BISA DIUBAH!</p>`;
+            if (this.selectedCount === 0) {
+                htmlMsg = `<p>Anda <b>tidak memilih siapa pun</b> (0 pelamar). Jika dilanjutkan, <b>SEMUA PELAMAR</b> di divisi ini akan <b>DITOLAK</b>.</p><p class="text-red-600 font-bold mt-2">Keputusan ini TIDAK BISA DIUBAH!</p>`;
+            }
 
             Swal.fire({
                 title: 'Finalisasi Keputusan?',
-                html: `<p>Anda akan menerima <b>${this.selectedCount}</b> pelamar dan menolak sisanya.</p><p class="text-red-600 font-bold mt-2">Keputusan ini TIDAK BISA DIUBAH!</p>`,
+                html: htmlMsg,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -318,30 +302,6 @@ function finalizePicker() {
     };
 }
 
-function confirmAnnounce(event) {
-    event.preventDefault();
-    const form = event.target;
-    Swal.fire({
-        title: 'Umumkan Hasil Rekrutmen?',
-        html: '<p>Semua mahasiswa akan dapat melihat status kelulusan mereka (diterima/ditolak).</p><p class="text-amber-600 font-bold mt-2">Pastikan semua keputusan sudah benar!</p>',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#059669',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Umumkan!',
-        cancelButtonText: 'Batal',
-        customClass: {
-            popup: 'rounded-2xl',
-            confirmButton: 'rounded-lg',
-            cancelButton: 'rounded-lg'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
-    return false;
-}
 </script>
 @endpush
 @endsection

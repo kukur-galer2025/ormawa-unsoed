@@ -134,7 +134,7 @@
                         <p class="text-sm text-slate-500">{{ $app->user->mahasiswaProfile->nim ?? '-' }}</p>
                     </div>
                     <span class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-600">
-                        {{ $app->status === 'pending' ? 'Belum Dinilai' : 'Sudah Dinilai' }}
+                        {{ $app->status === 'terkirim' ? 'Belum Dinilai' : 'Sudah Dinilai' }}
                     </span>
                 </div>
                 

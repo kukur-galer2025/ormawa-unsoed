@@ -12,6 +12,21 @@ class ApplicantController extends Controller
 {
     use ChecksRecruitmentOwnership;
 
+    public function selectRecruitment()
+    {
+        $ormawa = $this->getAdminOrmawa();
+        $recruitments = $ormawa->recruitments()
+            ->withCount(['applications', 'divisions'])
+            ->latest()
+            ->paginate(10);
+            
+        $pageTitle = "Pilih Rekrutmen (Data Pelamar)";
+        $pageDescription = "Pilih rekrutmen untuk melihat daftar pendaftar dan berkas mereka.";
+        $targetRoute = "admin.applicants.index";
+
+        return view('admin.shared.select-recruitment', compact('recruitments', 'pageTitle', 'pageDescription', 'targetRoute'));
+    }
+
     public function index(Recruitment $recruitment)
     {
         $this->ensureRecruitmentOwnership($recruitment);

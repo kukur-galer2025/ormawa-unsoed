@@ -48,7 +48,7 @@ class ApplicationController extends Controller
             'recruitment_division_id' => $division->id,
             'user_id' => $user->id,
             'motivasi' => $request->motivasi,
-            'status' => 'pending',
+            'status' => 'terkirim',
         ];
 
         if ($request->hasFile('berkas_pendukung')) {

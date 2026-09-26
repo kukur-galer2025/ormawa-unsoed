@@ -56,10 +56,10 @@ class ProfileMatchingController extends Controller
                         && $aspect->criteria->where('tipe', 'secondary')->count() > 0;
                 });
 
-                // Check all applicants have been scored
+                // Check all active applicants have been scored
                 if ($div->applications_count > 0) {
                     $allCriteriaIds = $div->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
-                    foreach ($div->applications()->with('scores')->get() as $app) {
+                    foreach ($div->applications()->where('status', '!=', 'ditolak')->with('scores')->get() as $app) {
                         foreach ($allCriteriaIds as $cId) {
                             $score = $app->scores->firstWhere('criteria_id', $cId);
                             if (!$score || $score->actual_value === null) {
@@ -99,10 +99,10 @@ class ProfileMatchingController extends Controller
             return back()->with('error', 'Total bobot semua aspek harus = 100%. Saat ini: ' . rtrim(rtrim(number_format($totalBobot, 2), '0'), '.') . '%.');
         }
 
-        // Validasi: semua pelamar harus sudah dinilai lengkap
+        // Validasi: semua pelamar aktif harus sudah dinilai lengkap
         $allCriteriaIds = $division->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
         $unscoredApplicants = [];
-        foreach ($division->applications()->with(['scores', 'user'])->get() as $app) {
+        foreach ($division->applications()->where('status', '!=', 'ditolak')->with(['scores', 'user'])->get() as $app) {
             foreach ($allCriteriaIds as $cId) {
                 $score = $app->scores->firstWhere('criteria_id', $cId);
                 if (!$score || $score->actual_value === null) {
@@ -143,12 +143,12 @@ class ProfileMatchingController extends Controller
         // Load all divisions for the dropdown filter
         $allDivisions = $recruitment->divisions()->withCount('applications')->get();
 
-        // Cek apakah semua pelamar sudah dinilai lengkap
+        // Cek apakah semua pelamar aktif sudah dinilai lengkap
         $allScored = true;
         $unscoredNames = [];
         $allCriteriaIds = $division->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
         if ($allCriteriaIds->isNotEmpty()) {
-            foreach ($division->applications()->with(['scores', 'user'])->get() as $app) {
+            foreach ($division->applications()->where('status', '!=', 'ditolak')->with(['scores', 'user'])->get() as $app) {
                 foreach ($allCriteriaIds as $cId) {
                     $score = $app->scores->firstWhere('criteria_id', $cId);
                     if (!$score || $score->actual_value === null) {
@@ -178,40 +178,54 @@ class ProfileMatchingController extends Controller
         }
 
         $request->validate([
-            'accepted_ids' => 'required|array|min:1',
+            'accepted_ids' => 'nullable|array',
             'accepted_ids.*' => 'integer|exists:pendaftaran,id',
-        ], [
-            'accepted_ids.required' => 'Pilih minimal satu pelamar yang diterima.',
-            'accepted_ids.min' => 'Pilih minimal satu pelamar yang diterima.',
         ]);
 
-        $acceptedIds = $request->accepted_ids;
+        $acceptedIds = $request->accepted_ids ?? [];
 
         // Validasi: semua ID harus milik divisi ini
-        $validCount = $division->applications()
-            ->whereIn('id', $acceptedIds)
-            ->count();
+        if (!empty($acceptedIds)) {
+            $validCount = $division->applications()
+                ->whereIn('id', $acceptedIds)
+                ->count();
 
-        if ($validCount !== count($acceptedIds)) {
-            return back()->with('error', 'Ada pelamar yang tidak valid untuk divisi ini.');
-        }
+            if ($validCount !== count($acceptedIds)) {
+                return back()->with('error', 'Ada pelamar yang tidak valid untuk divisi ini.');
+            }
 
-        // Validasi: jumlah yang dipilih tidak boleh melebihi kuota
-        if ($division->kuota > 0 && count($acceptedIds) > $division->kuota) {
-            return back()->with('error', 'Jumlah yang dipilih melebihi kuota divisi (' . $division->kuota . ').');
+            // Validasi: jumlah yang dipilih tidak boleh melebihi kuota
+            if ($division->kuota > 0 && count($acceptedIds) > $division->kuota) {
+                return back()->with('error', 'Jumlah yang dipilih melebihi kuota divisi (' . $division->kuota . ').');
+            }
         }
 
         // Eksekusi dalam transaction
         \DB::transaction(function () use ($division, $acceptedIds) {
-            // Yang dipilih → diterima
-            Application::where('recruitment_division_id', $division->id)
-                ->whereIn('id', $acceptedIds)
-                ->update(['status' => 'diterima']);
+            if (!empty($acceptedIds)) {
+                // Yang dipilih → diterima
+                Application::where('recruitment_division_id', $division->id)
+                    ->whereIn('id', $acceptedIds)
+                    ->update(['status' => 'diterima']);
 
-            // Sisanya → ditolak
-            Application::where('recruitment_division_id', $division->id)
-                ->whereNotIn('id', $acceptedIds)
-                ->update(['status' => 'ditolak']);
+                // Auto-reject: Tolak pendaftaran di divisi LAIN untuk mahasiswa yang diterima
+                $acceptedUserIds = Application::where('recruitment_division_id', $division->id)
+                    ->whereIn('id', $acceptedIds)
+                    ->pluck('user_id');
+
+                Application::where('recruitment_id', $division->recruitment_id)
+                    ->where('recruitment_division_id', '!=', $division->id)
+                    ->whereIn('user_id', $acceptedUserIds)
+                    ->where('status', '!=', 'diterima')
+                    ->update(['status' => 'ditolak']);
+            }
+
+            // Sisanya → ditolak (termasuk semuanya jika acceptedIds kosong)
+            $query = Application::where('recruitment_division_id', $division->id);
+            if (!empty($acceptedIds)) {
+                $query->whereNotIn('id', $acceptedIds);
+            }
+            $query->update(['status' => 'ditolak']);
 
             // Lock divisi
             $division->update(['is_finalized' => true]);

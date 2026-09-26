@@ -13,6 +13,21 @@ use Illuminate\Http\Request;
 class CriteriaController extends Controller
 {
     use ChecksRecruitmentOwnership;
+    public function selectRecruitment()
+    {
+        $ormawa = $this->getAdminOrmawa();
+        $recruitments = $ormawa->recruitments()
+            ->withCount(['applications', 'divisions'])
+            ->latest()
+            ->paginate(10);
+            
+        $pageTitle = "Pilih Rekrutmen (Kriteria)";
+        $pageDescription = "Pilih rekrutmen untuk mengelola Kriteria Penilaian (CF/SF).";
+        $targetRoute = "admin.criteria.index";
+
+        return view('admin.shared.select-recruitment', compact('recruitments', 'pageTitle', 'pageDescription', 'targetRoute'));
+    }
+
     public function index(Recruitment $recruitment)
     {
         $this->ensureRecruitmentOwnership($recruitment);

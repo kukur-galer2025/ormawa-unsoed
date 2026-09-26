@@ -39,7 +39,7 @@ class EnsureProfileComplete
 
             if (!$request->routeIs(...$allowedRoutes)) {
                 return redirect()->route('mahasiswa.profile.edit')
-                    ->with('error', 'Silakan lengkapi profil Anda (NIM, fakultas, jurusan) terlebih dahulu sebelum menggunakan fitur ini.');
+                    ->with('info', 'Selamat Datang! Silakan lengkapi profil Anda (NIM, fakultas, jurusan) terlebih dahulu untuk mulai mendaftar ke organisasi pilihan Anda.');
             }
         }
 

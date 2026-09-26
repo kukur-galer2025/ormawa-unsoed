@@ -72,6 +72,15 @@ class RecruitmentBrowseController extends Controller
         return view('mahasiswa.recruitment.prestasi', compact('ormawa'));
     }
 
+    public function prestasiShow(Ormawa $ormawa, \App\Models\OrmawaPrestasi $prestasi)
+    {
+        if (!$ormawa->is_active || $prestasi->ormawa_id !== $ormawa->id) {
+            abort(404);
+        }
+
+        return view('mahasiswa.recruitment.prestasi-show', compact('ormawa', 'prestasi'));
+    }
+
     public function programKerja(Ormawa $ormawa)
     {
         if (!$ormawa->is_active) {
@@ -81,5 +90,14 @@ class RecruitmentBrowseController extends Controller
         $ormawa->load('programKerjas');
 
         return view('mahasiswa.recruitment.program-kerja', compact('ormawa'));
+    }
+
+    public function programKerjaShow(Ormawa $ormawa, \App\Models\OrmawaProgramKerja $proker)
+    {
+        if (!$ormawa->is_active || $proker->ormawa_id !== $ormawa->id) {
+            abort(404);
+        }
+
+        return view('mahasiswa.recruitment.program-kerja-show', compact('ormawa', 'proker'));
     }
 }

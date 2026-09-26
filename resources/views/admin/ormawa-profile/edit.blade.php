@@ -80,10 +80,26 @@
                 <!-- Logo -->
                 <div class="md:col-span-2" x-data="{ 
                     previewUrl: '{{ $ormawa->logo ? asset('storage/' . $ormawa->logo) : '' }}',
+                    errorMsg: '',
                     fileChosen(event) {
                         const file = event.target.files[0];
+                        this.errorMsg = '';
                         if (file) {
+                            if (!file.type.startsWith('image/')) {
+                                this.errorMsg = 'Format file tidak valid. Harap pilih gambar (JPG/PNG).';
+                                this.previewUrl = '{{ $ormawa->logo ? asset('storage/' . $ormawa->logo) : '' }}';
+                                event.target.value = '';
+                                return;
+                            }
+                            if (file.size > 2 * 1024 * 1024) {
+                                this.errorMsg = 'Ukuran file terlalu besar. Maksimal 2MB.';
+                                this.previewUrl = '{{ $ormawa->logo ? asset('storage/' . $ormawa->logo) : '' }}';
+                                event.target.value = '';
+                                return;
+                            }
                             this.previewUrl = URL.createObjectURL(file);
+                        } else {
+                            this.previewUrl = '{{ $ormawa->logo ? asset('storage/' . $ormawa->logo) : '' }}';
                         }
                     }
                 }">
@@ -118,6 +134,10 @@
                                 />
                             </label>
                             <p class="mt-2 text-xs text-slate-500">Maksimal 2MB. Format yang didukung: PNG, JPG, GIF.</p>
+                            <template x-if="errorMsg">
+                                <p class="mt-1 text-xs text-red-500 font-medium" x-text="errorMsg"></p>
+                            </template>
+                            @error('logo')<p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>@enderror
                         </div>
                     </div>
                 </div>
@@ -125,10 +145,26 @@
                 <!-- Cover Photo -->
                 <div class="md:col-span-2 mt-4" x-data="{ 
                     previewUrl: '{{ $ormawa->cover_photo ? asset('storage/' . $ormawa->cover_photo) : '' }}',
+                    errorMsg: '',
                     fileChosen(event) {
                         const file = event.target.files[0];
+                        this.errorMsg = '';
                         if (file) {
+                            if (!file.type.startsWith('image/')) {
+                                this.errorMsg = 'Format file tidak valid. Harap pilih gambar (JPG/PNG).';
+                                this.previewUrl = '{{ $ormawa->cover_photo ? asset('storage/' . $ormawa->cover_photo) : '' }}';
+                                event.target.value = '';
+                                return;
+                            }
+                            if (file.size > 4 * 1024 * 1024) { // Cover boleh 4MB as per controller logic
+                                this.errorMsg = 'Ukuran file terlalu besar. Maksimal 4MB.';
+                                this.previewUrl = '{{ $ormawa->cover_photo ? asset('storage/' . $ormawa->cover_photo) : '' }}';
+                                event.target.value = '';
+                                return;
+                            }
                             this.previewUrl = URL.createObjectURL(file);
+                        } else {
+                            this.previewUrl = '{{ $ormawa->cover_photo ? asset('storage/' . $ormawa->cover_photo) : '' }}';
                         }
                     }
                 }">
@@ -162,8 +198,11 @@
                                     hover:file:bg-blue-100 transition-all cursor-pointer border border-slate-200 rounded-xl"
                                 />
                             </label>
-                            <p class="mt-2 text-xs text-slate-500">Gambar landscape untuk banner organisasi di katalog. Maksimal 4MB.</p>
-                            @error('cover_photo')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+                            <p class="mt-2 text-xs text-slate-500">Gambar landscape untuk banner organisasi di katalog. Maksimal 4MB. Format yang didukung: PNG, JPG, GIF.</p>
+                            <template x-if="errorMsg">
+                                <p class="mt-1 text-xs text-red-500 font-medium" x-text="errorMsg"></p>
+                            </template>
+                            @error('cover_photo')<p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>@enderror
                         </div>
                     </div>
                 </div>

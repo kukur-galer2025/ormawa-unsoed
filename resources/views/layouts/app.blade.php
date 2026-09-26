@@ -12,22 +12,34 @@
     @stack('styles')
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900" style="font-family: 'Plus Jakarta Sans', sans-serif;" x-data="{ sidebarOpen: window.innerWidth >= 1024 }" @resize.window="if(window.innerWidth >= 1024) { sidebarOpen = true } else { sidebarOpen = false }">
-    <div class="flex min-h-screen overflow-hidden">
+    <div class="flex h-screen w-full overflow-hidden">
         <!-- Sidebar Overlay (Mobile) -->
         <div x-show="sidebarOpen && window.innerWidth < 1024" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-black/50 lg:hidden" @click="sidebarOpen = false"></div>
 
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0 lg:translate-x-0'" class="fixed inset-y-0 left-0 z-50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 transform transition-all duration-300 ease-in-out lg:static lg:inset-auto lg:z-auto flex flex-col shrink-0 overflow-hidden">
+        <aside :class="sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0 lg:translate-x-0'" class="fixed inset-y-0 left-0 z-50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 transform transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:z-40 flex flex-col shrink-0 overflow-hidden">
             <!-- Sidebar Header -->
-            <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-white font-semibold text-sm">Ormawa UNSOED</p>
-                    <p class="text-slate-400 text-xs capitalize">{{ auth()->user()->role }}</p>
+            <div class="flex flex-col items-center justify-center px-6 py-8 border-b border-white/10 text-center">
+                @php
+                    $user = auth()->user();
+                    $profilePic = null;
+                    if ($user->role === 'mahasiswa' && $user->mahasiswaProfile && $user->mahasiswaProfile->foto) {
+                        $profilePic = asset('storage/' . $user->mahasiswaProfile->foto);
+                    } elseif ($user->google_avatar) {
+                        $profilePic = $user->google_avatar;
+                    }
+                @endphp
+
+                @if($profilePic)
+                    <img src="{{ $profilePic }}" alt="Profile" class="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-white/10 mb-3">
+                @else
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shrink-0 shadow-lg border-2 border-white/10 mb-3">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </div>
+                @endif
+                <div class="w-full">
+                    <p class="text-white text-base font-semibold truncate">{{ $user->name }}</p>
+                    <p class="text-blue-400/80 text-xs mt-1 capitalize font-medium">{{ $user->role }}</p>
                 </div>
             </div>
 
@@ -38,18 +50,9 @@
 
             <!-- Sidebar Footer -->
             <div class="p-4 border-t border-white/10">
-                <div class="flex items-center gap-3 px-2 mb-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-white text-sm font-medium truncate">{{ auth()->user()->name }}</p>
-                        <p class="text-slate-400 text-xs truncate">{{ auth()->user()->email }}</p>
-                    </div>
-                </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Logout
                     </button>
@@ -58,7 +61,7 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 relative overflow-x-hidden">
+        <div class="flex-1 flex flex-col min-w-0 relative h-screen overflow-y-auto overflow-x-hidden">
 
             <!-- Top Navbar -->
             @include('layouts.partials.navbar')

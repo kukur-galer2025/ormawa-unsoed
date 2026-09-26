@@ -13,6 +13,21 @@ use Illuminate\Http\Request;
 class ScoringController extends Controller
 {
     use ChecksRecruitmentOwnership;
+    public function selectRecruitment()
+    {
+        $ormawa = $this->getAdminOrmawa();
+        $recruitments = $ormawa->recruitments()
+            ->withCount(['applications', 'divisions'])
+            ->latest()
+            ->paginate(10);
+            
+        $pageTitle = "Pilih Rekrutmen (Input Nilai)";
+        $pageDescription = "Pilih rekrutmen untuk mulai memberikan nilai (scoring) pada pelamar.";
+        $targetRoute = "admin.scoring.index";
+
+        return view('admin.shared.select-recruitment', compact('recruitments', 'pageTitle', 'pageDescription', 'targetRoute'));
+    }
+
     public function index(Recruitment $recruitment)
     {
         $this->ensureRecruitmentOwnership($recruitment);
@@ -63,7 +78,7 @@ class ScoringController extends Controller
                         'name' => $app->user->name,
                         'nim' => $profile->nim ?? '-',
                         'jurusan' => $profile->jurusanRel->nama_jurusan ?? '-',
-                        'status_text' => $app->status === 'pending' ? 'Belum Dinilai' : 'Sudah Dinilai'
+                        'status_text' => $app->status === 'terkirim' ? 'Belum Dinilai' : 'Sudah Dinilai'
                     ];
                 })
             ];

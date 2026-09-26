@@ -26,12 +26,13 @@
             {{-- Tingkat --}}
             <div class="mb-5">
                 <label class="block text-sm font-bold text-slate-700 mb-2">Tingkat</label>
-                <select name="tingkat" x-model="selectedTingkat" @change="onTingkatChange()" class="w-full px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-sm font-medium shadow-sm">
-                    <option value="">Semua Tingkat</option>
-                    <option value="Universitas">Universitas (Pusat)</option>
-                    <option value="Fakultas">Fakultas</option>
-                    <option value="Jurusan">Jurusan</option>
-                </select>
+                <input type="hidden" name="tingkat" :value="selectedTingkat">
+                <button type="button" @click="openModal('tingkat')"
+                        class="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium shadow-sm hover:border-blue-400 hover:ring-2 hover:ring-blue-500/20 transition-all text-left"
+                        :class="selectedTingkatName ? 'text-slate-900' : 'text-slate-400'">
+                    <span class="truncate" x-text="selectedTingkatName || 'Semua Tingkat'"></span>
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
             </div>
 
             {{-- Fakultas (Modal Picker) — hidden when Universitas --}}
@@ -80,7 +81,7 @@
                     
                     {{-- Modal Header --}}
                     <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
-                        <h3 class="font-bold text-slate-800 text-base" x-text="modalType === 'fakultas' ? 'Pilih Fakultas' : 'Pilih Jurusan'"></h3>
+                        <h3 class="font-bold text-slate-800 text-base" x-text="modalType === 'fakultas' ? 'Pilih Fakultas' : (modalType === 'jurusan' ? 'Pilih Jurusan' : 'Pilih Tingkat')"></h3>
                         <button type="button" @click="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -103,7 +104,7 @@
                         <button type="button" @click="selectItem(null)"
                                 class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-between"
                                 :class="!isSelected(null) ? 'text-slate-500 hover:bg-slate-50 border border-transparent' : 'bg-blue-50 text-blue-700 border border-blue-200'">
-                            <span x-text="modalType === 'fakultas' ? 'Semua Fakultas' : 'Semua Jurusan'"></span>
+                            <span x-text="modalType === 'fakultas' ? 'Semua Fakultas' : (modalType === 'jurusan' ? 'Semua Jurusan' : 'Semua Tingkat')"></span>
                             <svg x-show="isSelected(null)" class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                         </button>
 
@@ -111,7 +112,7 @@
                             <button type="button" @click="selectItem(item)"
                                     class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 flex items-center justify-between"
                                     :class="isSelected(item) ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50 border border-transparent'">
-                                <span x-text="modalType === 'fakultas' ? item.nama_fakultas : item.nama_jurusan"></span>
+                                <span x-text="modalType === 'fakultas' ? item.nama_fakultas : (modalType === 'jurusan' ? item.nama_jurusan : item.nama)"></span>
                                 <svg x-show="isSelected(item)" class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                             </button>
                         </template>
@@ -302,7 +303,13 @@
             selectedJurusan: oldJurusan,
             selectedJurusanName: '',
             selectedTingkat: oldTingkat,
+            selectedTingkatName: '',
             fakultasData: fakultasData,
+            tingkatData: [
+                {id: 'Universitas', nama: 'Universitas (Pusat)'},
+                {id: 'Fakultas', nama: 'Fakultas'},
+                {id: 'Jurusan', nama: 'Jurusan'}
+            ],
 
             modalOpen: false,
             modalType: '',
@@ -328,6 +335,10 @@
             },
 
             init() {
+                if (this.selectedTingkat) {
+                    const tk = this.tingkatData.find(t => t.id == this.selectedTingkat);
+                    if (tk) this.selectedTingkatName = tk.nama;
+                }
                 if (this.selectedFakultas) {
                     const fak = this.fakultasData.find(f => f.id == this.selectedFakultas);
                     if (fak) this.selectedFakultasName = fak.nama_fakultas;
@@ -356,7 +367,13 @@
 
             get filteredModalItems() {
                 let items = [];
-                if (this.modalType === 'fakultas') {
+                if (this.modalType === 'tingkat') {
+                    items = this.tingkatData;
+                    if (this.modalSearch) {
+                        const q = this.modalSearch.toLowerCase();
+                        items = items.filter(t => t.nama.toLowerCase().includes(q));
+                    }
+                } else if (this.modalType === 'fakultas') {
                     items = this.fakultasData;
                     if (this.modalSearch) {
                         const q = this.modalSearch.toLowerCase();
@@ -375,15 +392,26 @@
 
             isSelected(item) {
                 if (item === null) {
+                    if (this.modalType === 'tingkat') return !this.selectedTingkat;
                     if (this.modalType === 'fakultas') return !this.selectedFakultas;
                     return !this.selectedJurusan;
                 }
+                if (this.modalType === 'tingkat') return item.id == this.selectedTingkat;
                 if (this.modalType === 'fakultas') return item.id == this.selectedFakultas;
                 return item.id == this.selectedJurusan;
             },
 
             selectItem(item) {
-                if (this.modalType === 'fakultas') {
+                if (this.modalType === 'tingkat') {
+                    if (item === null) {
+                        this.selectedTingkat = '';
+                        this.selectedTingkatName = '';
+                    } else {
+                        this.selectedTingkat = item.id;
+                        this.selectedTingkatName = item.nama;
+                    }
+                    this.onTingkatChange();
+                } else if (this.modalType === 'fakultas') {
                     if (item === null) {
                         this.selectedFakultas = '';
                         this.selectedFakultasName = '';

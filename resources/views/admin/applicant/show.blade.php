@@ -14,10 +14,10 @@
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Status Saat Ini</span>
                     <span class="px-2.5 py-1 rounded-full text-xs font-medium 
-                            {{ $application->status === 'pending' ? 'bg-amber-100 text-amber-700' : 
+                            {{ $application->status === 'terkirim' ? 'bg-amber-100 text-amber-700' : 
                                ($application->status === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($application->status === 'diterima' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')) }}">
-                            {{ $application->status === 'pending' ? 'Terkirim' : ucfirst($application->status) }}
+                            {{ ucfirst($application->status) }}
                     </span>
                 </div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Tanggal Melamar</span><p class="text-sm text-slate-800 font-medium">{{ $application->created_at->format('d F Y, H:i') }}</p></div>
@@ -55,7 +55,7 @@
             <div class="mb-4">
                 <div class="p-4 bg-green-50 rounded-xl border border-green-100 text-center max-w-sm mx-auto">
                     <p class="text-xs text-green-600 font-semibold uppercase mb-1">Total Score Final</p>
-                    <p class="text-3xl font-black text-green-800">{{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 4), '0'), '.') }}</p>
+                    <p class="text-3xl font-black text-green-800">{{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 5), '0'), '.') }}</p>
                 </div>
             </div>
             
@@ -246,7 +246,7 @@
                             <div class="flex items-center justify-between border-t border-green-200/50 pt-4">
                                 <span class="font-bold text-green-800 text-lg">Maka Total Akhir adalah:</span>
                                 <span class="text-4xl font-black text-green-700 bg-white px-4 py-2 rounded-xl shadow-sm border border-green-200">
-                                    {{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 4), '0'), '.') }}
+                                    {{ rtrim(rtrim(number_format($application->profileMatchingResult->total_score, 5), '0'), '.') }}
                                 </span>
                             </div>
                         </div>
@@ -258,7 +258,19 @@
                 Ranking pelamar ini di divisi <b>{{ $application->division->nama }}</b>: <span class="font-bold text-xl text-blue-800 ml-2">#{{ $application->profileMatchingResult->ranking }}</span>
             </div>
         @else
-            <div class="p-6 text-center text-slate-500 text-sm bg-slate-50 rounded-xl border border-slate-100">Belum ada hasil kalkulasi profile matching.</div>
+            <div class="p-8 text-center bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
+                <div class="w-12 h-12 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <p class="text-slate-600 font-medium mb-1">Belum Ada Nilai</p>
+                <p class="text-slate-500 text-sm mb-5">Belum ada hasil kalkulasi profile matching. Pelamar ini belum diberikan nilai.</p>
+                
+                <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
+                   class="px-5 py-2.5 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-700 shadow-sm transition-colors inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Input Nilai Sekarang
+                </a>
+            </div>
         @endif
     </div>
 
@@ -283,7 +295,7 @@
                 </p>
             </div>
         @else
-            @if($application->status === 'pending')
+            @if($application->status === 'terkirim')
             <div class="p-4 rounded-xl text-center border bg-slate-50 border-slate-200 max-w-lg mx-auto">
                 <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 bg-slate-100 text-slate-500">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

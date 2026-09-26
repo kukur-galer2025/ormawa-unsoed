@@ -35,6 +35,7 @@ class RecruitmentController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'persyaratan' => 'nullable|string',
+            'pesan_setelah_mendaftar' => 'nullable|string',
             'tanggal_buka' => 'required|date',
             'tanggal_tutup' => 'required|date|after:tanggal_buka',
             'divisions' => 'required|array|min:1',
@@ -45,7 +46,7 @@ class RecruitmentController extends Controller
 
         $ormawa = $this->getAdminOrmawa();
         $recruitment = $ormawa->recruitments()->create($request->only([
-            'judul', 'deskripsi', 'persyaratan', 'tanggal_buka', 'tanggal_tutup',
+            'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup',
         ]));
 
         foreach ($request->divisions as $div) {
@@ -81,6 +82,7 @@ class RecruitmentController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'persyaratan' => 'nullable|string',
+            'pesan_setelah_mendaftar' => 'nullable|string',
             'tanggal_buka' => 'required|date',
             'tanggal_tutup' => 'required|date|after:tanggal_buka',
             'status' => 'required|in:draft,dibuka,ditutup,selesai',
@@ -92,7 +94,7 @@ class RecruitmentController extends Controller
         ]);
 
         $recruitment->update($request->only([
-            'judul', 'deskripsi', 'persyaratan', 'tanggal_buka', 'tanggal_tutup', 'status',
+            'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup', 'status',
         ]));
 
         $existingIds = [];

@@ -14,13 +14,8 @@ class JurusanController extends Controller
     public function index()
     {
         $jurusans = Jurusan::with('fakultas')->orderBy('fakultas_id')->orderBy('nama_jurusan')->paginate(10);
-        return view('superadmin.jurusan.index', compact('jurusans'));
-    }
-
-    public function create()
-    {
         $fakultas = Fakultas::orderBy('nama_fakultas')->get();
-        return view('superadmin.jurusan.create', compact('fakultas'));
+        return view('superadmin.jurusan.index', compact('jurusans', 'fakultas'));
     }
 
     public function store(Request $request)

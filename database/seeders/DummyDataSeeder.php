@@ -174,7 +174,7 @@ class DummyDataSeeder extends Seeder
                     ],
                     [
                         'motivasi' => 'Saya ingin berkontribusi di ' . $div->nama . ' untuk mengembangkan potensi diri.',
-                        'status' => 'pending',
+                        'status' => 'terkirim',
                     ]
                 );
 

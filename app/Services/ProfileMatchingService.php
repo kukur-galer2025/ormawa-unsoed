@@ -83,8 +83,8 @@ class ProfileMatchingService
         $nsf = $secondaryScores->count() > 0 ? $secondaryScores->avg('bobot_gap') : 0;
 
         return [
-            'ncf' => round($ncf, 2),
-            'nsf' => round($nsf, 2),
+            'ncf' => $ncf,
+            'nsf' => $nsf,
         ];
     }
 
@@ -94,7 +94,7 @@ class ProfileMatchingService
      */
     public function calculateAspectScore(float $ncf, float $nsf, float $cfPercent, float $sfPercent): float
     {
-        return round(($cfPercent / 100 * $ncf) + ($sfPercent / 100 * $nsf), 2);
+        return ($cfPercent / 100 * $ncf) + ($sfPercent / 100 * $nsf);
     }
 
     /**
@@ -159,12 +159,20 @@ class ProfileMatchingService
                 'application_id' => $application->id,
                 'recruitment_division_id' => $division->id,
                 'detail_per_aspek' => $detailPerAspek,
-                'total_score' => round($totalScore, 2),
+                'total_score' => round($totalScore, 5),
+                'created_at' => $application->created_at->timestamp,
             ]);
         }
 
-        // Step 6: Sort dan assign ranking
-        $results = $results->sortByDesc('total_score')->values();
+        // Step 6: Sort berdasarkan total_score DESC, lalu created_at ASC (pendaftar lebih awal menang)
+        $results = $results->sort(function ($a, $b) {
+            // Primary: total_score descending
+            $scoreDiff = $b['total_score'] <=> $a['total_score'];
+            if ($scoreDiff !== 0) return $scoreDiff;
+
+            // Tiebreaker: Siapa yang mendaftar lebih awal (timestamp terkecil) menang
+            return $a['created_at'] <=> $b['created_at'];
+        })->values();
 
         foreach ($results as $index => $result) {
             ProfileMatchingResult::updateOrCreate(
