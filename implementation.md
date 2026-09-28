@@ -53,3 +53,11 @@ Dengan pendekatan global ini, **seluruh form** di dalam aplikasi Anda (mulai dar
 ## 3. Validasi Matematika (Logika Profile Matching)
 **Masalah:** Algoritma kalkulasi *Profile Matching* menuntut perhitungan rata-rata faktor utama (Core Factor/CF) dan faktor pendukung (Secondary Factor/SF). Jika suatu aspek tidak memiliki salah satu dari kriteria tersebut, sistem akan gagal menghitung (eror pembagian nol / *division by zero*).
 **Tindakan:** Menguji dan meninjau ulang validasi kesiapan data. Sempat ada penyesuaian dinamis (mengizinkan ketiadaan CF/SF jika bobot 0%), namun sesuai *best-practice* dan permintaan perancang sistem (Anda), validasi dikembalikan (revert) ke mode ketat (*strict mode*): **Setiap Aspek mutlak harus memiliki setidaknya 1 Kriteria tipe Core Factor (CF) dan 1 Kriteria tipe Secondary Factor (SF)** agar *Profile Matching* valid dan tidak menghasilkan "Tidak Valid".
+
+## 4. Deteksi Pintar Kekurangan Nilai Akibat Perubahan Kriteria
+**Masalah:** Ketika seorang admin sudah memasukkan nilai pelamar secara lengkap, status pelamar otomatis berubah menjadi "Diproses". Namun, jika keesokan harinya admin menambahkan "Kriteria Baru" untuk divisi pelamar tersebut, pelamar akan kekurangan satu (atau lebih) nilai, yang dapat menyebabkan hasil *Profile Matching* tidak akurat atau eror.
+**Implementasi:** 
+- Menambahkan logika pengecekan di tampilan Detail Pelamar (`show.blade.php`).
+- Sistem akan membandingkan **Total Kriteria** yang saat ini aktif di divisi tersebut dengan **Jumlah Nilai Mentah (tidak *null*)** yang dimiliki pelamar.
+- Jika terdapat ketimpangan (misal: ada 5 kriteria, tapi pelamar baru diinput 4 nilai mentah), meskipun status pelamar sudah "Diproses", sistem akan memunculkan *Warning Banner* (peringatan berwarna oranye) yang memberitahu Admin: *"Sistem mendeteksi ada X kriteria yang masih kosong. Hal ini biasanya terjadi jika Anda baru saja menambahkan kriteria baru setelah nilai pelamar diinput."*
+- Peringatan ini dilengkapi tombol "Lengkapi Nilai Sekarang" agar Admin langsung menginput ulang nilai yang kurang tanpa harus menebak-nebak letak kesalahannya.

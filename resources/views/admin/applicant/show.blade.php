@@ -273,19 +273,36 @@
                         Input Nilai Sekarang
                     </a>
                 @else
-                    <p class="text-slate-600 font-medium mb-1">Belum Ada Hasil Kalkulasi</p>
-                    <p class="text-slate-500 text-sm mb-5">Nilai mentah sudah diinput, namun sistem belum melakukan kalkulasi Profile Matching.</p>
-                    
-                    <a href="{{ route('admin.profile-matching.index') }}" 
-                       class="px-5 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-xl hover:bg-indigo-700 shadow-sm transition-colors inline-flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                        Hitung Profile Matching
-                    </a>
-                    
-                    <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
-                       class="mt-3 text-sm text-blue-600 hover:underline">
-                        Edit Nilai Mentah
-                    </a>
+                    @php
+                        $totalCriteria = $application->division->allCriteria()->count();
+                        $inputtedScoresCount = $application->scores()->whereNotNull('actual_value')->count();
+                        $hasIncompleteScores = $inputtedScoresCount < $totalCriteria;
+                    @endphp
+
+                    @if($hasIncompleteScores)
+                        <div class="mb-5 bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200 text-sm text-left flex items-start gap-3 max-w-md">
+                            <svg class="w-5 h-5 shrink-0 mt-0.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <div>
+                                <p class="font-bold mb-1">Perhatian: Nilai Belum Lengkap!</p>
+                                <p class="leading-relaxed">Sistem mendeteksi ada <b>{{ $totalCriteria - $inputtedScoresCount }} kriteria</b> yang masih kosong. Hal ini biasanya terjadi jika Anda baru saja menambahkan kriteria baru setelah nilai pelamar diinput.</p>
+                                <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" class="inline-block mt-3 px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition-colors">Lengkapi Nilai Sekarang</a>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-slate-600 font-medium mb-1">Belum Ada Hasil Kalkulasi</p>
+                        <p class="text-slate-500 text-sm mb-5">Nilai mentah sudah diinput secara lengkap, namun sistem belum melakukan kalkulasi Profile Matching.</p>
+                        
+                        <a href="{{ route('admin.profile-matching.index') }}" 
+                           class="px-5 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-xl hover:bg-indigo-700 shadow-sm transition-colors inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            Hitung Profile Matching
+                        </a>
+                        
+                        <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
+                           class="mt-3 text-sm text-blue-600 hover:underline">
+                            Edit Nilai Mentah
+                        </a>
+                    @endif
                 @endif
             </div>
         @endif
