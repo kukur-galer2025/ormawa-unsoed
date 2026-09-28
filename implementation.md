@@ -32,3 +32,24 @@ Saya telah menyuntikkan (*inject*) sebuah *Event Listener* Vanilla JavaScript ke
 
 ## Hasil Akhir
 Dengan pendekatan global ini, **seluruh form** di dalam aplikasi Anda (mulai dari Tambah Aspek, Edit Profile, Login, Daftar Akun, Input Nilai, hingga Finalisasi Profile Matching) kini sudah 100% terlindungi dari masalah *double-click spam*. Tidak ada lagi notifikasi *error* ganda atau duplikasi data!
+
+---
+
+# Analisis & Implementasi Peningkatan UI/UX Kriteria & Profile Matching
+
+## 1. Standarisasi Visual Status Rekrutmen
+**Masalah:** Pada halaman Tabel Profile Matching (`admin/profile-matching/index`), *badge* status untuk rekrutmen yang sudah "Ditutup" masih menggunakan warna kuning (*amber*). Padahal pada halaman lain (seperti halaman daftar rekrutmen), status "Ditutup" menggunakan standar warna merah (*red*). Ketidakkonsistenan ini membingungkan pengguna secara psikologis.
+**Implementasi:** Memodifikasi pewarnaan *badge* di `ProfileMatchingController` (tampilan `index.blade.php`) agar selaras. "Dibuka" (Biru), "Ditutup" (Merah), dan "Selesai" (Hijau).
+
+## 2. Peningkatan Filter Data di Halaman Kriteria
+**Masalah:** Pada halaman Kelola Kriteria, Admin disuguhkan *list* atau tabel yang memanjang ke bawah berisikan semua divisi beserta aspek dan kriterianya. Jika jumlah divisi banyak (misal: 10 divisi), halaman menjadi sangat panjang dan sulit dinavigasi. Hal serupa terjadi di form Tambah Kriteria, di mana semua aspek ditumpuk dalam satu *dropdown* panjang (menggunakan `optgroup`), membuat Admin kebingungan memilih aspek.
+**Implementasi:**
+- **Kelola Kriteria (Index):** Mengimplementasikan komponen `Alpine.js` (`x-data="{ selectedDivision: 'all' }"`) di atas halaman. Admin sekarang dapat memfilter tabel kriteria berdasarkan Divisi spesifik. Proses filtering terjadi secara *real-time* di sisi klien (browser) tanpa *reload* halaman, memberikan *feedback* instan (Zero-latency).
+- **Tambah Kriteria (Create Form):** Memisahkan *dropdown* menjadi dua tahap menggunakan `Alpine.js`.
+  1. *Dropdown* pertama: **Pilih Divisi**.
+  2. *Dropdown* kedua: **Pilih Aspek Penilaian**.
+  Data di *dropdown* kedua akan bereaksi dan **hanya memunculkan aspek yang sesuai dengan divisi** yang dipilih pada *dropdown* pertama (`<template x-if="...">`). Jika divisi tersebut belum memiliki aspek, form juga akan memunculkan peringatan *"Divisi ini belum memiliki aspek"* secara dinamis.
+
+## 3. Validasi Matematika (Logika Profile Matching)
+**Masalah:** Algoritma kalkulasi *Profile Matching* menuntut perhitungan rata-rata faktor utama (Core Factor/CF) dan faktor pendukung (Secondary Factor/SF). Jika suatu aspek tidak memiliki salah satu dari kriteria tersebut, sistem akan gagal menghitung (eror pembagian nol / *division by zero*).
+**Tindakan:** Menguji dan meninjau ulang validasi kesiapan data. Sempat ada penyesuaian dinamis (mengizinkan ketiadaan CF/SF jika bobot 0%), namun sesuai *best-practice* dan permintaan perancang sistem (Anda), validasi dikembalikan (revert) ke mode ketat (*strict mode*): **Setiap Aspek mutlak harus memiliki setidaknya 1 Kriteria tipe Core Factor (CF) dan 1 Kriteria tipe Secondary Factor (SF)** agar *Profile Matching* valid dan tidak menghasilkan "Tidak Valid".

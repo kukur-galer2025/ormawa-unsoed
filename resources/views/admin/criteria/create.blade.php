@@ -7,23 +7,46 @@
 <p class="text-sm text-slate-500 mb-4">Rekrutmen: <span class="font-semibold text-slate-700">{{ $recruitment->judul }}</span></p>
 <form method="POST" action="{{ route('admin.criteria.store', $recruitment) }}" class="space-y-5">@csrf
 
-<div>
+@php
+    $oldDivId = '';
+    if(old('aspect_id')) {
+        $oldAspect = \App\Models\Aspect::find(old('aspect_id'));
+        if($oldAspect) $oldDivId = $oldAspect->recruitment_division_id;
+    }
+@endphp
+<div x-data="{ selectedDiv: '{{ $oldDivId }}' }">
+<div class="mb-5">
+    <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi *</label>
+    <select x-model="selectedDiv" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer">
+        <option value="">-- Pilih Divisi --</option>
+        @foreach($recruitment->divisions as $div)
+            <option value="{{ $div->id }}">{{ $div->nama }}</option>
+        @endforeach
+    </select>
+</div>
+
+<div class="mb-5">
     <label class="block text-sm font-semibold text-slate-700 mb-1">Aspek Penilaian *</label>
-    <select name="aspect_id" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+    <select name="aspect_id" required x-bind:disabled="!selectedDiv" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 cursor-pointer">
         <option value="">-- Pilih Aspek --</option>
         @foreach($recruitment->divisions as $div)
-            <optgroup label="Divisi: {{ $div->nama }}">
-                @foreach($div->aspects as $aspect)
-                    <option value="{{ $aspect->id }}" {{ old('aspect_id') == $aspect->id ? 'selected' : '' }}>
-                        {{ $aspect->nama }} (Bobot {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%)
-                    </option>
-                @endforeach
-            </optgroup>
+            <template x-if="selectedDiv == '{{ $div->id }}'">
+                <optgroup label="Pilihan Aspek">
+                    @foreach($div->aspects as $aspect)
+                        <option value="{{ $aspect->id }}" {{ old('aspect_id') == $aspect->id ? 'selected' : '' }}>
+                            {{ $aspect->nama }} (Bobot {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%)
+                        </option>
+                    @endforeach
+                </optgroup>
+            </template>
         @endforeach
     </select>
     @if($recruitment->divisions->flatMap->aspects->isEmpty())
-        <p class="mt-1 text-xs text-red-500">Belum ada aspek. <a href="{{ route('admin.aspect.index', $recruitment) }}" class="font-bold underline">Buat aspek dulu</a>.</p>
+        <p class="mt-1 text-xs text-red-500">Belum ada aspek di rekrutmen ini. <a href="{{ route('admin.aspect.index', $recruitment) }}" class="font-bold underline">Buat aspek dulu</a>.</p>
     @endif
+    <p x-show="selectedDiv && $el.previousElementSibling.options.length <= 1" class="mt-1 text-xs text-amber-600 hidden" :class="{'hidden': false}">
+        Divisi ini belum memiliki aspek.
+    </p>
 </div>
 
 <div>
@@ -72,6 +95,7 @@
     <a href="{{ route('admin.criteria.index', $recruitment) }}" class="px-6 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200">Batal</a>
 </div>
 </form>
+</div>
 </div>
 </div>
 @endsection
