@@ -262,14 +262,31 @@
                 <div class="w-12 h-12 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-3">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 </div>
-                <p class="text-slate-600 font-medium mb-1">Belum Ada Nilai</p>
-                <p class="text-slate-500 text-sm mb-5">Belum ada hasil kalkulasi profile matching. Pelamar ini belum diberikan nilai.</p>
                 
-                <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
-                   class="px-5 py-2.5 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-700 shadow-sm transition-colors inline-flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    Input Nilai Sekarang
-                </a>
+                @if($application->status === 'terkirim')
+                    <p class="text-slate-600 font-medium mb-1">Belum Ada Nilai Mentah</p>
+                    <p class="text-slate-500 text-sm mb-5">Admin belum memasukkan nilai tes/wawancara untuk pelamar ini.</p>
+                    
+                    <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
+                       class="px-5 py-2.5 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-700 shadow-sm transition-colors inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        Input Nilai Sekarang
+                    </a>
+                @else
+                    <p class="text-slate-600 font-medium mb-1">Belum Ada Hasil Kalkulasi</p>
+                    <p class="text-slate-500 text-sm mb-5">Nilai mentah sudah diinput, namun sistem belum melakukan kalkulasi Profile Matching.</p>
+                    
+                    <a href="{{ route('admin.profile-matching.index') }}" 
+                       class="px-5 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-xl hover:bg-indigo-700 shadow-sm transition-colors inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Hitung Profile Matching
+                    </a>
+                    
+                    <a href="{{ route('admin.scoring.index', [$recruitment, 'division_id' => $application->recruitment_division_id, 'application_id' => $application->id]) }}" 
+                       class="mt-3 text-sm text-blue-600 hover:underline">
+                        Edit Nilai Mentah
+                    </a>
+                @endif
             </div>
         @endif
     </div>
