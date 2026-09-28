@@ -127,7 +127,7 @@
                         @foreach($application->profileMatchingResult->detail_per_aspek as $aspekData)
                             @php
                                 $aspekModel = $application->division->aspects->where('nama', $aspekData['nama'])->first();
-                                $aspekScores = $aspekModel ? $application->scores->whereIn('criteria_id', $aspekModel->criteria->pluck('id')) : collect();
+                                $aspekScores = $aspekModel ? $application->scores->whereIn('criteria_id', $aspekModel->criteria->pluck('id'))->sortBy(fn($s) => $s->criteria->urutan) : collect();
                                 
                                 $coreScores = $aspekScores->filter(fn($s) => $s->criteria->tipe == 'core');
                                 $secondaryScores = $aspekScores->filter(fn($s) => $s->criteria->tipe == 'secondary');

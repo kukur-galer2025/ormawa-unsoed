@@ -68,7 +68,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">Angkatan</label>
-        <input type="number" name="angkatan" value="{{ old('angkatan', $profile->angkatan) }}" required min="2015" max="{{ now()->year }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+        <input type="number" name="angkatan" value="{{ old('angkatan', $profile->angkatan) }}" required min="2023" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
         @error('angkatan')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
     <div>
