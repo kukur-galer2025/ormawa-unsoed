@@ -50,11 +50,10 @@ class ProfileMatchingController extends Controller
                 $totalBobot = $div->aspects->sum('bobot');
                 $div->bobotValid = abs($totalBobot - 100) < 0.1;
 
-                // Check each aspect has required criteria based on its percentages
+                // Check each aspect has at least one core and one secondary (wajib sesuai rumus Profile Matching)
                 $div->aspectsReady = $div->aspects->every(function ($aspect) {
-                    $hasCore = $aspect->cf_percentage > 0 ? $aspect->criteria->where('tipe', 'core')->count() > 0 : true;
-                    $hasSecondary = $aspect->sf_percentage > 0 ? $aspect->criteria->where('tipe', 'secondary')->count() > 0 : true;
-                    return $hasCore && $hasSecondary && $aspect->criteria->count() > 0;
+                    return $aspect->criteria->where('tipe', 'core')->count() > 0
+                        && $aspect->criteria->where('tipe', 'secondary')->count() > 0;
                 });
 
                 // Check all active applicants have been scored
