@@ -198,6 +198,41 @@
             });
         });
         @endif
+        // Global Anti-Double Submit
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            
+            // Allow forms that have alpine preventDefault to be handled if they want, 
+            // but we still mark them as submitted if they reach here.
+            if (form.dataset.submitted === 'true') {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Find submit buttons
+            const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+            
+            // Check HTML5 validity first before disabling
+            if (form.checkValidity && !form.checkValidity()) {
+                return; // Let browser handle validation UI, don't disable button
+            }
+
+            form.dataset.submitted = 'true';
+            
+            submitButtons.forEach(btn => {
+                setTimeout(() => {
+                    btn.disabled = true;
+                    if(btn.tagName === 'BUTTON') {
+                        // Avoid overriding buttons that already have a loading state from Alpine
+                        if (!btn.hasAttribute('x-bind:disabled') && !btn.hasAttribute(':disabled')) {
+                            if(!btn.dataset.originalText) btn.dataset.originalText = btn.innerHTML;
+                            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 inline-block text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+                            btn.classList.add('opacity-75', 'cursor-wait');
+                        }
+                    }
+                }, 10);
+            });
+        });
     </script>
     @stack('scripts')
 </body>
