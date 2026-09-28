@@ -159,8 +159,27 @@ class ProfileMatchingController extends Controller
                 }
             }
         }
+        $isOutdated = false;
+        if ($results->isNotEmpty() && !$division->is_finalized) {
+            $latestResultTime = $results->max('updated_at');
+            
+            $latestAspectTime = $division->aspects()->max('updated_at');
+            $latestCriteriaTime = \App\Models\Criteria::whereHas('aspect', function($q) use ($division) {
+                $q->where('recruitment_division_id', $division->id);
+            })->max('updated_at');
+            
+            $latestScoreTime = \App\Models\ApplicationScore::whereHas('application', function($q) use ($division) {
+                $q->where('recruitment_division_id', $division->id);
+            })->max('updated_at');
 
-        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions', 'allScored', 'unscoredNames'));
+            $maxChangeTime = collect([$latestAspectTime, $latestCriteriaTime, $latestScoreTime])->filter()->max();
+            
+            if ($maxChangeTime && $maxChangeTime > $latestResultTime) {
+                $isOutdated = true;
+            }
+        }
+
+        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions', 'allScored', 'unscoredNames', 'isOutdated'));
     }
 
     public function finalize(Request $request, Recruitment $recruitment, RecruitmentDivision $division)

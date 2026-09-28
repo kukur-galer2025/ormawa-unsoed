@@ -16,8 +16,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $openRecruitments = Recruitment::where('status', 'dibuka')
-            ->where('tanggal_tutup', '>=', now())
+        $openRecruitments = Recruitment::reallyOpen()
             ->with('ormawa')
             ->count();
 

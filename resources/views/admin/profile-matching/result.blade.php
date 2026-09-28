@@ -11,7 +11,13 @@
             @if($allScored)
             <form action="{{ route('admin.profile-matching.calculate', [$recruitment, $division]) }}" method="POST">
                 @csrf
-                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all flex items-center gap-2">
+                <button type="submit" class="relative px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all flex items-center gap-2 {{ $isOutdated ? 'animate-pulse' : '' }}">
+                    @if($isOutdated)
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                        </span>
+                    @endif
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     {{ $results->isEmpty() ? 'Mulai Perhitungan' : 'Hitung Ulang' }}
                 </button>
@@ -26,6 +32,20 @@
         <a href="{{ route('admin.profile-matching.show', $recruitment) }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali</a>
     </div>
 </div>
+
+{{-- Warning: Data Outdated --}}
+@if($isOutdated && !$division->is_finalized)
+<div class="mb-6 p-4 rounded-2xl border border-blue-200 bg-blue-50 flex items-start gap-3">
+    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5 animate-bounce">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div>
+        <p class="font-bold text-sm text-blue-800">Terdapat Perubahan Data Terbaru (Nilai/Kriteria/Aspek)</p>
+        <p class="text-xs text-blue-700 mt-1">Sistem mendeteksi adanya perubahan nilai pelamar atau pengaturan aspek/kriteria sejak terakhir kali ranking dihitung.</p>
+        <p class="text-xs text-blue-600 mt-1">Silakan tekan tombol <strong class="text-blue-800">Hitung Ulang</strong> di sudut kanan atas untuk memperbarui ranking dan hasil Profile Matching.</p>
+    </div>
+</div>
+@endif
 
 {{-- Warning: Pelamar belum dinilai --}}
 @if(!$allScored && !$division->is_finalized)

@@ -33,22 +33,22 @@
         <table class="w-full">
             <thead>
                 <tr class="bg-slate-50">
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Nama Fakultas</th>
-                    <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Jumlah Jurusan</th>
-                    <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Aksi</th>
+                    <th class="px-4 py-3 sm:px-6 sm:py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Fakultas</th>
+                    <th class="px-4 py-3 sm:px-6 sm:py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah Jurusan</th>
+                    <th class="px-4 py-3 sm:px-6 sm:py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($fakultas as $f)
                 <tr class="hover:bg-slate-50">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $f->nama_fakultas }}</td>
-                    <td class="px-6 py-4 text-center text-slate-600">{{ $f->jurusans_count }}</td>
-                    <td class="px-6 py-4 text-center">
+                    <td class="px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base font-bold text-slate-800">{{ $f->nama_fakultas }}</td>
+                    <td class="px-4 py-3 sm:px-6 sm:py-4 text-center text-sm sm:text-base text-slate-600">{{ $f->jurusans_count }}</td>
+                    <td class="px-4 py-3 sm:px-6 sm:py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <a href="{{ route('superadmin.fakultas.edit', $f) }}" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg">Edit</a>
+                            <a href="{{ route('superadmin.fakultas.edit', $f) }}" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">Edit</a>
                             <form action="{{ route('superadmin.fakultas.destroy', $f) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')">
                                 @csrf @method('DELETE')
-                                <button class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg">Hapus</button>
+                                <button class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">Hapus</button>
                             </form>
                         </div>
                     </td>

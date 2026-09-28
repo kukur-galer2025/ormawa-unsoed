@@ -30,7 +30,7 @@ class RecruitmentBrowseController extends Controller
         }
 
         $ormawas = $query->with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments' => function($q) {
-            $q->where('status', 'dibuka')->where('tanggal_tutup', '>=', now());
+            $q->reallyOpen();
         }])->paginate(12)->withQueryString();
 
         $fakultasList = \App\Models\Fakultas::with('jurusans')->orderBy('nama_fakultas')->get();
@@ -47,7 +47,7 @@ class RecruitmentBrowseController extends Controller
         $ormawa->load(['prestasis' => function($query) {
             $query->orderBy('tahun', 'desc')->latest();
         }, 'programKerjas', 'recruitments' => function($query) {
-            $query->where('status', 'dibuka')->where('tanggal_tutup', '>=', now());
+            $query->reallyOpen();
         }, 'recruitments.divisions' => function ($query) {
             // Load divisions with application count
             $query->withCount('applications');

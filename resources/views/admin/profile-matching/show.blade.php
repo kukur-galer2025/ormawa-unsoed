@@ -25,17 +25,30 @@
         <p class="text-xs text-emerald-600 mt-1">Seluruh divisi telah selesai diproses dan hasil akhirnya sudah dapat dilihat oleh masing-masing pendaftar.</p>
     </div>
 </div>
-@elseif($allFinalized)
-<div class="mb-6 p-5 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+@else
+<div class="mb-6 p-5 {{ $allFinalized ? 'bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200' : 'bg-slate-50 border-slate-200' }} border rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
     <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 animate-pulse">
+        <div class="w-12 h-12 rounded-full {{ $allFinalized ? 'bg-indigo-100 text-indigo-600 animate-pulse' : 'bg-slate-200 text-slate-500' }} flex items-center justify-center shrink-0">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
         </div>
         <div>
-            <p class="font-bold text-indigo-900 text-sm">Semua Divisi Telah Difinalisasi!</p>
-            <p class="text-xs text-indigo-700 mt-1">Langkah terakhir: Umumkan hasilnya agar mahasiswa dapat melihat status kelulusan mereka.</p>
+            <p class="font-bold {{ $allFinalized ? 'text-indigo-900' : 'text-slate-800' }} text-sm">
+                {{ $allFinalized ? 'Semua Divisi Telah Difinalisasi!' : 'Pengumuman Hasil Akhir Belum Tersedia' }}
+            </p>
+            <p class="text-xs {{ $allFinalized ? 'text-indigo-700' : 'text-slate-500' }} mt-1">
+                @if($allFinalized)
+                    Langkah terakhir: Umumkan hasilnya agar mahasiswa dapat melihat status kelulusan mereka.
+                @else
+                    Selesaikan (finalisasi) proses Profile Matching pada <b>setiap divisi</b> terlebih dahulu. Divisi yang belum final: 
+                    @php
+                        $unfinalized = $recruitment->divisions->filter(fn($d) => !$d->is_finalized)->pluck('nama')->toArray();
+                    @endphp
+                    <span class="text-red-600 font-medium">{{ implode(', ', $unfinalized) }}</span>.
+                @endif
+            </p>
         </div>
     </div>
+    @if($allFinalized)
     <form action="{{ route('admin.profile-matching.announce', $recruitment) }}" method="POST" onsubmit="return confirmAnnounce(event)">
         @csrf
         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 whitespace-nowrap">
@@ -43,6 +56,12 @@
             Umumkan Hasil Akhir
         </button>
     </form>
+    @else
+        <button disabled class="px-6 py-3 bg-slate-200 text-slate-400 font-bold text-sm rounded-xl cursor-not-allowed flex items-center gap-2 whitespace-nowrap" title="Belum semua divisi difinalisasi">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Umumkan Hasil Akhir
+        </button>
+    @endif
 </div>
 @endif
 
