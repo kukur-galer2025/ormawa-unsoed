@@ -2,19 +2,30 @@
 @section("title","Kriteria")@section("page-title","Kelola Kriteria")
 @section("sidebar")@include("layouts.partials.sidebar-admin")@endsection
 @section("content")
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-    <div>
-        <p class="text-sm text-slate-500">Rekrutmen: <span class="font-semibold text-slate-700">{{ $recruitment->judul }}</span></p>
+<div x-data="{ selectedDivision: 'all' }">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="text-sm text-slate-500">Rekrutmen: <span class="font-semibold text-slate-700">{{ $recruitment->judul }}</span></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="relative">
+                <select x-model="selectedDivision" class="appearance-none pl-4 pr-10 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer">
+                    <option value="all">Semua Divisi</option>
+                    @foreach($recruitment->divisions as $div)
+                        <option value="{{ $div->id }}">{{ $div->nama }}</option>
+                    @endforeach
+                </select>
+                <svg class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+            
+            <a href="{{ route('admin.criteria.create', $recruitment) }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all">+ Tambah Kriteria</a>
+            <a href="{{ route('admin.aspect.index', $recruitment) }}" class="px-4 py-2 bg-purple-50 text-purple-700 text-sm font-semibold rounded-xl hover:bg-purple-100 transition-all">⚙ Kelola Aspek</a>
+            <a href="{{ route('admin.recruitment.show', $recruitment) }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200 transition-all">← Kembali</a>
+        </div>
     </div>
-    <div class="flex gap-2">
-        <a href="{{ route('admin.criteria.create', $recruitment) }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow-md">+ Tambah Kriteria</a>
-        <a href="{{ route('admin.aspect.index', $recruitment) }}" class="px-4 py-2 bg-purple-50 text-purple-700 text-sm font-semibold rounded-xl hover:bg-purple-100">⚙ Kelola Aspek</a>
-        <a href="{{ route('admin.recruitment.show', $recruitment) }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali</a>
-    </div>
-</div>
 
-@foreach($recruitment->divisions as $div)
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+    @foreach($recruitment->divisions as $div)
+    <div x-show="selectedDivision === 'all' || selectedDivision == '{{ $div->id }}'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
         <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
         <p class="text-xs text-slate-500 mt-1">{{ $div->aspects->count() }} Aspek • {{ $div->aspects->sum(fn($a) => $a->criteria->count()) }} Kriteria total</p>
@@ -93,5 +104,6 @@
         @endforeach
     @endif
 </div>
-@endforeach
+    @endforeach
+</div>
 @endsection
