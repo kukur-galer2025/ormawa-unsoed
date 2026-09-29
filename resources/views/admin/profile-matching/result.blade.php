@@ -308,8 +308,8 @@
                                 </div>
                                 <p class="text-xs text-slate-400 mt-1">{{ $app->user->mahasiswaProfile->nim ?? '-' }}</p>
                             </td>
-                            <td class="px-6 py-4 align-top text-xs text-slate-400 italic">
-                                Dikeluarkan dari kalkulasi
+                            <td class="px-6 py-4 text-center align-top font-bold text-slate-300">
+                                -
                             </td>
                             <td class="px-6 py-4 text-center font-bold text-slate-300 text-lg align-top">
                                 -
