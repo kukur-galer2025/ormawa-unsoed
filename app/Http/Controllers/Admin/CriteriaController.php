@@ -65,6 +65,10 @@ class CriteriaController extends Controller
             abort(403, 'Aspek ini tidak termasuk dalam rekrutmen ini.');
         }
 
+        if ($aspect->division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat menambah kriteria.');
+        }
+
         $maxUrutan = $aspect->criteria()->max('urutan') ?? 0;
 
         $criteria = $aspect->criteria()->create([
@@ -119,6 +123,10 @@ class CriteriaController extends Controller
             abort(403, 'Aspek tujuan tidak termasuk dalam rekrutmen ini.');
         }
 
+        if ($aspect->division->is_finalized || $criterion->aspect->division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat mengubah kriteria.');
+        }
+
         $criterion->update($request->only([
             'aspect_id', 'nama_kriteria', 'tipe', 'target_value', 'keterangan',
         ]));
@@ -140,6 +148,10 @@ class CriteriaController extends Controller
     {
         $this->ensureRecruitmentOwnership($recruitment);
         $this->ensureCriterionBelongsToRecruitment($recruitment, $criterion);
+
+        if ($criterion->aspect->division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat menghapus kriteria.');
+        }
 
         $criterion->delete();
         return redirect()->route('admin.criteria.index', $recruitment)

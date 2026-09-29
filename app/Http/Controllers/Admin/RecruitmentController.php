@@ -93,6 +93,16 @@ class RecruitmentController extends Controller
             'divisions.*.kuota' => 'required|integer|min:1',
         ]);
 
+        if ($recruitment->is_announced && $request->status !== 'selesai') {
+            return back()->with('error', 'Rekrutmen yang sudah diumumkan statusnya harus tetap "selesai".');
+        }
+
+        $finalizedIds = $recruitment->divisions()->where('is_finalized', true)->pluck('id')->toArray();
+        $requestDivIds = array_filter(array_column($request->divisions, 'id'));
+        if (!empty(array_diff($finalizedIds, $requestDivIds))) {
+            return back()->with('error', 'Tidak dapat menghapus divisi yang sudah difinalisasi.');
+        }
+
         $recruitment->update($request->only([
             'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup', 'status',
         ]));
@@ -100,6 +110,11 @@ class RecruitmentController extends Controller
         $existingIds = [];
         foreach ($request->divisions as $div) {
             if (!empty($div['id'])) {
+                $existingDiv = $recruitment->divisions()->find($div['id']);
+                if ($existingDiv && $existingDiv->is_finalized && $existingDiv->kuota != $div['kuota']) {
+                    return back()->with('error', 'Tidak dapat mengubah kuota untuk divisi yang sudah difinalisasi: ' . $existingDiv->nama);
+                }
+
                 $recruitment->divisions()->where('id', $div['id'])->update([
                     'nama' => $div['nama'],
                     'deskripsi' => $div['deskripsi'] ?? null,

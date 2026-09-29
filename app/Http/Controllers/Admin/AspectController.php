@@ -48,6 +48,10 @@ class AspectController extends Controller
             ->where('recruitment_id', $recruitment->id)
             ->firstOrFail();
 
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat menambah aspek.');
+        }
+
         // Bobot sekarang disimpan langsung sebagai persen (30.5 = 30.5%)
         $currentTotalBobot = $division->aspects()->sum('bobot');
         $newBobot = (float) $request->bobot;
@@ -93,6 +97,10 @@ class AspectController extends Controller
         }
 
         $division = $aspect->division;
+        
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat mengubah aspek.');
+        }
         $currentTotalBobot = $division->aspects()->where('id', '!=', $aspect->id)->sum('bobot');
         $newBobot = (float) $request->bobot;
 
@@ -119,6 +127,10 @@ class AspectController extends Controller
     {
         $this->ensureRecruitmentOwnership($recruitment);
         $this->ensureAspectBelongsToRecruitment($recruitment, $aspect);
+
+        if ($aspect->division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat menghapus aspek.');
+        }
 
         $aspect->delete();
         return redirect()->route('admin.aspect.index', $recruitment)
