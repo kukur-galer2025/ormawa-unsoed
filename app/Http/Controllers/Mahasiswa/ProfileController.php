@@ -37,7 +37,7 @@ class ProfileController extends Controller
             ],
             'fakultas_id' => 'required|exists:fakultas,id',
             'jurusan_id' => 'required|exists:jurusan,id',
-            'angkatan' => 'required|integer|digits:4|min:2023',
+            'angkatan' => 'required|integer|digits:4|min:2018|max:2030',
             'no_hp' => 'nullable|string|regex:/^[0-9]{10,13}$/',
             'foto' => 'nullable|image|max:2048',
         ]);
