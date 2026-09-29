@@ -62,6 +62,7 @@
                             <span class="text-slate-400">{{ $aspect->criteria->count() }} kriteria</span>
                         </div>
                     </div>
+                    @if(!$div->is_finalized)
                     <div class="flex gap-2">
                         <button @click="editing = true" class="px-3 py-1.5 text-xs bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200">Edit</button>
                         <form action="{{ route('admin.aspect.destroy', [$recruitment, $aspect]) }}" method="POST" onsubmit="confirmForm(event, 'Hapus aspek ini beserta semua kriterianya?')">
@@ -69,6 +70,14 @@
                             <button type="submit" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100">Hapus</button>
                         </form>
                     </div>
+                    @else
+                    <div class="flex items-center">
+                        <span class="px-2 py-1 text-[10px] font-bold tracking-wider text-slate-400 bg-slate-100 uppercase rounded-md flex gap-1 items-center">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Terkunci
+                        </span>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Inline Edit Form --}}
@@ -102,6 +111,7 @@
         </div>
     @endif
 
+    @if(!$div->is_finalized)
     {{-- Add New Aspect Form --}}
     <div class="p-5 bg-slate-50 border-t border-slate-100" x-data="{ open: false }">
         <button @click="open = !open" class="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
@@ -133,6 +143,7 @@
             <button type="submit" class="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-sm">Tambah Aspek</button>
         </form>
     </div>
+    @endif
 </div>
 @endforeach
 </div>

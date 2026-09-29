@@ -48,11 +48,19 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Status</label>
+                    @if($recruitment->is_announced)
+                        <div class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 flex items-center justify-between shadow-sm cursor-not-allowed">
+                            <span class="font-medium text-sm">Selesai (Terkunci karena sudah diumumkan)</span>
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                        <input type="hidden" name="status" value="selesai">
+                    @else
                     <select name="status" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
                         @foreach(['draft','dibuka','ditutup','selesai'] as $s)
                             <option value="{{ $s }}" {{ old('status', $recruitment->status) == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
                         @endforeach
                     </select>
+                    @endif
                 </div>
 
                 <div>
@@ -113,9 +121,16 @@
                                             placeholder="Contoh: Humas" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Kuota *</label>
+                                        <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1 flex items-center gap-1">
+                                            Kuota *
+                                            <template x-if="div.is_finalized">
+                                                <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Terkunci (Sudah Difinalisasi)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            </template>
+                                        </label>
                                         <input type="number" :name="'divisions['+index+'][kuota]'" x-model="div.kuota" required min="1"
-                                            placeholder="5" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                                            :readonly="div.is_finalized"
+                                            :class="div.is_finalized ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500'"
+                                            placeholder="5" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm transition-all">
                                     </div>
                                     <div class="sm:col-span-3">
                                         <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">Deskripsi <span class="normal-case font-normal text-slate-400">(opsional)</span></label>
@@ -125,11 +140,20 @@
                                     <input type="hidden" :name="'divisions['+index+'][id]'" :value="div.id || ''">
                                 </div>
 
-                                {{-- Delete --}}
-                                <button type="button" @click="removeDivision(index)" x-show="divisions.length > 1"
-                                    class="shrink-0 w-8 h-8 rounded-lg text-slate-300 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors mt-0.5 opacity-0 group-hover:opacity-100">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
+                                {{-- Delete or Lock --}}
+                                <div class="shrink-0 w-8 h-8 mt-0.5 flex items-center justify-center">
+                                    <template x-if="!div.is_finalized && divisions.length > 1">
+                                        <button type="button" @click="removeDivision(index)"
+                                            class="w-full h-full rounded-lg text-slate-300 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </template>
+                                    <template x-if="div.is_finalized">
+                                        <div class="w-full h-full text-slate-400 flex items-center justify-center" title="Terkunci (Sudah Difinalisasi)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -166,7 +190,8 @@
             'id' => $d->id,
             'nama' => $d->nama,
             'deskripsi' => $d->deskripsi ?? '',
-            'kuota' => $d->kuota
+            'kuota' => $d->kuota,
+            'is_finalized' => (bool)$d->is_finalized
         ];
     })->values();
 @endphp
