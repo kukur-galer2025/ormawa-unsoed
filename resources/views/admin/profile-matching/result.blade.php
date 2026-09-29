@@ -101,8 +101,11 @@
         <span class="text-sm font-semibold text-slate-600 whitespace-nowrap">Pilih Divisi:</span>
         <select onchange="window.location.href=this.value" class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-medium bg-slate-50 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer">
             @foreach($allDivisions as $div)
+                @php
+                    $divActiveCount = $div->applications()->where('status', '!=', 'ditolak')->count();
+                @endphp
                 <option value="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" {{ $div->id === $division->id ? 'selected' : '' }}>
-                    {{ $div->nama }} — {{ $div->applications_count }} pelamar, kuota {{ $div->kuota }}
+                    {{ $div->nama }} — {{ $divActiveCount }} pelamar aktif, kuota {{ $div->kuota }}
                     @if($div->is_finalized) ✅ @endif
                 </option>
             @endforeach
@@ -111,9 +114,18 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    @php
+        $activeApplicationsCount = $division->applications()->where('status', '!=', 'ditolak')->count();
+        $totalApplicationsCount = $division->applications()->count();
+    @endphp
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-        <p class="text-xs font-semibold text-slate-500 uppercase mb-1">Total Pelamar</p>
-        <p class="text-2xl font-black text-slate-800">{{ $division->applications()->count() }}</p>
+        <p class="text-xs font-semibold text-slate-500 uppercase mb-1">Pelamar Aktif</p>
+        <div class="flex items-baseline gap-2">
+            <p class="text-2xl font-black text-slate-800">{{ $activeApplicationsCount }}</p>
+            @if($activeApplicationsCount !== $totalApplicationsCount)
+                <p class="text-sm font-medium text-slate-400">dari total {{ $totalApplicationsCount }}</p>
+            @endif
+        </div>
     </div>
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
         <p class="text-xs font-semibold text-slate-500 uppercase mb-1">Kuota Divisi</p>
@@ -122,9 +134,6 @@
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" x-data="finalizePicker()">
-    @php
-        $activeApplicationsCount = $division->applications()->where('status', '!=', 'ditolak')->count();
-    @endphp
 
     @if($results->isEmpty())
         @if($activeApplicationsCount === 0 && !$division->is_finalized)
