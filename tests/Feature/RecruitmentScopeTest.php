@@ -18,8 +18,8 @@ class RecruitmentScopeTest extends TestCase
             'nama' => 'BEM Unsoed',
             'tingkat' => 'Universitas',
             'deskripsi' => 'Badan Eksekutif Mahasiswa Universitas Jenderal Soedirman',
-            'kategori' => 'BEM',
-            'visi_misi' => 'Visi Misi BEM',
+            'visi' => 'Visi BEM',
+            'misi' => 'Misi BEM',
             'is_active' => true,
         ]);
 

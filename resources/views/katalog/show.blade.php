@@ -97,7 +97,17 @@
                     <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                 </div>
                 <h3 class="text-xl font-black mb-4 relative z-10">Visi & Misi</h3>
-                <p class="text-blue-100 leading-relaxed relative z-10 whitespace-pre-line">{{ $ormawa->visi_misi ?: 'Belum ada visi misi yang dicantumkan.' }}</p>
+                @if($ormawa->visi)
+                    <h4 class="text-white font-bold mb-2">Visi:</h4>
+                    <p class="text-blue-100 leading-relaxed relative z-10 whitespace-pre-line mb-4">{{ $ormawa->visi }}</p>
+                @endif
+                @if($ormawa->misi)
+                    <h4 class="text-white font-bold mb-2">Misi:</h4>
+                    <p class="text-blue-100 leading-relaxed relative z-10 whitespace-pre-line">{{ $ormawa->misi }}</p>
+                @endif
+                @if(!$ormawa->visi && !$ormawa->misi)
+                    <p class="text-blue-100 leading-relaxed relative z-10 whitespace-pre-line">Belum ada visi & misi yang dicantumkan.</p>
+                @endif
             </div>
         </div>
 
