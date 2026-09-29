@@ -105,18 +105,21 @@ class ScoringController extends Controller
         foreach ($allCriteria as $c) {
             $rules["scores.{$c->id}"] = 'required|integer|min:1|max:5';
         }
-        $request->validate($rules);
+        $validated = $request->validate($rules);
+        $inputScores = $validated['scores'] ?? [];
 
-        foreach ($request->scores as $criteriaId => $actualValue) {
-            ApplicationScore::updateOrCreate(
-                [
-                    'application_id' => $application->id,
-                    'criteria_id' => $criteriaId,
-                ],
-                [
-                    'actual_value' => $actualValue,
-                ]
-            );
+        foreach ($allCriteria as $c) {
+            if (isset($inputScores[$c->id])) {
+                ApplicationScore::updateOrCreate(
+                    [
+                        'application_id' => $application->id,
+                        'criteria_id' => $c->id,
+                    ],
+                    [
+                        'actual_value' => $inputScores[$c->id],
+                    ]
+                );
+            }
         }
 
         $application->update(['status' => 'diproses']);
