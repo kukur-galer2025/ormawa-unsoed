@@ -47,6 +47,7 @@ class AdminManagementController extends Controller
 
     public function edit(User $admin)
     {
+        abort_if($admin->role !== 'admin', 404);
         $ormawas = Ormawa::where('is_active', true)->get();
         $assignedOrmawaId = $admin->ormawas->first()->id ?? null;
         return view('superadmin.admin-management.edit', compact('admin', 'ormawas', 'assignedOrmawaId'));
@@ -54,6 +55,7 @@ class AdminManagementController extends Controller
 
     public function update(Request $request, User $admin)
     {
+        abort_if($admin->role !== 'admin', 404);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $admin->id,
@@ -76,6 +78,7 @@ class AdminManagementController extends Controller
 
     public function toggleActive(User $admin)
     {
+        abort_if($admin->role !== 'admin', 404);
         $admin->update(['is_active' => !$admin->is_active]);
         $status = $admin->is_active ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Akun admin berhasil $status.");
