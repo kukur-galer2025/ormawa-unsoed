@@ -96,6 +96,17 @@ class RecruitmentController extends Controller
         if ($recruitment->is_announced && $request->status !== 'selesai') {
             return back()->with('error', 'Rekrutmen yang sudah diumumkan statusnya harus tetap "selesai".');
         }
+        
+        if ($request->status === 'selesai' && !$recruitment->is_announced) {
+            return back()->with('error', 'Status "Selesai" hanya dapat diatur secara otomatis dengan menekan tombol "Umumkan Hasil" setelah semua divisi difinalisasi.');
+        }
+
+        if ($request->status === 'dibuka' && $recruitment->status !== 'dibuka') {
+            $hasFinalized = $recruitment->divisions()->where('is_finalized', true)->exists();
+            if ($hasFinalized) {
+                return back()->with('error', 'Tidak dapat membuka ulang rekrutmen karena sudah ada divisi yang difinalisasi. Pembukaan ulang dapat merusak integritas data pelamar baru.');
+            }
+        }
 
         $finalizedIds = $recruitment->divisions()->where('is_finalized', true)->pluck('id')->toArray();
         $requestDivIds = array_filter(array_column($request->divisions, 'id'));
@@ -103,37 +114,35 @@ class RecruitmentController extends Controller
             return back()->with('error', 'Tidak dapat menghapus divisi yang sudah difinalisasi.');
         }
 
-        $recruitment->update($request->only([
-            'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup', 'status',
-        ]));
+        \DB::transaction(function () use ($request, $recruitment) {
+            $recruitment->update($request->only([
+                'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup', 'status',
+            ]));
 
-        $existingIds = [];
-        foreach ($request->divisions as $div) {
-            if (!empty($div['id'])) {
-                $existingDiv = $recruitment->divisions()->find($div['id']);
-                if ($existingDiv && $existingDiv->is_finalized && $existingDiv->kuota != $div['kuota']) {
-                    return back()->with('error', 'Tidak dapat mengubah kuota untuk divisi yang sudah difinalisasi: ' . $existingDiv->nama);
+            $existingIds = [];
+            foreach ($request->divisions as $div) {
+                if (!empty($div['id'])) {
+                    $recruitment->divisions()->where('id', $div['id'])->update([
+                        'nama' => $div['nama'],
+                        'deskripsi' => $div['deskripsi'] ?? null,
+                        'kuota' => $div['kuota'],
+                    ]);
+                    $existingIds[] = $div['id'];
+                } else {
+                    $newDiv = $recruitment->divisions()->create([
+                        'nama' => $div['nama'],
+                        'deskripsi' => $div['deskripsi'] ?? null,
+                        'kuota' => $div['kuota'],
+                    ]);
+                    $existingIds[] = $newDiv->id;
                 }
-
-                $recruitment->divisions()->where('id', $div['id'])->update([
-                    'nama' => $div['nama'],
-                    'deskripsi' => $div['deskripsi'] ?? null,
-                    'kuota' => $div['kuota'],
-                ]);
-                $existingIds[] = $div['id'];
-            } else {
-                $newDiv = $recruitment->divisions()->create([
-                    'nama' => $div['nama'],
-                    'deskripsi' => $div['deskripsi'] ?? null,
-                    'kuota' => $div['kuota'],
-                ]);
-                $existingIds[] = $newDiv->id;
             }
-        }
-        $recruitment->divisions()
-            ->whereNotIn('id', $existingIds)
-            ->doesntHave('applications')
-            ->delete();
+
+            $recruitment->divisions()
+                ->whereNotIn('id', $existingIds)
+                ->doesntHave('applications')
+                ->delete();
+        });
 
         return redirect()->route('admin.recruitment.index')->with('success', 'Rekrutmen berhasil diperbarui.');
     }

@@ -32,6 +32,10 @@ class ApplicationController extends Controller
             return back()->with('error', 'Anda sudah mendaftar pada divisi ini.');
         }
 
+        if ($division->is_finalized) {
+            return back()->with('error', 'Divisi ini sudah selesai melakukan proses seleksi dan tidak menerima pendaftar baru.');
+        }
+
         // Check if recruitment is open (menggunakan method di Model, bukan duplikasi logika)
         if (!$recruitment->isOpen()) {
             return back()->with('error', $recruitment->closure_message ?? 'Rekrutmen ini tidak tersedia untuk pendaftaran.');

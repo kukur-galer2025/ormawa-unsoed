@@ -99,6 +99,14 @@ class ProfileMatchingController extends Controller
             return back()->with('error', 'Total bobot semua aspek harus = 100%. Saat ini: ' . rtrim(rtrim(number_format($totalBobot, 2), '0'), '.') . '%.');
         }
 
+        foreach ($division->aspects as $aspect) {
+            $hasCore = $aspect->criteria->where('tipe', 'core')->count() > 0;
+            $hasSecondary = $aspect->criteria->where('tipe', 'secondary')->count() > 0;
+            if (!$hasCore || !$hasSecondary) {
+                return back()->with('error', "Aspek '{$aspect->nama}' belum lengkap. Setiap aspek wajib memiliki minimal 1 kriteria Core Factor (CF) dan 1 kriteria Secondary Factor (SF).");
+            }
+        }
+
         // Validasi: semua pelamar aktif harus sudah dinilai lengkap
         $allCriteriaIds = $division->aspects->flatMap(fn($a) => $a->criteria->pluck('id'));
         $unscoredApplicants = [];
@@ -187,6 +195,8 @@ class ProfileMatchingController extends Controller
     {
         $this->ensureRecruitmentOwnership($recruitment);
         $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
+
+        abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Finalisasi belum diizinkan.');
 
         if ($division->is_finalized) {
             return back()->with('error', 'Divisi ini sudah difinalisasi sebelumnya.');
