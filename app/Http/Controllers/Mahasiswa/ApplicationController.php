@@ -80,6 +80,9 @@ class ApplicationController extends Controller
 
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
+            if (isset($data['berkas_pendukung'])) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($data['berkas_pendukung']);
+            }
             // Kemungkinan duplicate entry akibat race condition (double click)
             if ($e->errorInfo[1] == 1062) {
                 return back()->with('error', 'Anda sudah mendaftar pada divisi ini.');
@@ -88,6 +91,9 @@ class ApplicationController extends Controller
             return back()->with('error', 'Terjadi kesalahan pada sistem saat menyimpan pendaftaran Anda.');
         } catch (\Exception $e) {
             DB::rollBack();
+            if (isset($data['berkas_pendukung'])) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($data['berkas_pendukung']);
+            }
             Log::error('Gagal menyimpan pendaftaran: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan sistem yang tidak terduga.');
         }

@@ -25,6 +25,10 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
+        if ($request->has('nim')) {
+            $request->merge(['nim' => strtoupper($request->nim)]);
+        }
+
         $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',

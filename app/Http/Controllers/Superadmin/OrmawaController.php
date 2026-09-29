@@ -30,7 +30,14 @@ class OrmawaController extends Controller
         ]);
 
         $data = $request->only(['nama', 'tingkat', 'fakultas_id', 'jurusan_id']);
-        $data['slug'] = Str::slug($request->nama);
+        $slug = Str::slug($request->nama);
+        $originalSlug = $slug;
+        $counter = 1;
+        while (Ormawa::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+        $data['slug'] = $slug;
 
         if ($data['tingkat'] === 'Universitas') {
             $data['fakultas_id'] = null;
@@ -73,7 +80,6 @@ class OrmawaController extends Controller
         ]);
 
         $data = $request->except(['logo', 'cover_photo']);
-        $data['slug'] = Str::slug($request->nama);
         
         if ($data['tingkat'] === 'Universitas') {
             $data['fakultas_id'] = null;
@@ -112,6 +118,18 @@ class OrmawaController extends Controller
         foreach ($applications as $app) {
             if ($app->berkas_pendukung && \Storage::disk('public')->exists($app->berkas_pendukung)) {
                 \Storage::disk('public')->delete($app->berkas_pendukung);
+            }
+        }
+
+        // Hapus foto prestasi dan proker
+        foreach ($ormawa->prestasis as $prestasi) {
+            if ($prestasi->foto && \Storage::disk('public')->exists($prestasi->foto)) {
+                \Storage::disk('public')->delete($prestasi->foto);
+            }
+        }
+        foreach ($ormawa->programKerjas as $proker) {
+            if ($proker->foto && \Storage::disk('public')->exists($proker->foto)) {
+                \Storage::disk('public')->delete($proker->foto);
             }
         }
 
