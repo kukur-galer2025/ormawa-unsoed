@@ -285,6 +285,40 @@
                             </td>
                         </tr>
                     @endforeach
+
+                    {{-- Pelamar yang Gugur / Tidak Masuk Ranking --}}
+                    @foreach($unrankedApplications as $app)
+                        <tr class="bg-slate-50 opacity-75">
+                            @if(!$division->is_finalized)
+                            <td class="px-4 py-4 text-center align-top">
+                                <input type="checkbox" disabled class="w-5 h-5 rounded border-slate-200 bg-slate-100 cursor-not-allowed" title="Tidak dapat dipilih karena sudah gugur/diterima di divisi lain">
+                            </td>
+                            @endif
+                            <td class="px-6 py-4 text-center align-top">
+                                <span class="font-bold text-slate-400">-</span>
+                            </td>
+                            <td class="px-6 py-4 align-top">
+                                <div class="font-bold text-slate-500 text-base flex flex-wrap items-center gap-2">
+                                    {{ $app->user->name }}
+                                    @if(!$app->user->is_active)
+                                        <span class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] uppercase font-bold rounded-full flex items-center gap-1" title="Akun mahasiswa ini dinonaktifkan oleh Superadmin">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">{{ $app->user->mahasiswaProfile->nim ?? '-' }}</p>
+                            </td>
+                            <td class="px-6 py-4 align-top text-xs text-slate-400 italic">
+                                Dikeluarkan dari kalkulasi
+                            </td>
+                            <td class="px-6 py-4 text-center font-bold text-slate-300 text-lg align-top">
+                                -
+                            </td>
+                            <td class="px-6 py-4 text-center align-top">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-200 text-slate-600 border border-slate-300">{{ $app->reject_reason }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

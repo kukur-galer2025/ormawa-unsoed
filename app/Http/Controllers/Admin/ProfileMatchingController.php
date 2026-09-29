@@ -152,6 +152,27 @@ class ProfileMatchingController extends Controller
         // Load all divisions for the dropdown filter
         $allDivisions = $recruitment->divisions()->withCount('applications')->get();
 
+        // Cari pelamar yang tidak masuk dalam hasil kalkulasi (misal karena sudah ditolak duluan/diterima di divisi lain)
+        $rankedApplicationIds = $results->pluck('application_id')->toArray();
+        $unrankedApplications = $division->applications()
+            ->whereNotIn('id', $rankedApplicationIds)
+            ->with(['user.mahasiswaProfile'])
+            ->get();
+
+        foreach ($unrankedApplications as $app) {
+            $acceptedElsewhere = Application::where('recruitment_id', $recruitment->id)
+                ->where('user_id', $app->user_id)
+                ->where('status', 'diterima')
+                ->with('division')
+                ->first();
+            
+            if ($acceptedElsewhere) {
+                $app->reject_reason = "Diterima di " . $acceptedElsewhere->division->nama;
+            } else {
+                $app->reject_reason = "Gugur / Ditolak";
+            }
+        }
+
         // Cek apakah semua pelamar aktif sudah dinilai lengkap
         $allScored = true;
         $unscoredNames = [];
@@ -188,7 +209,7 @@ class ProfileMatchingController extends Controller
             }
         }
 
-        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'allDivisions', 'allScored', 'unscoredNames', 'isOutdated'));
+        return view('admin.profile-matching.result', compact('recruitment', 'division', 'results', 'unrankedApplications', 'allDivisions', 'allScored', 'unscoredNames', 'isOutdated'));
     }
 
     public function finalize(Request $request, Recruitment $recruitment, RecruitmentDivision $division)
