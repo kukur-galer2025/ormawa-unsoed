@@ -103,9 +103,9 @@
                         @php
                             $statusClasses = [
                                 'draft' => 'bg-slate-100 text-slate-600',
-                                'dibuka' => 'bg-blue-50 text-blue-700',
+                                'dibuka' => 'bg-emerald-50 text-emerald-700',
                                 'ditutup' => 'bg-red-50 text-red-700',
-                                'selesai' => 'bg-green-50 text-green-700',
+                                'selesai' => 'bg-slate-100 text-slate-600',
                             ];
                         @endphp
                         <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold {{ $statusClasses[$r->status] ?? 'bg-slate-100 text-slate-600' }}">
