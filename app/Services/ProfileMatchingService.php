@@ -117,6 +117,12 @@ class ProfileMatchingService
 
             $aspects = $division->aspects()->with('criteria')->orderBy('urutan')->get();
 
+            // Clean up old results for applications that are no longer valid (e.g. rejected)
+            $validApplicationIds = $applications->pluck('id');
+            ProfileMatchingResult::where('recruitment_division_id', $division->id)
+                ->whereNotIn('application_id', $validApplicationIds)
+                ->delete();
+
             $results = collect();
 
         foreach ($applications as $application) {

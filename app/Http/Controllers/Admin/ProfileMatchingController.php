@@ -207,10 +207,11 @@ class ProfileMatchingController extends Controller
         if (!empty($acceptedIds)) {
             $validCount = $division->applications()
                 ->whereIn('id', $acceptedIds)
+                ->where('status', '!=', 'ditolak')
                 ->count();
 
             if ($validCount !== count($acceptedIds)) {
-                return back()->with('error', 'Ada pelamar yang tidak valid untuk divisi ini.');
+                return back()->with('error', 'Ada pelamar yang tidak valid atau sudah otomatis ditolak karena diterima di divisi lain.');
             }
 
             // Validasi: jumlah yang dipilih tidak boleh melebihi kuota
