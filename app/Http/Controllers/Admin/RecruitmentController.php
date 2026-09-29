@@ -126,6 +126,14 @@ class RecruitmentController extends Controller
     public function destroy(Recruitment $recruitment)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+        
+        $applications = \App\Models\Application::where('recruitment_id', $recruitment->id)->get();
+        foreach ($applications as $app) {
+            if ($app->berkas_pendukung && \Storage::disk('public')->exists($app->berkas_pendukung)) {
+                \Storage::disk('public')->delete($app->berkas_pendukung);
+            }
+        }
+
         $recruitment->delete();
         return redirect()->route('admin.recruitment.index')->with('success', 'Rekrutmen berhasil dihapus.');
     }

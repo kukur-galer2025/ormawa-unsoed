@@ -83,6 +83,9 @@ class OrmawaController extends Controller
         }
 
         if ($request->hasFile('logo')) {
+            if ($ormawa->logo && \Storage::disk('public')->exists($ormawa->logo)) {
+                \Storage::disk('public')->delete($ormawa->logo);
+            }
             $data['logo'] = $request->file('logo')->store('ormawa-logos', 'public');
         }
 
@@ -101,6 +104,25 @@ class OrmawaController extends Controller
 
     public function destroy(Ormawa $ormawa)
     {
+        // Bersihkan berkas pendaftar (berkas_pendukung)
+        $applications = \App\Models\Application::whereHas('recruitment', function($q) use ($ormawa) {
+            $q->where('ormawa_id', $ormawa->id);
+        })->get();
+        
+        foreach ($applications as $app) {
+            if ($app->berkas_pendukung && \Storage::disk('public')->exists($app->berkas_pendukung)) {
+                \Storage::disk('public')->delete($app->berkas_pendukung);
+            }
+        }
+
+        // Bersihkan aset ormawa
+        if ($ormawa->logo && \Storage::disk('public')->exists($ormawa->logo)) {
+            \Storage::disk('public')->delete($ormawa->logo);
+        }
+        if ($ormawa->cover_photo && \Storage::disk('public')->exists($ormawa->cover_photo)) {
+            \Storage::disk('public')->delete($ormawa->cover_photo);
+        }
+
         $ormawa->delete();
         return redirect()->route('superadmin.ormawa.index')->with('success', 'Ormawa berhasil dihapus.');
     }
