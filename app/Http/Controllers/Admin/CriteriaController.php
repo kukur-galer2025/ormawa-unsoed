@@ -112,6 +112,13 @@ class CriteriaController extends Controller
             'labels.*' => 'required|string|max:255',
         ]);
 
+        // Verify the aspect belongs to one of this recruitment's divisions
+        $aspect = Aspect::findOrFail($request->aspect_id);
+        $divisionIds = $recruitment->divisions()->pluck('id');
+        if (!$divisionIds->contains($aspect->recruitment_division_id)) {
+            abort(403, 'Aspek tujuan tidak termasuk dalam rekrutmen ini.');
+        }
+
         $criterion->update($request->only([
             'aspect_id', 'nama_kriteria', 'tipe', 'target_value', 'keterangan',
         ]));
