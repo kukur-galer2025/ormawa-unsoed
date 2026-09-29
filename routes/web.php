@@ -23,7 +23,6 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout')->middleware('auth');
 
-use App\Http\Controllers\KatalogOrmawaController;
 
 // Landing Page
 Route::get('/', function () {
