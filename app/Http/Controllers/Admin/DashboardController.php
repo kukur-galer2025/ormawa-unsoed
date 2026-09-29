@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
         $stats = [
             'total_rekrutmen' => $ormawa->recruitments()->count(),
-            'rekrutmen_aktif' => $ormawa->recruitments()->where('status', 'dibuka')->count(),
+            'rekrutmen_aktif' => $ormawa->recruitments()->reallyOpen()->count(),
             'total_pelamar' => $ormawa->recruitments()->withCount('applications')->get()->sum('applications_count'),
         ];
 

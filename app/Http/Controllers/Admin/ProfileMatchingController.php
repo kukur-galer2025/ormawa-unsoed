@@ -121,7 +121,8 @@ class ProfileMatchingController extends Controller
         } catch (\InvalidArgumentException $e) {
             return back()->with('error', 'Gagal memproses kalkulasi: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem saat kalkulasi: ' . $e->getMessage());
+            \Log::error('Profile Matching Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan sistem saat melakukan kalkulasi. Silakan coba lagi atau hubungi administrator.');
         }
 
         return redirect()->route('admin.profile-matching.result', [$recruitment, $division])

@@ -8,6 +8,8 @@ use App\Models\ApplicationScore;
 use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
 {
@@ -55,18 +57,36 @@ class ApplicationController extends Controller
             $data['berkas_pendukung'] = $request->file('berkas_pendukung')->store('berkas-pendukung', 'public');
         }
 
-        $application = Application::create($data);
+        try {
+            DB::beginTransaction();
 
-        // Create empty score entries for each criteria in this division
-        $criteria = $division->allCriteria()->get();
-        foreach ($criteria as $c) {
-            ApplicationScore::create([
-                'application_id' => $application->id,
-                'criteria_id' => $c->id,
-            ]);
+            $application = Application::create($data);
+
+            // Create empty score entries for each criteria in this division
+            $criteria = $division->allCriteria()->get();
+            foreach ($criteria as $c) {
+                ApplicationScore::create([
+                    'application_id' => $application->id,
+                    'criteria_id' => $c->id,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('mahasiswa.applications.history')->with('success', 'Pendaftaran berhasil! Silakan tunggu proses seleksi.');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            // Kemungkinan duplicate entry akibat race condition (double click)
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Anda sudah mendaftar pada divisi ini.');
+            }
+            Log::error('Gagal menyimpan pendaftaran: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem saat menyimpan pendaftaran Anda.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal menyimpan pendaftaran: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan sistem yang tidak terduga.');
         }
-
-        return redirect()->route('mahasiswa.applications.history')->with('success', 'Pendaftaran berhasil! Silakan tunggu proses seleksi.');
     }
 
     public function history()

@@ -23,7 +23,7 @@ class OrmawaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:ormawa,nama',
             'tingkat' => 'required|in:Universitas,Fakultas,Jurusan',
             'fakultas_id' => 'required_if:tingkat,Fakultas,Jurusan|nullable|exists:fakultas,id',
             'jurusan_id' => 'required_if:tingkat,Jurusan|nullable|exists:jurusan,id',
@@ -59,7 +59,7 @@ class OrmawaController extends Controller
     public function update(Request $request, Ormawa $ormawa)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:ormawa,nama,' . $ormawa->id,
             'tingkat' => 'required|in:Universitas,Fakultas,Jurusan',
             'fakultas_id' => 'required_if:tingkat,Fakultas,Jurusan|nullable|exists:fakultas,id',
             'jurusan_id' => 'required_if:tingkat,Jurusan|nullable|exists:jurusan,id',
