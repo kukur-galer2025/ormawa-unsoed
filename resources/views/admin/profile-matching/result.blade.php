@@ -122,12 +122,38 @@
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" x-data="finalizePicker()">
+    @php
+        $activeApplicationsCount = $division->applications()->where('status', '!=', 'ditolak')->count();
+    @endphp
+
     @if($results->isEmpty())
-        <div class="p-12 text-center text-slate-500 flex flex-col items-center">
-            <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <p class="font-medium">Belum ada hasil kalkulasi.</p>
-            <p class="text-xs mt-1">Silakan klik tombol "Mulai Perhitungan" di pojok kanan atas untuk memproses data pelamar.</p>
-        </div>
+        @if($activeApplicationsCount === 0 && !$division->is_finalized)
+            <div class="p-12 text-center text-slate-500 flex flex-col items-center">
+                <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <p class="font-medium text-slate-700">Tidak ada pelamar aktif di divisi ini.</p>
+                <p class="text-xs mt-1 mb-6 max-w-md mx-auto">Anda dapat langsung memfinalisasi divisi ini tanpa kalkulasi agar proses rekrutmen secara keseluruhan dapat segera diumumkan.</p>
+                
+                <form action="{{ route('admin.profile-matching.finalize', [$recruitment, $division]) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('Finalisasi divisi ini sebagai divisi tanpa pelamar?')" class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center gap-2 hover:scale-105">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Finalisasi Divisi Kosong
+                    </button>
+                </form>
+            </div>
+        @elseif($activeApplicationsCount === 0 && $division->is_finalized)
+            <div class="p-12 text-center text-slate-500 flex flex-col items-center">
+                <svg class="w-12 h-12 text-blue-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+                <p class="font-medium text-blue-800">Divisi Kosong Telah Difinalisasi</p>
+                <p class="text-xs mt-1">Divisi ini berhasil difinalisasi tanpa ada pelamar yang diterima/ditolak karena memang tidak ada pelamar yang mendaftar (atau semua pelamar ditarik/ditolak).</p>
+            </div>
+        @else
+            <div class="p-12 text-center text-slate-500 flex flex-col items-center">
+                <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <p class="font-medium">Belum ada hasil kalkulasi.</p>
+                <p class="text-xs mt-1">Silakan klik tombol "Mulai Perhitungan" di pojok kanan atas untuk memproses data pelamar.</p>
+            </div>
+        @endif
     @else
         {{-- Counter untuk mode seleksi --}}
         @if(!$division->is_finalized)

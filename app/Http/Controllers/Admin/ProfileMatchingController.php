@@ -191,8 +191,10 @@ class ProfileMatchingController extends Controller
             return back()->with('error', 'Divisi ini sudah difinalisasi sebelumnya.');
         }
 
-        // Harus sudah ada hasil PM
-        if ($division->profileMatchingResults()->count() === 0) {
+        $activeApplicationsCount = $division->applications()->where('status', '!=', 'ditolak')->count();
+
+        // Harus sudah ada hasil PM (Kecuali jika memang tidak ada pelamar aktif sama sekali)
+        if ($activeApplicationsCount > 0 && $division->profileMatchingResults()->count() === 0) {
             return back()->with('error', 'Belum ada hasil Profile Matching. Hitung ranking terlebih dahulu.');
         }
 
