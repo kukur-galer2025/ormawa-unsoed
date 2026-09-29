@@ -22,7 +22,7 @@
                         <p class="font-bold text-slate-800">{{ $rec->judul }}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $rec->status === 'dibuka' ? 'bg-blue-100 text-blue-700' : ($rec->status === 'ditutup' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700') }}">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $rec->status === 'dibuka' ? 'bg-green-50 text-green-700' : ($rec->status === 'ditutup' ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600') }}">
                             {{ ucfirst($rec->status) }}
                         </span>
                     </td>
