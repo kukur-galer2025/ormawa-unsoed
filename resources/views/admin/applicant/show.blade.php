@@ -40,7 +40,17 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col">
             <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4">Profil Mahasiswa</h3>
             <div class="space-y-4 text-sm flex-1">
-                <div><span class="block text-xs font-medium text-slate-500 mb-1">Nama Lengkap</span><p class="font-bold text-slate-800 text-base">{{ $application->user->name }}</p></div>
+                <div><span class="block text-xs font-medium text-slate-500 mb-1">Nama Lengkap</span>
+                    <p class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        {{ $application->user->name }}
+                        @if(!$application->user->is_active)
+                            <span class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] uppercase font-bold rounded-full flex items-center gap-1" title="Akun mahasiswa ini dinonaktifkan oleh Superadmin">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                Nonaktif
+                            </span>
+                        @endif
+                    </p>
+                </div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">NIM</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->nim ?? '-' }}</p></div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Fakultas / Jurusan</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->fakultasRel->nama_fakultas ?? '-' }} &mdash; {{ $application->user->mahasiswaProfile->jurusanRel->nama_jurusan ?? '-' }}</p></div>
                 <div><span class="block text-xs font-medium text-slate-500 mb-1">Angkatan</span><p class="font-medium text-slate-800">{{ $application->user->mahasiswaProfile->angkatan ?? '-' }}</p></div>

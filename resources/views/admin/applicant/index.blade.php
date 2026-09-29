@@ -36,8 +36,16 @@
                 <tr class="hover:bg-slate-50/50 transition-colors">
                     <td class="px-6 py-4 text-slate-500">{{ $app->user->mahasiswaProfile->nim ?? '-' }}</td>
                     <td class="px-6 py-4">
-                        <p class="font-bold text-slate-800">{{ $app->user->name }}</p>
-                        <p class="text-xs text-slate-500">
+                        <p class="font-bold text-slate-800 flex items-center gap-2">
+                            {{ $app->user->name }}
+                            @if(!$app->user->is_active)
+                                <span class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-200 text-[10px] uppercase font-bold rounded-full flex items-center gap-1" title="Akun mahasiswa ini dinonaktifkan oleh Superadmin">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    Nonaktif
+                                </span>
+                            @endif
+                        </p>
+                        <p class="text-xs text-slate-500 mt-0.5">
                             {{ $app->user->mahasiswaProfile->fakultasRel->nama_fakultas ?? '-' }} 
                             &mdash; 
                             {{ $app->user->mahasiswaProfile->jurusanRel->nama_jurusan ?? '-' }}
