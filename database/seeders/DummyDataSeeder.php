@@ -79,117 +79,190 @@ class DummyDataSeeder extends Seeder
         }
         echo "10 Mahasiswa accounts created.\n";
 
-        // Create a sample recruitment for BEM
-        $bem = Ormawa::where('nama', 'BEM UNSOED')->first();
-        if ($bem) {
+        // ADD IMAGES TO EXISTING ORMAWAS
+        foreach ($ormawas as $idx => $ormawa) {
+            $colors = ['4F46E5', '0ea5e9', '10b981'];
+            $ormawa->update([
+                'logo' => 'https://ui-avatars.com/api/?name=' . urlencode($ormawa->nama) . '&color=ffffff&background=' . $colors[$idx % 3] . '&size=200',
+                'cover_photo' => 'https://picsum.photos/seed/ormawa' . $ormawa->id . '/1200/400',
+            ]);
+        }
+
+        // CREATE 3 RECRUITMENTS (1 for each Ormawa)
+        $recruitmentData = [
+            [
+                'ormawa' => 'BEM UNSOED',
+                'judul' => 'Open Recruitment BEM UNSOED 2024',
+                'deskripsi' => 'Mari bergabung dan berkontribusi untuk kampus dan bangsa melalui BEM UNSOED.',
+                'divisi' => ['Kementerian Sosial', 'Kementerian Komunikasi', 'Kementerian PSDM'],
+            ],
+            [
+                'ormawa' => 'BEM Fakultas Teknik',
+                'judul' => 'Oprec Pengurus BEM FT 2024',
+                'deskripsi' => 'Saatnya Teknik Bergerak! Bergabunglah menjadi pengurus BEM Fakultas Teknik.',
+                'divisi' => ['Divisi Pengajian', 'Divisi Minat Bakat', 'Divisi Humas'],
+            ],
+            [
+                'ormawa' => 'UKM Olahraga',
+                'judul' => 'Rekrutmen Atlet & Official UKM Olahraga',
+                'deskripsi' => 'Pendaftaran untuk atlet dan pengurus official unit kegiatan olahraga.',
+                'divisi' => ['Official Futsal', 'Official Voli', 'Official Basket'],
+            ]
+        ];
+
+        $mahasiswas = User::where('role', 'mahasiswa')->get();
+        $totalApps = 0;
+
+        foreach ($recruitmentData as $rData) {
+            $ormawa = Ormawa::where('nama', $rData['ormawa'])->first();
+            if (!$ormawa) continue;
+
             $recruitment = Recruitment::updateOrCreate(
-                ['ormawa_id' => $bem->id, 'judul' => 'Rekrutmen Pengurus BEM UNSOED 2024/2025'],
+                ['ormawa_id' => $ormawa->id, 'judul' => $rData['judul']],
                 [
-                    'deskripsi' => 'Pendaftaran calon pengurus Badan Eksekutif Mahasiswa UNSOED periode 2024/2025. Terbuka untuk seluruh mahasiswa aktif UNSOED.',
-                    'persyaratan' => "1. Mahasiswa aktif UNSOED minimal semester 3\n2. IPK minimal 3.00\n3. Tidak sedang menjabat di organisasi lain\n4. Bersedia aktif selama periode kepengurusan",
-                    'tanggal_buka' => now()->format('Y-m-d'),
-                    'tanggal_tutup' => now()->addDays(30)->format('Y-m-d'),
+                    'deskripsi' => $rData['deskripsi'],
+                    'persyaratan' => "1. Mahasiswa aktif\n2. Berkomitmen tinggi\n3. Lulus wawancara",
+                    'tanggal_buka' => now()->subDays(5)->format('Y-m-d'),
+                    'tanggal_tutup' => now()->addDays(20)->format('Y-m-d'),
                     'status' => 'dibuka',
                 ]
             );
 
-            // Create Divisions
-            $divisionsData = [
-                ['nama' => 'Kementerian Dalam Negeri', 'kuota' => 2],
-                ['nama' => 'Kementerian Luar Negeri', 'kuota' => 2],
-                ['nama' => 'Kementerian Komunikasi dan Informasi', 'kuota' => 1]
-            ];
-
-            foreach ($divisionsData as $div) {
+            foreach ($rData['divisi'] as $divName) {
                 $division = RecruitmentDivision::updateOrCreate(
-                    ['recruitment_id' => $recruitment->id, 'nama' => $div['nama']],
-                    ['kuota' => $div['kuota']]
+                    ['recruitment_id' => $recruitment->id, 'nama' => $divName],
+                    ['kuota' => 2, 'deskripsi' => 'Fokus pada pengembangan ' . strtolower($divName)]
                 );
 
-                // Create aspects for division
-                $aspekKecerdasan = \App\Models\Aspect::updateOrCreate(
-                    ['recruitment_division_id' => $division->id, 'nama' => 'Kecerdasan'],
-                    ['bobot' => 40, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
+                // Jika divisi ini adalah "Divisi Pengajian", gunakan data sesuai tes (Excel)
+                if ($divName === 'Divisi Pengajian') {
+                    $aspek1 = \App\Models\Aspect::updateOrCreate(
+                        ['recruitment_division_id' => $division->id, 'nama' => 'Kecerdasan'],
+                        ['bobot' => 40.50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
+                    );
+                    $aspek2 = \App\Models\Aspect::updateOrCreate(
+                        ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian'],
+                        ['bobot' => 59.50, 'cf_percentage' => 70, 'sf_percentage' => 30, 'urutan' => 2]
+                    );
+
+                    $kriteria = [
+                        ['aspek' => $aspek1, 'nama' => 'Intelektual', 'tipe' => 'core', 'target' => 4],
+                        ['aspek' => $aspek1, 'nama' => 'Problem Solving', 'tipe' => 'secondary', 'target' => 4],
+                        ['aspek' => $aspek2, 'nama' => 'Sikap', 'tipe' => 'core', 'target' => 4],
+                        ['aspek' => $aspek2, 'nama' => 'Bijaksana', 'tipe' => 'secondary', 'target' => 5],
+                        ['aspek' => $aspek2, 'nama' => 'Tanggung Jawab', 'tipe' => 'core', 'target' => 4],
+                    ];
+
+                    $defaultLabels = ['Sangat Kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat Baik'];
+                    $kObjects = [];
+                    foreach ($kriteria as $idx => $k) {
+                        $crit = Criteria::updateOrCreate(
+                            ['aspect_id' => $k['aspek']->id, 'nama_kriteria' => $k['nama']],
+                            ['tipe' => $k['tipe'], 'target_value' => $k['target'], 'urutan' => $idx + 1]
+                        );
+                        $kObjects[] = $crit;
+                        foreach ($defaultLabels as $lIdx => $label) {
+                            \App\Models\CriteriaValueLabel::updateOrCreate(
+                                ['criteria_id' => $crit->id, 'value' => $lIdx + 1],
+                                ['label' => $label]
+                            );
+                        }
+                    }
+
+                    // Pendaftar khusus: Anton & Budi
+                    $anton = User::firstOrCreate(
+                        ['email' => 'anton@ormawa-unsoed.test'],
+                        ['name' => 'Anton', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
+                    );
+                    \App\Models\MahasiswaProfile::firstOrCreate(['user_id' => $anton->id], ['nim' => 'A10001']);
+
+                    $budi = User::firstOrCreate(
+                        ['email' => 'budi@ormawa-unsoed.test'],
+                        ['name' => 'Budi', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
+                    );
+                    \App\Models\MahasiswaProfile::firstOrCreate(['user_id' => $budi->id], ['nim' => 'A10002']);
+
+                    $appAnton = Application::updateOrCreate(
+                        ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $anton->id],
+                        ['status' => 'terkirim']
+                    );
+                    $appBudi = Application::updateOrCreate(
+                        ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $budi->id],
+                        ['status' => 'terkirim']
+                    );
+
+                    $antonScores = [2, 5, 3, 5, 4];
+                    $budiScores = [4, 5, 4, 3, 1];
+
+                    foreach ($kObjects as $i => $crit) {
+                        // Anton
+                        $gapA = $antonScores[$i] - $crit->target_value;
+                        ApplicationScore::updateOrCreate(
+                            ['application_id' => $appAnton->id, 'criteria_id' => $crit->id],
+                            ['actual_value' => $antonScores[$i], 'gap' => $gapA, 'bobot_gap' => $this->getBobotGap($gapA)]
+                        );
+                        // Budi
+                        $gapB = $budiScores[$i] - $crit->target_value;
+                        ApplicationScore::updateOrCreate(
+                            ['application_id' => $appBudi->id, 'criteria_id' => $crit->id],
+                            ['actual_value' => $budiScores[$i], 'gap' => $gapB, 'bobot_gap' => $this->getBobotGap($gapB)]
+                        );
+                    }
+                    $totalApps += 2;
+                    continue; // Skip the default dummy data insertion for this division
+                }
+
+                // Aspek & Kriteria Standar untuk divisi lainnya
+                $aspek1 = \App\Models\Aspect::updateOrCreate(
+                    ['recruitment_division_id' => $division->id, 'nama' => 'Kemampuan (Skill)'],
+                    ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
                 );
-                $aspekKepribadian = \App\Models\Aspect::updateOrCreate(
-                    ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian'],
-                    ['bobot' => 60, 'cf_percentage' => 70, 'sf_percentage' => 30, 'urutan' => 2]
+                $aspek2 = \App\Models\Aspect::updateOrCreate(
+                    ['recruitment_division_id' => $division->id, 'nama' => 'Wawancara'],
+                    ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 2]
                 );
 
-                // Create criteria per aspect
-                $criteriaKecerdasan = [
-                    ['nama_kriteria' => 'Intelektual', 'tipe' => 'core', 'target_value' => 4, 'keterangan' => 'Pengetahuan umum dan organisasi', 'urutan' => 1],
-                    ['nama_kriteria' => 'Problem Solving', 'tipe' => 'secondary', 'target_value' => 4, 'keterangan' => 'Kemampuan menyelesaikan masalah', 'urutan' => 2],
-                ];
-                
-                $criteriaKepribadian = [
-                    ['nama_kriteria' => 'Sikap', 'tipe' => 'core', 'target_value' => 4, 'keterangan' => 'Sikap keseharian dan tata krama', 'urutan' => 1],
-                    ['nama_kriteria' => 'Bijaksana', 'tipe' => 'secondary', 'target_value' => 5, 'keterangan' => 'Kedewasaan dalam berpikir', 'urutan' => 2],
-                    ['nama_kriteria' => 'Tanggung Jawab', 'tipe' => 'core', 'target_value' => 4, 'keterangan' => 'Rasa tanggung jawab terhadap tugas', 'urutan' => 3],
+                $kriteria = [
+                    ['aspek' => $aspek1, 'nama' => 'Pengalaman', 'tipe' => 'core'],
+                    ['aspek' => $aspek1, 'nama' => 'Pengetahuan', 'tipe' => 'secondary'],
+                    ['aspek' => $aspek2, 'nama' => 'Komunikasi', 'tipe' => 'core'],
+                    ['aspek' => $aspek2, 'nama' => 'Attitude', 'tipe' => 'secondary'],
                 ];
 
                 $defaultLabels = ['Sangat Kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat Baik'];
-
-                foreach ($criteriaKecerdasan as $cData) {
-                    $c = Criteria::updateOrCreate(
-                        ['aspect_id' => $aspekKecerdasan->id, 'nama_kriteria' => $cData['nama_kriteria']],
-                        $cData
+                foreach ($kriteria as $idx => $k) {
+                    $crit = Criteria::updateOrCreate(
+                        ['aspect_id' => $k['aspek']->id, 'nama_kriteria' => $k['nama']],
+                        ['tipe' => $k['tipe'], 'target_value' => 4, 'urutan' => $idx + 1]
                     );
-                    foreach ($defaultLabels as $idx => $label) {
+                    foreach ($defaultLabels as $lIdx => $label) {
                         \App\Models\CriteriaValueLabel::updateOrCreate(
-                            ['criteria_id' => $c->id, 'value' => $idx + 1],
+                            ['criteria_id' => $crit->id, 'value' => $lIdx + 1],
                             ['label' => $label]
                         );
                     }
                 }
 
-                foreach ($criteriaKepribadian as $cData) {
-                    $c = Criteria::updateOrCreate(
-                        ['aspect_id' => $aspekKepribadian->id, 'nama_kriteria' => $cData['nama_kriteria']],
-                        $cData
+                // Masukkan 2 pendaftar acak ke tiap divisi ini
+                $pendaftarAcak = $mahasiswas->random(2);
+                foreach ($pendaftarAcak as $mhs) {
+                    $app = Application::updateOrCreate(
+                        ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $mhs->id],
+                        ['motivasi' => 'Motivasi saya untuk divisi ' . $divName, 'status' => 'terkirim']
                     );
-                    foreach ($defaultLabels as $idx => $label) {
-                        \App\Models\CriteriaValueLabel::updateOrCreate(
-                            ['criteria_id' => $c->id, 'value' => $idx + 1],
-                            ['label' => $label]
+                    
+                    // Beri nilai dummy
+                    foreach ($division->allCriteria()->get() as $c) {
+                        ApplicationScore::updateOrCreate(
+                            ['application_id' => $app->id, 'criteria_id' => $c->id],
+                            ['actual_value' => null, 'gap' => null, 'bobot_gap' => null]
                         );
                     }
+                    $totalApps++;
                 }
             }
-
-            echo "1 Recruitment with 3 Divisions created for BEM.\n";
-
-            // Create some applications (spread them among divisions)
-            $mahasiswas = User::where('role', 'mahasiswa')->take(6)->get();
-            $divisions = $recruitment->divisions;
-            
-            $divIndex = 0;
-            foreach ($mahasiswas as $mhs) {
-                $div = $divisions[$divIndex % count($divisions)];
-                $app = Application::updateOrCreate(
-                    [
-                        'recruitment_id' => $recruitment->id, 
-                        'recruitment_division_id' => $div->id, 
-                        'user_id' => $mhs->id
-                    ],
-                    [
-                        'motivasi' => 'Saya ingin berkontribusi di ' . $div->nama . ' untuk mengembangkan potensi diri.',
-                        'status' => 'terkirim',
-                    ]
-                );
-
-                // Create empty score entries for each criteria
-                foreach ($div->allCriteria()->get() as $c) {
-                    ApplicationScore::updateOrCreate(
-                        ['application_id' => $app->id, 'criteria_id' => $c->id],
-                        ['actual_value' => null, 'gap' => null, 'bobot_gap' => null]
-                    );
-                }
-                
-                $divIndex++;
-            }
-            echo "6 Applications created with empty scores.\n";
         }
+        echo "3 Recruitments and {$totalApps} Applications created.\n";
 
         echo "\nDummy data seeding complete!\n";
         echo "Login credentials (all passwords: 'password'):\n";
@@ -197,6 +270,13 @@ class DummyDataSeeder extends Seeder
         echo "  Admin BEM:  admin1@ormawa-unsoed.test\n";
         echo "  Admin DPM:  admin2@ormawa-unsoed.test\n";
         echo "  Admin HMPS: admin3@ormawa-unsoed.test\n";
-        echo "  Mahasiswa:  mahasiswa1@ormawa-unsoed.test s/d mahasiswa10@ormawa-unsoed.test\n";
+        echo "  Mahasiswa (Anton): anton@ormawa-unsoed.test\n";
+        echo "  Mahasiswa (Budi):  budi@ormawa-unsoed.test\n";
+    }
+
+    private function getBobotGap($gap)
+    {
+        $konversi = [0 => 5, 1 => 4.5, -1 => 4, 2 => 3.5, -2 => 3, 3 => 2.5, -3 => 2, 4 => 1.5, -4 => 1];
+        return $konversi[$gap] ?? 0;
     }
 }
