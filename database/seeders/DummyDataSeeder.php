@@ -79,12 +79,11 @@ class DummyDataSeeder extends Seeder
         }
         echo "10 Mahasiswa accounts created.\n";
 
-        // ADD IMAGES TO EXISTING ORMAWAS
+        // ADD IMAGES TO EXISTING ORMAWAS (Using AI Generated, Locally stored images)
         foreach ($ormawas as $idx => $ormawa) {
-            $colors = ['4F46E5', '0ea5e9', '10b981'];
             $ormawa->update([
-                'logo' => 'https://ui-avatars.com/api/?name=' . urlencode($ormawa->nama) . '&color=ffffff&background=' . $colors[$idx % 3] . '&size=200',
-                'cover_photo' => 'https://picsum.photos/seed/ormawa' . $ormawa->id . '/1200/400',
+                'logo' => 'ormawas/logo_dummy.jpg',
+                'cover_photo' => 'ormawas/cover_dummy.jpg',
             ]);
         }
 
