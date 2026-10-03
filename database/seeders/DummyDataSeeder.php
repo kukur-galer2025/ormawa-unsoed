@@ -97,6 +97,34 @@ class DummyDataSeeder extends Seeder
                 'logo' => $logoMap[$ormawa->nama] ?? 'ormawas/logo_dummy.jpg',
                 'cover_photo' => $coverMap[$ormawa->nama] ?? 'ormawas/cover_dummy.jpg',
             ]);
+
+            // Add Prestasi (Achievements)
+            $prestasiMap = [
+                'BEM UNSOED' => ['judul' => 'Juara 1 Debat Nasional 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
+                'BEM Fakultas Teknik' => ['judul' => 'Juara 1 Kontes Robotika Nasional 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
+                'UKM Olahraga' => ['judul' => 'Juara Umum Liga Futsal Mahasiswa 2023', 'foto' => 'ormawas/prestasi_olahraga.jpg'],
+            ];
+
+            // Add Program Kerja (Work Programs)
+            $prokerMap = [
+                'BEM UNSOED' => ['nama' => 'Seminar Nasional & Town Hall', 'foto' => 'ormawas/proker_univ.jpg'],
+                'BEM Fakultas Teknik' => ['nama' => 'Workshop & Pembuatan Prototipe Robot', 'foto' => 'ormawas/proker_ft.jpg'],
+                'UKM Olahraga' => ['nama' => 'Turnamen Olahraga Rektor Cup', 'foto' => 'ormawas/proker_olahraga.jpg'],
+            ];
+
+            if (isset($prestasiMap[$ormawa->nama])) {
+                \App\Models\OrmawaPrestasi::updateOrCreate(
+                    ['ormawa_id' => $ormawa->id, 'judul' => $prestasiMap[$ormawa->nama]['judul']],
+                    ['deskripsi' => 'Prestasi membanggakan dari ' . $ormawa->nama, 'tahun' => 2023, 'foto' => $prestasiMap[$ormawa->nama]['foto']]
+                );
+            }
+
+            if (isset($prokerMap[$ormawa->nama])) {
+                \App\Models\OrmawaProgramKerja::updateOrCreate(
+                    ['ormawa_id' => $ormawa->id, 'nama' => $prokerMap[$ormawa->nama]['nama']],
+                    ['deskripsi' => 'Program kerja unggulan dari ' . $ormawa->nama, 'foto' => $prokerMap[$ormawa->nama]['foto']]
+                );
+            }
         }
 
         // CREATE 3 RECRUITMENTS (1 for each Ormawa)
