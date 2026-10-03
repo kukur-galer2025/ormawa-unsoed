@@ -79,11 +79,23 @@ class DummyDataSeeder extends Seeder
         }
         echo "10 Mahasiswa accounts created.\n";
 
-        // ADD IMAGES TO EXISTING ORMAWAS (Using AI Generated, Locally stored images)
+        // ADD IMAGES TO EXISTING ORMAWAS (Using 3 distinct AI Generated, Locally stored images)
         foreach ($ormawas as $idx => $ormawa) {
+            $logoMap = [
+                'BEM UNSOED' => 'ormawas/logo_dummy.jpg',
+                'BEM Fakultas Teknik' => 'ormawas/logo_ft.jpg',
+                'UKM Olahraga' => 'ormawas/logo_olahraga.jpg',
+            ];
+            
+            $coverMap = [
+                'BEM UNSOED' => 'ormawas/cover_dummy.jpg',
+                'BEM Fakultas Teknik' => 'ormawas/cover_ft.jpg',
+                'UKM Olahraga' => 'ormawas/cover_olahraga.jpg',
+            ];
+
             $ormawa->update([
-                'logo' => 'ormawas/logo_dummy.jpg',
-                'cover_photo' => 'ormawas/cover_dummy.jpg',
+                'logo' => $logoMap[$ormawa->nama] ?? 'ormawas/logo_dummy.jpg',
+                'cover_photo' => $coverMap[$ormawa->nama] ?? 'ormawas/cover_dummy.jpg',
             ]);
         }
 
