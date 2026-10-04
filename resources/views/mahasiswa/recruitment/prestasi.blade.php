@@ -1,5 +1,6 @@
 @extends("layouts.app")
 @section("title", "Prestasi " . $ormawa->nama)
+@section("page-title", "Jelajah Prestasi " . $ormawa->nama)
 @section("sidebar")@include("layouts.partials.sidebar-mahasiswa")@endsection
 @section("content")
 

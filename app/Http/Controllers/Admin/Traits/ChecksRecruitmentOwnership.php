@@ -22,7 +22,7 @@ trait ChecksRecruitmentOwnership
      */
     protected function getAdminOrmawa()
     {
-        return auth()->user()->ormawas()->first();
+        return auth()->user()->ormawa;
     }
 
     /**

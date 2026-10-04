@@ -18,6 +18,12 @@ class JurusanController extends Controller
         return view('superadmin.jurusan.index', compact('jurusans', 'fakultas'));
     }
 
+    public function create()
+    {
+        $fakultas = Fakultas::orderBy('nama_fakultas')->get();
+        return view('superadmin.jurusan.create', compact('fakultas'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([

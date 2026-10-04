@@ -60,7 +60,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     Route::resource('jurusan', \App\Http\Controllers\Superadmin\JurusanController::class)->except(['show']);
 
     // Ormawa CRUD
-    Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class)->except(['create']);
+    Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class);
 
     // Admin Management
     Route::get('/admin', [\App\Http\Controllers\Superadmin\AdminManagementController::class, 'index'])->name('admin.index');

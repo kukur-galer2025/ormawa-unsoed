@@ -11,7 +11,7 @@ class ProgramKerjaController extends Controller
 {
     public function index()
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         $prokers = $ormawa->programKerjas()->latest()->get();
         return view('admin.proker.index', compact('prokers', 'ormawa'));
     }
@@ -29,7 +29,7 @@ class ProgramKerjaController extends Controller
             'foto' => 'nullable|image|max:2048'
         ]);
 
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         $data = $request->except('foto');
 
         if ($request->hasFile('foto')) {
@@ -43,7 +43,7 @@ class ProgramKerjaController extends Controller
 
     public function edit(OrmawaProgramKerja $proker)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($proker->ormawa_id !== $ormawa->id) abort(403);
 
         return view('admin.proker.edit', compact('proker'));
@@ -51,7 +51,7 @@ class ProgramKerjaController extends Controller
 
     public function update(Request $request, OrmawaProgramKerja $proker)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($proker->ormawa_id !== $ormawa->id) abort(403);
 
         $request->validate([
@@ -74,7 +74,7 @@ class ProgramKerjaController extends Controller
 
     public function destroy(OrmawaProgramKerja $proker)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($proker->ormawa_id !== $ormawa->id) abort(403);
 
         if ($proker->foto) Storage::disk('public')->delete($proker->foto);

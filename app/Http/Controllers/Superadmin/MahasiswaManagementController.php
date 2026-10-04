@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Fakultas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,8 +25,21 @@ class MahasiswaManagementController extends Controller
             });
         }
 
+        if ($request->filled('fakultas_id')) {
+            $query->whereHas('mahasiswaProfile', function ($q) use ($request) {
+                $q->where('fakultas_id', $request->fakultas_id);
+            });
+        }
+
+        if ($request->filled('jurusan_id')) {
+            $query->whereHas('mahasiswaProfile', function ($q) use ($request) {
+                $q->where('jurusan_id', $request->jurusan_id);
+            });
+        }
+
         $mahasiswas = $query->latest()->paginate(10)->withQueryString();
-        return view('superadmin.mahasiswa-management.index', compact('mahasiswas'));
+        $fakultas = Fakultas::with('jurusans')->get();
+        return view('superadmin.mahasiswa-management.index', compact('mahasiswas', 'fakultas'));
     }
 
     public function toggle(User $mahasiswa)

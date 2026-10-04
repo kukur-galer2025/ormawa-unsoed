@@ -1,5 +1,6 @@
 @extends("layouts.app")
 @section("title", $prestasi->judul . " - " . $ormawa->nama)
+@section("page-title", "Detail Prestasi " . $ormawa->nama)
 @section("sidebar")@include("layouts.partials.sidebar-mahasiswa")@endsection
 @section("content")
 
@@ -51,7 +52,7 @@
                     </h1>
                     
                     @if($prestasi->deskripsi)
-                    <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line text-sm sm:text-base md:text-lg">
+                    <div class="text-slate-700 leading-8 whitespace-pre-line text-base md:text-lg text-justify tracking-wide">
                         {{ $prestasi->deskripsi }}
                     </div>
                     @else

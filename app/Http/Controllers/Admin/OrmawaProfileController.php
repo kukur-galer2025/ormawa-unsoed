@@ -9,7 +9,7 @@ class OrmawaProfileController extends Controller
 {
     public function edit()
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         return view('admin.ormawa-profile.edit', compact('ormawa'));
     }
 
@@ -25,7 +25,7 @@ class OrmawaProfileController extends Controller
             'kontak_instagram' => 'nullable|string|max:255',
         ]);
 
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         $data = $request->only(['deskripsi', 'visi', 'misi', 'kontak_email', 'kontak_instagram']);
 
         if ($request->hasFile('logo')) {

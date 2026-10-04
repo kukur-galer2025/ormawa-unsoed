@@ -25,13 +25,13 @@
             <tbody class="border-b-[6px] border-slate-100 last:border-0 hover:bg-slate-50/10 transition-colors">
                 {{-- Baris Header Rekrutmen --}}
                 <tr class="bg-slate-50/80">
-                    <td colspan="4" class="px-6 py-4">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                            <div>
-                                <p class="font-bold text-slate-800 text-lg">{{ $ormawa->nama }}</p>
-                                <p class="text-sm font-semibold text-indigo-700 mt-0.5">{{ $recruitment->judul }}</p>
-                            </div>
-                            <span class="px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">
+                    <td class="px-6 py-4 align-top">
+                        <p class="font-bold text-slate-800 text-base">{{ $ormawa->nama }}</p>
+                    </td>
+                    <td class="px-6 py-4 align-top" colspan="3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <p class="text-sm font-semibold text-indigo-700">{{ $recruitment->judul }}</p>
+                            <span class="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">
                                 Mendaftar di {{ $group->count() }} Divisi
                             </span>
                         </div>
@@ -41,15 +41,16 @@
                 {{-- Baris Divisi --}}
                 @foreach($group as $app)
                 <tr class="border-t border-slate-100 bg-white">
-                    <td class="px-6 py-4 sm:pl-10" colspan="2">
+                    <td class="px-6 py-4 hidden sm:table-cell"></td> {{-- Spacer under Organisasi --}}
+                    <td class="px-6 py-4" colspan="1">
                         <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-slate-300 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            <span class="inline-block px-2.5 py-1 bg-slate-100/80 text-slate-700 font-semibold rounded text-sm border border-slate-200">
+                            <svg class="w-4 h-4 text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-semibold rounded-lg text-sm border border-slate-200">
                                 {{ $app->division->nama }}
                             </span>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-slate-500 font-medium">
+                    <td class="px-6 py-4 text-slate-500 font-medium text-sm">
                         {{ $app->created_at->format('d/m/Y') }}
                     </td>
                     <td class="px-6 py-4">
@@ -59,7 +60,7 @@
                                 $showStatus = 'diproses';
                             }
                         @endphp
-                        <span class="px-3 py-1 rounded-full text-xs font-bold 
+                        <span class="inline-flex px-3 py-1 rounded-full text-[11px] tracking-wider font-bold 
                             {{ $showStatus === 'terkirim' ? 'bg-amber-100 text-amber-700' : 
                                ($showStatus === 'diproses' ? 'bg-blue-100 text-blue-700' : 
                                ($showStatus === 'diterima' ? 'bg-green-100 text-green-700 shadow-sm shadow-green-500/20' : 'bg-red-100 text-red-700')) }}">

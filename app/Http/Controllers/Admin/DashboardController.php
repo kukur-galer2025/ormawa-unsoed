@@ -9,7 +9,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $ormawa = $user->ormawas()->first();
+        $ormawa = $user->ormawa;
 
         if (!$ormawa) {
             return view('admin.no-ormawa');

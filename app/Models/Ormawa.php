@@ -39,6 +39,13 @@ class Ormawa extends Model
 
     public function ormawaAdmins() { return $this->hasMany(OrmawaAdmin::class); }
     public function admins() { return $this->belongsToMany(User::class, 'admin_ormawa'); }
+    public function admin()
+    {
+        return $this->hasOneThrough(
+            User::class, OrmawaAdmin::class,
+            'ormawa_id', 'id', 'id', 'user_id'
+        );
+    }
     public function recruitments() { return $this->hasMany(Recruitment::class); }
     public function prestasis() { return $this->hasMany(OrmawaPrestasi::class); }
     public function programKerjas() { return $this->hasMany(OrmawaProgramKerja::class); }

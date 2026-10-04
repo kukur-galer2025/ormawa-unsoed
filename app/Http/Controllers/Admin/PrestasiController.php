@@ -11,7 +11,7 @@ class PrestasiController extends Controller
 {
     public function index()
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         $prestasis = $ormawa->prestasis()->latest()->get();
         return view('admin.prestasi.index', compact('prestasis', 'ormawa'));
     }
@@ -30,7 +30,7 @@ class PrestasiController extends Controller
             'foto' => 'nullable|image|max:2048'
         ]);
 
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         $data = $request->except('foto');
 
         if ($request->hasFile('foto')) {
@@ -44,7 +44,7 @@ class PrestasiController extends Controller
 
     public function edit(OrmawaPrestasi $prestasi)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($prestasi->ormawa_id !== $ormawa->id) abort(403);
 
         return view('admin.prestasi.edit', compact('prestasi'));
@@ -52,7 +52,7 @@ class PrestasiController extends Controller
 
     public function update(Request $request, OrmawaPrestasi $prestasi)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($prestasi->ormawa_id !== $ormawa->id) abort(403);
 
         $request->validate([
@@ -76,7 +76,7 @@ class PrestasiController extends Controller
 
     public function destroy(OrmawaPrestasi $prestasi)
     {
-        $ormawa = auth()->user()->ormawas()->first();
+        $ormawa = auth()->user()->ormawa;
         if ($prestasi->ormawa_id !== $ormawa->id) abort(403);
 
         if ($prestasi->foto) Storage::disk('public')->delete($prestasi->foto);

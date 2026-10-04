@@ -11,7 +11,7 @@ class RecruitmentPolicy
     {
         if ($user->isSuperadmin()) return true;
 
-        return $user->ormawas->contains('id', $recruitment->ormawa_id);
+        return $user->ormawa?->id === $recruitment->ormawa_id;
     }
 
     public function update(User $user, Recruitment $recruitment): bool

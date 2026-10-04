@@ -1,5 +1,6 @@
 @extends("layouts.app")
 @section("title",$ormawa->nama)
+@section("page-title", "Jelajah " . $ormawa->nama)
 @section("sidebar")@include("layouts.partials.sidebar-mahasiswa")@endsection
 @section("content")
 <div class="mb-6"><a href="{{ route('mahasiswa.recruitment.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">← Kembali ke Katalog</a></div>
@@ -22,7 +23,7 @@
     </div>
     
     <div class="p-4 sm:p-6 md:p-8">
-        <p class="text-sm sm:text-base text-slate-600 mb-6 leading-relaxed">{{ $ormawa->deskripsi }}</p>
+        <p class="text-base sm:text-lg text-slate-700 mb-6 leading-8 tracking-wide text-justify whitespace-pre-line">{{ $ormawa->deskripsi }}</p>
         
         {{-- Navigation Buttons for Prestasi & Program Kerja --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

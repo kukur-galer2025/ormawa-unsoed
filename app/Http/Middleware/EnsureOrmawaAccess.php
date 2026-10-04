@@ -17,7 +17,7 @@ class EnsureOrmawaAccess
         }
 
         // Check if admin has any ormawa assigned
-        if ($user->ormawas()->count() === 0) {
+        if (!$user->ormawa) {
             // Allow access to dashboard so they can see the no-ormawa message
             if ($request->routeIs('admin.dashboard')) {
                 return $next($request);

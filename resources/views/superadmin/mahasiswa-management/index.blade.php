@@ -2,10 +2,41 @@
 @section("title","Kelola Mahasiswa")@section("page-title","Kelola Mahasiswa")
 @section("sidebar")@include("layouts.partials.sidebar-superadmin")@endsection
 @section("content")
-<div class="mb-6">
-    <form method="GET" class="flex flex-col sm:flex-row gap-3">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau NIM..." class="flex-1 w-full sm:max-w-md px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm">
-        <button type="submit" class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl hover:bg-slate-700">Cari</button>
+<div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm" x-data="filterMahasiswa()">
+    <form method="GET" class="flex flex-col md:flex-row gap-3">
+        <div class="flex-1">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau NIM..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all">
+        </div>
+        
+        <div class="w-full md:w-48">
+            <select name="fakultas_id" x-model="fakultas_id" @change="jurusan_id = ''" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all">
+                <option value="">Semua Fakultas</option>
+                <template x-for="f in fakultasList" :key="f.id">
+                    <option :value="f.id" x-text="f.nama_fakultas"></option>
+                </template>
+            </select>
+        </div>
+        
+        <div class="w-full md:w-48">
+            <select name="jurusan_id" x-model="jurusan_id" :disabled="!fakultas_id || filteredJurusan.length === 0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <option value="">Semua Jurusan</option>
+                <template x-for="j in filteredJurusan" :key="j.id">
+                    <option :value="j.id" x-text="j.nama_jurusan"></option>
+                </template>
+            </select>
+        </div>
+        
+        <div class="flex gap-2 w-full md:w-auto">
+            <button type="submit" class="flex-1 md:flex-none px-6 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition-colors shadow-lg shadow-slate-200">
+                Filter
+            </button>
+            
+            @if(request()->hasAny(['search', 'fakultas_id', 'jurusan_id']) && (request('search') || request('fakultas_id') || request('jurusan_id')))
+            <a href="{{ route('superadmin.mahasiswa.index') }}" class="flex-1 md:flex-none px-4 py-2.5 bg-slate-100 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-200 transition-colors text-center flex items-center justify-center">
+                Reset
+            </a>
+            @endif
+        </div>
     </form>
 </div>
 
@@ -90,6 +121,17 @@
 
 @push('scripts')
 <script>
+function filterMahasiswa() {
+    return {
+        fakultasList: @json($fakultas),
+        fakultas_id: '{{ request('fakultas_id') }}',
+        jurusan_id: '{{ request('jurusan_id') }}',
+        get filteredJurusan() {
+            const f = this.fakultasList.find(f => f.id == this.fakultas_id);
+            return f ? f.jurusans : [];
+        }
+    };
+}
 function showAksiModal(userId, userName, isActive) {
     const toggleLabel = isActive ? 'Nonaktifkan Akun' : 'Aktifkan Akun';
     const toggleIcon = isActive
