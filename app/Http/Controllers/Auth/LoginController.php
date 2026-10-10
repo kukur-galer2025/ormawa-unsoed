@@ -33,6 +33,11 @@ class LoginController extends Controller
                 return back()->with('error', 'Akun Anda telah dinonaktifkan. Hubungi administrator.');
             }
 
+            if ($user->role === 'admin' && $user->ormawa && !$user->ormawa->is_active) {
+                Auth::logout();
+                return back()->with('error', 'Organisasi Anda sedang dinonaktifkan. Anda tidak dapat mengakses sistem.');
+            }
+
             return $this->redirectByRole($user);
         }
 

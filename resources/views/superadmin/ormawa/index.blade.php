@@ -22,7 +22,6 @@
                     <tr class="bg-slate-50">
                         <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Nama</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Tingkat</th>
-                        <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Admin</th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Rekrutmen</th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Aksi</th>
@@ -38,7 +37,6 @@
                                 <div class="text-xs text-slate-500 mt-1">{{ $o->fakultasRel->nama_fakultas ?? '-' }}{{ $o->jurusan_id ? ' - ' . $o->jurusanRel->nama_jurusan : '' }}</div>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-center text-sm">{{ $o->admins_count }}</td>
                         <td class="px-6 py-4 text-center text-sm">{{ $o->recruitments_count }}</td>
                         <td class="px-6 py-4 text-center">
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $o->is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">{{ $o->is_active ? 'Aktif' : 'Nonaktif' }}</span>
@@ -51,6 +49,12 @@
                                 <a href="{{ route('superadmin.ormawa.edit', $o) }}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </a>
+                                <form method="POST" action="{{ route('superadmin.ormawa.toggle', $o) }}">
+                                    @csrf @method('PATCH')
+                                    <button class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg" title="Toggle Status">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                    </button>
+                                </form>
                                 <form method="POST" action="{{ route('superadmin.ormawa.destroy', $o) }}" onsubmit="confirmForm(event, 'Yakin hapus?')">
                                     @csrf @method('DELETE')
                                     <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg" title="Hapus">

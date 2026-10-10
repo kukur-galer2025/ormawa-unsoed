@@ -13,7 +13,7 @@ class OrmawaController extends Controller
 {
     public function index()
     {
-        $ormawas = Ormawa::with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments', 'admins'])->latest()->paginate(10);
+        $ormawas = Ormawa::with(['fakultasRel', 'jurusanRel'])->withCount(['recruitments'])->latest()->paginate(10);
         $fakultas = Fakultas::with('jurusans')->get();
         return view('superadmin.ormawa.index', compact('ormawas', 'fakultas'));
     }
@@ -127,5 +127,12 @@ class OrmawaController extends Controller
 
         $ormawa->delete();
         return redirect()->route('superadmin.ormawa.index')->with('success', 'Ormawa berhasil dihapus.');
+    }
+
+    public function toggleActive(Ormawa $ormawa)
+    {
+        $ormawa->update(['is_active' => !$ormawa->is_active]);
+        $status = $ormawa->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->route('superadmin.ormawa.index')->with('success', "Ormawa berhasil $status.");
     }
 }

@@ -61,6 +61,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 
     // Ormawa CRUD
     Route::resource('ormawa', \App\Http\Controllers\Superadmin\OrmawaController::class);
+    Route::patch('ormawa/{ormawa}/toggle', [\App\Http\Controllers\Superadmin\OrmawaController::class, 'toggleActive'])->name('ormawa.toggle');
 
     // Admin Management
     Route::get('/admin', [\App\Http\Controllers\Superadmin\AdminManagementController::class, 'index'])->name('admin.index');
