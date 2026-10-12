@@ -35,6 +35,12 @@
                 </a>
             </div>
             @endif
+
+            @if($application->catatan_wawancara)
+            <div class="mt-4"><span class="block text-xs font-medium text-slate-500 mb-2">Catatan Hasil Wawancara</span>
+                <div class="p-4 bg-emerald-50 rounded-xl text-sm text-slate-700 leading-relaxed border border-emerald-100 whitespace-pre-line">{{ $application->catatan_wawancara }}</div>
+            </div>
+            @endif
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col">

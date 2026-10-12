@@ -101,7 +101,7 @@ class ScoringController extends Controller
         }
         $allCriteria = $division->allCriteria()->get();
 
-        $rules = [];
+        $rules = ['catatan_wawancara' => 'nullable|string'];
         foreach ($allCriteria as $c) {
             $rules["scores.{$c->id}"] = 'required|integer|min:1|max:5';
         }
@@ -122,7 +122,10 @@ class ScoringController extends Controller
             }
         }
 
-        $application->update(['status' => 'diproses']);
+        $application->update([
+            'status' => 'diproses',
+            'catatan_wawancara' => $request->input('catatan_wawancara'),
+        ]);
 
         return back()->with('success', 'Nilai pelamar berhasil disimpan.');
     }

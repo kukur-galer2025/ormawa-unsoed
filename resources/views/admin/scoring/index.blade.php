@@ -180,6 +180,24 @@
                         @endforeach
                     </div>
                     
+                    {{-- Catatan Hasil Wawancara --}}
+                    <div class="border border-slate-100 rounded-xl p-4 bg-white shadow-sm mb-6">
+                        <h4 class="font-bold text-slate-700 border-b border-slate-100 pb-2 mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Catatan Hasil Wawancara
+                            <span class="text-xs font-normal text-slate-400 ml-1">(Opsional)</span>
+                        </h4>
+                        <textarea 
+                            name="catatan_wawancara" 
+                            rows="4" 
+                            placeholder="Tuliskan catatan hasil wawancara untuk pendaftar ini, misalnya: kesan umum, kelebihan, kekurangan, atau rekomendasi khusus..."
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 resize-y focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all {{ $isReadOnly ? 'opacity-70 cursor-not-allowed' : '' }}"
+                            {{ $isReadOnly ? 'disabled' : '' }}
+                        >{{ $app->catatan_wawancara }}</textarea>
+                        <p class="text-xs text-slate-400 mt-1.5">Catatan ini tidak mempengaruhi perhitungan Profile Matching.</p>
+                        @error('catatan_wawancara')<p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>@enderror
+                    </div>
+                    
                     @if(!$isReadOnly)
                     <div class="flex justify-end pt-3">
                         <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all">Simpan Nilai Pelamar</button>
