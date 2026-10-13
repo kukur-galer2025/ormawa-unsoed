@@ -83,8 +83,8 @@
         <div>
             <label for="angkatan" class="block text-xs font-bold text-slate-700 mb-1.5">Angkatan</label>
             <div class="relative flex items-center">
-                <input type="text" id="angkatan" name="angkatan" value="{{ old('angkatan') }}" required maxlength="4" placeholder="Misal: 2022"
-                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
+                <input type="text" id="angkatan" name="angkatan" value="{{ old('angkatan') }}" required maxlength="4" placeholder="Misal: 2024 (Min. 2020)"
+                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border @error('angkatan') border-red-400 focus:border-red-500 focus:ring-red-500/30 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500/30 @enderror rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-300">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 </div>
@@ -96,13 +96,14 @@
         <div>
             <label for="no_hp" class="block text-xs font-bold text-slate-700 mb-1.5">No. HP <span class="font-normal text-slate-400">(Opsional)</span></label>
             <div class="relative flex items-center">
-                <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08123456789"
-                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300">
+                <input type="tel" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" maxlength="13" placeholder="08123456789"
+                       class="peer w-full pl-9 focus:pl-3 pr-3 py-2.5 bg-slate-50 border @error('no_hp') border-red-400 focus:border-red-500 focus:ring-red-500/30 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500/30 @enderror rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-300">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 peer-focus:opacity-0 peer-focus:-translate-x-2 transition-all duration-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                 </div>
             </div>
             <p class="mt-1 text-xs text-slate-400">10–13 digit angka (contoh: 08..., jangan gunakan +62).</p>
+            @error('no_hp')<p class="mt-1 text-[10px] font-medium text-red-500">{{ $message }}</p>@enderror
         </div>
         
         {{-- Email --}}

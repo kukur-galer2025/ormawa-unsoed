@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,14 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
+        // Cek dulu apakah email terdaftar di sistem
+        $userExists = User::where('email', $credentials['email'])->exists();
+        if (!$userExists) {
+            return back()
+                ->with('error', 'Email tidak terdaftar di sistem.')
+                ->withInput($request->only('email'));
+        }
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
@@ -41,7 +50,7 @@ class LoginController extends Controller
             return $this->redirectByRole($user);
         }
 
-        return back()->with('error', 'Email atau password salah.')->withInput($request->only('email'));
+        return back()->with('error', 'Password yang Anda masukkan salah.')->withInput($request->only('email'));
     }
 
     protected function redirectByRole($user)

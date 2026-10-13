@@ -65,7 +65,7 @@
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $m->is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">{{ $m->is_active ? 'Aktif' : 'Nonaktif' }}</span>
                     </td>
                     <td class="px-5 py-4 text-center">
-                        <button type="button" onclick="showAksiModal({{ $m->id }}, '{{ addslashes($m->name) }}', {{ $m->is_active ? 'true' : 'false' }})" class="text-xs font-semibold px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors inline-flex items-center gap-1.5">
+                        <button type="button" onclick="showAksiModal({{ $m->id }}, '{{ addslashes($m->name) }}', {{ $m->is_active ? 'true' : 'false' }}, '{{ route('superadmin.mahasiswa.show', $m) }}')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors inline-flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>Aksi
                         </button>
                     </td>
@@ -104,7 +104,7 @@
                 <span class="text-slate-700 font-medium">{{ $m->mahasiswaProfile->jurusanRel->nama_jurusan ?? '-' }}</span>
             </div>
         </div>
-        <button type="button" onclick="showAksiModal({{ $m->id }}, '{{ addslashes($m->name) }}', {{ $m->is_active ? 'true' : 'false' }})" class="w-full text-xs font-semibold px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5">
+        <button type="button" onclick="showAksiModal({{ $m->id }}, '{{ addslashes($m->name) }}', {{ $m->is_active ? 'true' : 'false' }}, '{{ route('superadmin.mahasiswa.show', $m) }}')" class="w-full text-xs font-semibold px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>Kelola Akun
         </button>
     </div>
@@ -132,7 +132,7 @@ function filterMahasiswa() {
         }
     };
 }
-function showAksiModal(userId, userName, isActive) {
+function showAksiModal(userId, userName, isActive, detailUrl) {
     const toggleLabel = isActive ? 'Nonaktifkan Akun' : 'Aktifkan Akun';
     const toggleIcon = isActive
         ? '<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>'
@@ -144,6 +144,10 @@ function showAksiModal(userId, userName, isActive) {
         html: `
             <p class="text-sm text-slate-500 mb-5">Pilih aksi untuk <strong>${userName}</strong></p>
             <div class="space-y-2 text-left">
+                <a href="${detailUrl}" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 text-blue-600 hover:bg-blue-50 font-medium text-sm transition-colors">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>Lihat Detail</span>
+                </a>
                 <button id="swal-toggle-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 ${toggleColor} font-medium text-sm transition-colors">
                     ${toggleIcon}
                     <span>${toggleLabel}</span>

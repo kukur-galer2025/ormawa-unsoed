@@ -26,9 +26,25 @@
 
     @foreach($recruitment->divisions as $div)
     <div x-show="selectedDivision === 'all' || selectedDivision == '{{ $div->id }}'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-        <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
-        <p class="text-xs text-slate-500 mt-1">{{ $div->aspects->count() }} Aspek • {{ $div->aspects->sum(fn($a) => $a->criteria->count()) }} Kriteria total</p>
+    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2.5">
+                <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
+                @if($div->is_finalized)
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-xs">
+                        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Divisi Sudah Difinalisasi
+                    </span>
+                @endif
+            </div>
+            <p class="text-xs text-slate-500 mt-1">{{ $div->aspects->count() }} Aspek • {{ $div->aspects->sum(fn($a) => $a->criteria->count()) }} Kriteria total</p>
+        </div>
+        @if($div->is_finalized)
+            <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold">
+                <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                Kriteria Tidak Dapat Diubah
+            </div>
+        @endif
     </div>
 
     @if($div->aspects->isEmpty())
@@ -38,11 +54,28 @@
     @else
         @foreach($div->aspects as $aspect)
         <div class="border-b border-slate-100 last:border-b-0">
-            <div class="px-6 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 flex items-center justify-between">
-                <div class="flex items-center gap-3">
+            <div class="px-6 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-3">
                     <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold">{{ $aspect->nama }}</span>
                     <span class="text-xs text-slate-500">Bobot: {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%</span>
                     <span class="text-xs text-slate-500">CF: {{ rtrim(rtrim(number_format($aspect->cf_percentage, 2), '0'), '.') }}% / SF: {{ rtrim(rtrim(number_format($aspect->sf_percentage, 2), '0'), '.') }}%</span>
+                </div>
+                @php
+                    $hasCore = $aspect->criteria->where('tipe', 'core')->count() > 0;
+                    $hasSecondary = $aspect->criteria->where('tipe', 'secondary')->count() > 0;
+                @endphp
+                <div>
+                    @if(!$hasCore || !$hasSecondary)
+                        <span class="px-2.5 py-1 bg-red-100 text-red-700 border border-red-200 rounded-lg text-xs font-semibold flex items-center gap-1.5" title="Setiap aspek wajib memiliki minimal 1 kriteria Core Factor (CF) dan 1 kriteria Secondary Factor (SF)">
+                            <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            Aspek Belum Lengkap: {{ !$hasCore && !$hasSecondary ? 'Wajib ada kriteria CF & SF' : (!$hasCore ? 'Belum ada kriteria Core (CF)' : 'Belum ada kriteria Secondary (SF)') }}
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Kriteria Lengkap (CF & SF)
+                        </span>
+                    @endif
                 </div>
             </div>
 

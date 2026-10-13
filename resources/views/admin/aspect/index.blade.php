@@ -30,9 +30,17 @@
 
     @foreach($recruitment->divisions as $div)
     <div x-show="selectedDivision === 'all' || selectedDivision == '{{ $div->id }}'" x-transition.opacity.duration.300ms class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between gap-4">
         <div>
-            <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
+            <div class="flex items-center gap-2.5">
+                <h3 class="font-bold text-slate-800 text-lg">{{ $div->nama }}</h3>
+                @if($div->is_finalized)
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-xs">
+                        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Divisi Sudah Difinalisasi
+                    </span>
+                @endif
+            </div>
             @php $totalBobot = $div->aspects->sum('bobot'); @endphp
             <p class="text-xs text-slate-500 mt-1">
                 Total Bobot: <span class="{{ abs($totalBobot - 100) < 0.1 ? 'text-green-600 font-bold' : 'text-red-500 font-bold' }}">{{ rtrim(rtrim(number_format($totalBobot, 2), '0'), '.') }}%</span>
@@ -43,6 +51,12 @@
                 @endif
             </p>
         </div>
+        @if($div->is_finalized)
+            <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold">
+                <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                Aspek Tidak Dapat Ditambah
+            </div>
+        @endif
     </div>
 
     {{-- Existing Aspects --}}
@@ -55,11 +69,26 @@
                 <div x-show="!editing" class="flex items-center justify-between">
                     <div>
                         <p class="font-bold text-slate-800">{{ $aspect->nama }}</p>
-                        <div class="flex gap-3 mt-1 text-xs text-slate-500">
+                        @php
+                            $hasCore = $aspect->criteria->where('tipe', 'core')->count() > 0;
+                            $hasSecondary = $aspect->criteria->where('tipe', 'secondary')->count() > 0;
+                        @endphp
+                        <div class="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-500">
                             <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded font-semibold">Bobot: {{ rtrim(rtrim(number_format($aspect->bobot, 2), '0'), '.') }}%</span>
                             <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded">CF: {{ rtrim(rtrim(number_format($aspect->cf_percentage, 2), '0'), '.') }}%</span>
                             <span class="px-2 py-0.5 bg-amber-50 text-amber-600 rounded">SF: {{ rtrim(rtrim(number_format($aspect->sf_percentage, 2), '0'), '.') }}%</span>
                             <span class="text-slate-400">{{ $aspect->criteria->count() }} kriteria</span>
+                            @if(!$hasCore || !$hasSecondary)
+                                <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-md font-semibold text-[11px] flex items-center gap-1" title="Setiap aspek wajib memiliki minimal 1 kriteria Core Factor (CF) dan 1 kriteria Secondary Factor (SF)">
+                                    <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                    Aspek Belum Lengkap: {{ !$hasCore && !$hasSecondary ? 'Wajib ada kriteria CF & SF' : (!$hasCore ? 'Belum ada kriteria Core (CF)' : 'Belum ada kriteria Secondary (SF)') }}
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-md font-semibold text-[11px] flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Lengkap (CF & SF)
+                                </span>
+                            @endif
                         </div>
                     </div>
                     @if(!$div->is_finalized)
@@ -142,6 +171,32 @@
             <p class="text-[11px] text-slate-500">CF% + SF% harus = 100%.</p>
             <button type="submit" class="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-sm">Tambah Aspek</button>
         </form>
+    </div>
+    @else
+    {{-- Peringatan Divisi Sudah Difinalisasi --}}
+    <div class="p-4 bg-amber-50/70 border-t border-amber-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-200 text-amber-900 shrink-0">
+                <svg class="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                Peringatan
+            </span>
+            <span class="text-xs font-semibold text-amber-800">
+                Divisi sudah difinalisasi dan aspek tidak dapat ditambah.
+            </span>
+        </div>
+        <button type="button" 
+            onclick="Swal.fire({
+                title: 'Peringatan',
+                text: 'Divisi sudah difinalisasi dan aspek tidak dapat ditambah.',
+                icon: 'warning',
+                confirmButtonColor: '#2563eb',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+            })" 
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold rounded-lg transition-colors shrink-0">
+            <svg class="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Tambah Aspek (Terkunci)
+        </button>
     </div>
     @endif
 </div>

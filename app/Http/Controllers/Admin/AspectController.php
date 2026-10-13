@@ -49,7 +49,7 @@ class AspectController extends Controller
             ->firstOrFail();
 
         if ($division->is_finalized) {
-            return back()->with('error', 'Divisi ini sudah difinalisasi. Anda tidak dapat menambah aspek.');
+            return back()->with('error', 'Divisi sudah difinalisasi dan aspek tidak dapat ditambah.');
         }
 
         // Bobot sekarang disimpan langsung sebagai persen (30.5 = 30.5%)

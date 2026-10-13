@@ -33,6 +33,18 @@
     </div>
 </div>
 
+@if($recruitment->status === 'dibuka')
+<div class="mb-6 p-4 rounded-2xl border border-amber-200 bg-amber-50 flex items-start gap-3">
+    <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    </div>
+    <div>
+        <p class="font-bold text-sm text-amber-800">Status Rekrutmen Masih "Dibuka"</p>
+        <p class="text-xs text-amber-700 mt-1">Finalisasi keputusan dan penetapan kelulusan ditolak selama masa pendaftaran masih dibuka. Silakan tutup rekrutmen terlebih dahulu.</p>
+    </div>
+</div>
+@endif
+
 {{-- Warning: Data Outdated --}}
 @if($isOutdated && !$division->is_finalized)
 <div class="mb-6 p-4 rounded-2xl border border-blue-200 bg-blue-50 flex items-start gap-3">
@@ -42,7 +54,7 @@
     <div>
         <p class="font-bold text-sm text-blue-800">Terdapat Perubahan Data Terbaru (Nilai/Kriteria/Aspek)</p>
         <p class="text-xs text-blue-700 mt-1">Sistem mendeteksi adanya perubahan nilai pelamar atau pengaturan aspek/kriteria sejak terakhir kali ranking dihitung.</p>
-        <p class="text-xs text-blue-600 mt-1">Silakan tekan tombol <strong class="text-blue-800">Hitung Ulang</strong> di sudut kanan atas untuk memperbarui ranking dan hasil Profile Matching.</p>
+        <p class="text-xs text-blue-600 mt-1">Silakan lengkapi nilai terbaru dari para pelamar dan tekan tombol <strong class="text-blue-800">Hitung Ulang</strong> di sudut kanan atas untuk memperbarui ranking dan hasil Profile Matching.</p>
     </div>
 </div>
 @endif
@@ -158,9 +170,27 @@
             </div>
         @else
             <div class="p-12 text-center text-slate-500 flex flex-col items-center">
-                <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                <p class="font-medium">Belum ada hasil kalkulasi.</p>
-                <p class="text-xs mt-1">Silakan klik tombol "Mulai Perhitungan" di pojok kanan atas untuk memproses data pelamar.</p>
+                <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <p class="font-bold text-slate-800 text-lg">Hasil Profile Matching Belum Ada</p>
+                <p class="text-xs text-slate-500 mt-1 max-w-md">Finalisasi keputusan tidak dapat dijalankan karena perhitungan Profile Matching belum pernah diproses.</p>
+                <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+                    <form action="{{ route('admin.profile-matching.calculate', [$recruitment, $division]) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Mulai Hitung Ranking
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.profile-matching.finalize', [$recruitment, $division]) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-5 py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-sm font-semibold rounded-xl border border-slate-200 transition-all flex items-center gap-2" title="Uji coba finalisasi sebelum perhitungan dijalankan">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Finalisasi Keputusan
+                        </button>
+                    </form>
+                </div>
             </div>
         @endif
     @else
@@ -172,6 +202,12 @@
                 <p class="text-xs text-indigo-600 mt-0.5">Centang pelamar yang ingin diterima, lalu klik Finalisasi. Maksimal <span class="font-bold">{{ $division->kuota }}</span> orang.</p>
             </div>
             <div class="flex items-center gap-3">
+                <template x-if="selectedCount > {{ $division->kuota }}">
+                    <span class="text-xs font-bold text-red-600 bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Jumlah yang dipilih melebihi kuota!
+                    </span>
+                </template>
                 <span class="text-sm font-bold px-3 py-1.5 rounded-lg" :class="selectedCount > {{ $division->kuota }} ? 'bg-red-100 text-red-700' : 'bg-indigo-100 text-indigo-700'">
                     <span x-text="selectedCount"></span> / {{ $division->kuota }} terpilih
                 </span>
@@ -337,13 +373,25 @@
                     </p>
                     <button type="button" 
                         @click="submitFinalize()"
-                        :disabled="selectedCount > {{ $division->kuota }}"
-                        :class="selectedCount > {{ $division->kuota }} ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'"
-                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center gap-2 whitespace-nowrap">
+                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Finalisasi Divisi Ini
                     </button>
                 </div>
+            </form>
+        </div>
+        @else
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <p class="text-xs text-green-700 font-semibold flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Divisi ini telah difinalisasi. Keputusan penerimaan telah disimpan permanen.
+            </p>
+            <form action="{{ route('admin.profile-matching.finalize', [$recruitment, $division]) }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 text-xs font-semibold rounded-xl border border-slate-200 transition-all flex items-center gap-1.5" title="Uji coba finalisasi ulang pada divisi yang sama">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Finalisasi Ulang
+                </button>
             </form>
         </div>
         @endif
@@ -369,7 +417,35 @@ function finalizePicker() {
             return this.selectedIds.length;
         },
         submitFinalize() {
-            if (this.selectedCount > {{ $division->kuota }}) return;
+            @if($recruitment->status === 'dibuka')
+                Swal.fire({
+                    title: 'Finalisasi Ditolak!',
+                    text: 'Rekrutmen masih berstatus "dibuka". Finalisasi keputusan hanya dapat dilakukan setelah status rekrutmen ditutup.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-lg'
+                    }
+                });
+                return;
+            @endif
+
+            if (this.selectedCount > {{ $division->kuota }}) {
+                Swal.fire({
+                    title: 'Gagal Finalisasi!',
+                    text: 'Jumlah yang dipilih melebihi kuota divisi ({{ $division->kuota }}).',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-lg'
+                    }
+                });
+                return;
+            }
 
             let htmlMsg = `<p>Anda akan menerima <b>${this.selectedCount}</b> pelamar dan menolak sisanya.</p><p class="text-red-600 font-bold mt-2">Keputusan ini TIDAK BISA DIUBAH!</p>`;
             if (this.selectedCount === 0) {

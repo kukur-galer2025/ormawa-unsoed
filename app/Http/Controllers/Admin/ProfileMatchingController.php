@@ -80,7 +80,9 @@ class ProfileMatchingController extends Controller
         $this->ensureRecruitmentOwnership($recruitment);
         $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
 
-        abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Kalkulasi belum diizinkan.');
+        if ($recruitment->status === 'dibuka') {
+            return back()->with('error', 'Perhitungan ditolak. Rekrutmen masih berstatus "dibuka", perhitungan ranking hanya dapat dilakukan setelah status rekrutmen ditutup.');
+        }
 
         if ($division->is_finalized) {
             return back()->with('error', 'Divisi ini sudah difinalisasi. Tidak bisa menghitung ulang.');
@@ -121,7 +123,7 @@ class ProfileMatchingController extends Controller
         }
         if (!empty($unscoredApplicants)) {
             $names = implode(', ', $unscoredApplicants);
-            return back()->with('error', 'Tidak bisa menghitung ranking. Pelamar berikut belum dinilai lengkap: ' . $names . '. Silakan input nilai mereka di menu Data Pelamar terlebih dahulu.');
+            return back()->with('error', 'Perhitungan ditolak. Pelamar berikut belum dinilai: ' . $names . '. Silakan lengkapi nilai semua kriteria pelamar terlebih dahulu.');
         }
 
         try {
@@ -217,7 +219,9 @@ class ProfileMatchingController extends Controller
         $this->ensureRecruitmentOwnership($recruitment);
         $this->ensureDivisionBelongsToRecruitment($recruitment, $division);
 
-        abort_if($recruitment->status === 'dibuka', 403, 'Rekrutmen masih berjalan. Finalisasi belum diizinkan.');
+        if ($recruitment->status === 'dibuka') {
+            return back()->with('error', 'Finalisasi ditolak. Rekrutmen masih berstatus "dibuka", finalisasi keputusan hanya dapat dilakukan setelah status rekrutmen ditutup.');
+        }
 
         if ($division->is_finalized) {
             return back()->with('error', 'Divisi ini sudah difinalisasi sebelumnya.');
@@ -227,7 +231,7 @@ class ProfileMatchingController extends Controller
 
         // Harus sudah ada hasil PM (Kecuali jika memang tidak ada pelamar aktif sama sekali)
         if ($activeApplicationsCount > 0 && $division->profileMatchingResults()->count() === 0) {
-            return back()->with('error', 'Belum ada hasil Profile Matching. Hitung ranking terlebih dahulu.');
+            return back()->with('error', 'Hasil Profile Matching belum ada. Silakan jalankan perhitungan ranking terlebih dahulu sebelum melakukan finalisasi.');
         }
 
         $request->validate([

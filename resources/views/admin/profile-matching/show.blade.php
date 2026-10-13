@@ -11,6 +11,18 @@
     </div>
 </div>
 
+@if($recruitment->status === 'dibuka')
+<div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-4 text-amber-800 shadow-xs">
+    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    </div>
+    <div>
+        <p class="font-bold text-sm">Status Rekrutmen Masih "Dibuka"</p>
+        <p class="text-xs text-amber-700 mt-0.5">Perhitungan ranking ditolak selama masa pendaftaran masih berjalan. Silakan tutup pendaftaran terlebih dahulu untuk mulai menghitung ranking.</p>
+    </div>
+</div>
+@endif
+
 {{-- Tombol Umumkan Hasil --}}
 @php
     $allFinalized = $recruitment->divisions->count() > 0 && $recruitment->divisions->every(fn($d) => $d->is_finalized);
@@ -57,8 +69,22 @@
         </button>
     </form>
     @else
-        <button disabled class="px-6 py-3 bg-slate-200 text-slate-400 font-bold text-sm rounded-xl cursor-not-allowed flex items-center gap-2 whitespace-nowrap" title="Belum semua divisi difinalisasi">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        @php
+            $remainingCount = $recruitment->divisions->filter(fn($d) => !$d->is_finalized)->count();
+            $unfinalizedList = implode(', ', $unfinalized);
+        @endphp
+        <button type="button" 
+            onclick="Swal.fire({
+                title: 'Belum Bisa Diumumkan!',
+                text: 'Masih ada {{ $remainingCount }} divisi yang belum difinalisasi ({{ $unfinalizedList }}). Selesaikan semua divisi terlebih dahulu.',
+                icon: 'warning',
+                confirmButtonColor: '#4f46e5',
+                confirmButtonText: 'Mengerti',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+            })" 
+            class="px-6 py-3 bg-slate-100 hover:bg-amber-50 text-slate-500 hover:text-amber-700 font-bold text-sm rounded-xl border border-slate-200 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            title="Klik untuk melihat divisi mana yang belum difinalisasi">
+            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             Umumkan Hasil Akhir
         </button>
     @endif
@@ -126,7 +152,12 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             @endif
                         </div>
-                        <span class="text-xs font-medium {{ (!$div->hasAspects || !$div->aspectsReady) ? 'text-red-900' : 'text-slate-700' }}">Persentase CF & SF Tiap Aspek</span>
+                        <div>
+                            <span class="text-xs font-medium {{ (!$div->hasAspects || !$div->aspectsReady) ? 'text-red-900' : 'text-slate-700' }}">Persentase CF & SF Tiap Aspek</span>
+                            @if($div->hasAspects && !$div->aspectsReady)
+                                <p class="text-[11px] text-red-600 font-medium mt-0.5">Aspek belum lengkap: setiap aspek wajib memiliki minimal 1 kriteria Core (CF) dan 1 kriteria Secondary (SF).</p>
+                            @endif
+                        </div>
                     </div>
                     @if($div->hasAspects && $div->aspectsReady)
                         <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">Valid</span>
@@ -170,25 +201,18 @@
                 <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 shadow-sm transition-colors flex items-center gap-1.5">
                     Lihat Hasil Final
                 </a>
-            @elseif($div->applications_count > 0 && $div->hasAspects && $div->bobotValid && $div->aspectsReady && $div->allScored)
-                <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition-colors">
-                    Lihat Hasil
-                </a>
+            @else
+                @if($div->profile_matching_results_count > 0)
+                    <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition-colors" title="Lihat hasil kalkulasi terakhir yang tersimpan">
+                        Lihat Hasil
+                    </a>
+                @endif
                 <form action="{{ route('admin.profile-matching.calculate', [$recruitment, $div]) }}" method="POST">
                     @csrf
                     <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all">
                         Hitung Ranking
                     </button>
                 </form>
-            @else
-                @if($div->profile_matching_results_count > 0)
-                    <a href="{{ route('admin.profile-matching.result', [$recruitment, $div]) }}" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition-colors" title="Lihat hasil kalkulasi terakhir yang tersimpan">
-                        Lihat Hasil (Lama)
-                    </a>
-                @endif
-                <button disabled class="px-4 py-2 bg-slate-200 text-slate-400 text-sm font-semibold rounded-lg cursor-not-allowed" title="Harap lengkapi semua checklist kesiapan data terlebih dahulu">
-                    Data Belum Siap
-                </button>
             @endif
         </div>
     </div>

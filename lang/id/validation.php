@@ -191,8 +191,7 @@ return [
             'required' => 'Angkatan wajib diisi.',
             'integer'  => 'Angkatan harus berupa tahun (angka).',
             'digits'   => 'Angkatan harus berupa 4 digit tahun.',
-            'min'      => 'Angkatan tidak valid.',
-            'max'      => 'Angkatan tidak boleh melebihi tahun saat ini.',
+            'min'      => 'Angkatan minimal tahun 2020.',
         ],
         'foto' => [
             'image' => 'File foto harus berupa gambar (JPG/PNG/JPEG).',
@@ -222,6 +221,8 @@ return [
         'tanggal_tutup' => 'tanggal tutup',
         'berkas_pendukung' => 'berkas persyaratan',
         'motivasi'    => 'motivasi bergabung',
+        'target_value' => 'nilai target',
+        'nama_kriteria' => 'nama kriteria',
     ],
 
 ];

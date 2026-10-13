@@ -35,7 +35,7 @@ class RegisterController extends Controller
             'nim'         => 'required|string|size:9|regex:/^[A-Z0-9]{9}$/|unique:profil_mahasiswa,nim',
             'fakultas_id' => 'required|exists:fakultas,id',
             'jurusan_id'  => 'required|exists:jurusan,id',
-            'angkatan'    => 'required|integer|digits:4|min:2018|max:2030',
+            'angkatan'    => 'required|integer|digits:4|min:2020',
             'no_hp'       => 'nullable|string|regex:/^[0-9]{10,13}$/',
             'password'    => [
                 'required',
@@ -60,8 +60,7 @@ class RegisterController extends Controller
             'jurusan_id.exists'    => 'Jurusan yang dipilih tidak valid.',
             'angkatan.required'    => 'Angkatan wajib diisi.',
             'angkatan.digits'      => 'Angkatan harus 4 digit angka (misal: 2022).',
-            'angkatan.min'         => 'Angkatan minimal tahun 2018.',
-            'angkatan.max'         => 'Angkatan maksimal tahun 2030.',
+            'angkatan.min'         => 'Angkatan minimal tahun 2020.',
             'no_hp.regex'          => 'No. HP harus berupa angka dan panjangnya antara 10 hingga 13 digit.',
             'password.required'    => 'Kata sandi wajib diisi.',
             'password.min'         => 'Kata sandi minimal 8 karakter.',

@@ -37,9 +37,23 @@ class ProfileController extends Controller
             ],
             'fakultas_id' => 'required|exists:fakultas,id',
             'jurusan_id' => 'required|exists:jurusan,id',
-            'angkatan' => 'required|integer|digits:4|min:2018|max:2030',
+            'angkatan' => 'required|integer|digits:4|min:2020',
             'no_hp' => 'nullable|string|regex:/^[0-9]{10,13}$/',
             'foto' => 'nullable|image|max:2048',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'nim.required' => 'NIM wajib diisi.',
+            'nim.size' => 'NIM harus persis 9 karakter.',
+            'nim.regex' => 'Format NIM tidak valid. Gunakan huruf kapital dan angka.',
+            'nim.unique' => 'NIM tersebut sudah terdaftar.',
+            'fakultas_id.required' => 'Fakultas wajib dipilih.',
+            'jurusan_id.required' => 'Jurusan wajib dipilih.',
+            'angkatan.required' => 'Angkatan wajib diisi.',
+            'angkatan.digits' => 'Angkatan harus 4 digit angka (misal: 2022).',
+            'angkatan.min' => 'Angkatan minimal tahun 2020.',
+            'no_hp.regex' => 'No. HP harus berupa angka dan panjangnya antara 10 hingga 13 digit.',
+            'foto.image' => 'File foto harus berupa gambar.',
+            'foto.max' => 'Ukuran foto maksimal 2MB.',
         ]);
 
         $user->update(['name' => $request->name]);

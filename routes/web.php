@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 
     // Mahasiswa Management
     Route::get('/mahasiswa', [\App\Http\Controllers\Superadmin\MahasiswaManagementController::class, 'index'])->name('mahasiswa.index');
+    Route::get('/mahasiswa/{mahasiswa}', [\App\Http\Controllers\Superadmin\MahasiswaManagementController::class, 'show'])->name('mahasiswa.show');
     Route::patch('/mahasiswa/{mahasiswa}/toggle', [\App\Http\Controllers\Superadmin\MahasiswaManagementController::class, 'toggle'])->name('mahasiswa.toggle');
     Route::put('/mahasiswa/{mahasiswa}/reset-password', [\App\Http\Controllers\Superadmin\MahasiswaManagementController::class, 'resetPassword'])->name('mahasiswa.reset-password');
 

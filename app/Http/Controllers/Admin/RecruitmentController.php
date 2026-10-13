@@ -42,6 +42,22 @@ class RecruitmentController extends Controller
             'divisions.*.nama' => 'required|string|max:255',
             'divisions.*.deskripsi' => 'nullable|string',
             'divisions.*.kuota' => 'required|integer|min:1',
+        ], [
+            'judul.required' => 'Judul rekrutmen wajib diisi.',
+            'judul.max' => 'Judul rekrutmen maksimal 255 karakter.',
+            'tanggal_buka.required' => 'Tanggal buka pendaftaran wajib diisi.',
+            'tanggal_buka.date' => 'Format tanggal buka tidak valid.',
+            'tanggal_tutup.required' => 'Tanggal tutup pendaftaran wajib diisi.',
+            'tanggal_tutup.date' => 'Format tanggal tutup tidak valid.',
+            'tanggal_tutup.after' => 'Tanggal tutup harus setelah tanggal buka.',
+            'divisions.required' => 'Rekrutmen wajib memiliki minimal satu divisi.',
+            'divisions.array' => 'Daftar divisi tidak valid.',
+            'divisions.min' => 'Rekrutmen wajib memiliki minimal satu divisi.',
+            'divisions.*.nama.required' => 'Nama divisi wajib diisi.',
+            'divisions.*.nama.max' => 'Nama divisi maksimal 255 karakter.',
+            'divisions.*.kuota.required' => 'Kuota divisi wajib diisi.',
+            'divisions.*.kuota.integer' => 'Kuota divisi harus berupa angka.',
+            'divisions.*.kuota.min' => 'Kuota divisi minimal bernilai 1.',
         ]);
 
         $ormawa = $this->getAdminOrmawa();
@@ -70,8 +86,18 @@ class RecruitmentController extends Controller
     public function edit(Recruitment $recruitment)
     {
         $this->ensureRecruitmentOwnership($recruitment);
+
+        // Rekrutmen yang sudah selesai (diumumkan) tidak bisa diedit sama sekali
+        if ($recruitment->is_announced) {
+            return redirect()
+                ->route('admin.recruitment.show', $recruitment)
+                ->with('info', 'Rekrutmen yang sudah selesai dan diumumkan tidak dapat diedit.');
+        }
+
         $recruitment->load('divisions');
-        return view('admin.recruitment.edit', compact('recruitment'));
+        // Rekrutmen dianggap "ditutup" jika sudah tidak bisa menerima pendaftar baru (bukan draft)
+        $isClosed = !$recruitment->isOpen() && $recruitment->getRawOriginal('status') !== 'draft';
+        return view('admin.recruitment.edit', compact('recruitment', 'isClosed'));
     }
 
     public function update(Request $request, Recruitment $recruitment)
@@ -91,6 +117,23 @@ class RecruitmentController extends Controller
             'divisions.*.nama' => 'required|string|max:255',
             'divisions.*.deskripsi' => 'nullable|string',
             'divisions.*.kuota' => 'required|integer|min:1',
+        ], [
+            'judul.required' => 'Judul rekrutmen wajib diisi.',
+            'judul.max' => 'Judul rekrutmen maksimal 255 karakter.',
+            'tanggal_buka.required' => 'Tanggal buka pendaftaran wajib diisi.',
+            'tanggal_buka.date' => 'Format tanggal buka tidak valid.',
+            'tanggal_tutup.required' => 'Tanggal tutup pendaftaran wajib diisi.',
+            'tanggal_tutup.date' => 'Format tanggal tutup tidak valid.',
+            'tanggal_tutup.after' => 'Tanggal tutup harus setelah tanggal buka.',
+            'status.required' => 'Status rekrutmen wajib dipilih.',
+            'divisions.required' => 'Rekrutmen wajib memiliki minimal satu divisi.',
+            'divisions.array' => 'Daftar divisi tidak valid.',
+            'divisions.min' => 'Rekrutmen wajib memiliki minimal satu divisi.',
+            'divisions.*.nama.required' => 'Nama divisi wajib diisi.',
+            'divisions.*.nama.max' => 'Nama divisi maksimal 255 karakter.',
+            'divisions.*.kuota.required' => 'Kuota divisi wajib diisi.',
+            'divisions.*.kuota.integer' => 'Kuota divisi harus berupa angka.',
+            'divisions.*.kuota.min' => 'Kuota divisi minimal bernilai 1.',
         ]);
 
         if ($recruitment->is_announced && $request->status !== 'selesai') {
@@ -118,6 +161,12 @@ class RecruitmentController extends Controller
             $recruitment->update($request->only([
                 'judul', 'deskripsi', 'persyaratan', 'pesan_setelah_mendaftar', 'tanggal_buka', 'tanggal_tutup', 'status',
             ]));
+
+            // Jika rekrutmen sudah ditutup, jangan proses perubahan divisi apapun
+            $isClosed = !$recruitment->isOpen() && $recruitment->getRawOriginal('status') !== 'draft';
+            if ($isClosed) {
+                return;
+            }
 
             $existingIds = [];
             foreach ($request->divisions as $div) {

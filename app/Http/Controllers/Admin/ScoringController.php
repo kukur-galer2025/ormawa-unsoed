@@ -102,10 +102,20 @@ class ScoringController extends Controller
         $allCriteria = $division->allCriteria()->get();
 
         $rules = ['catatan_wawancara' => 'nullable|string'];
+        $messages = [];
+        $attributes = [];
+
         foreach ($allCriteria as $c) {
-            $rules["scores.{$c->id}"] = 'required|integer|min:1|max:5';
+            $key = "scores.{$c->id}";
+            $rules[$key] = 'required|integer|min:1|max:5';
+            $attributes[$key] = $c->nama_kriteria;
+            $messages["{$key}.required"] = "Nilai kriteria :attribute wajib diisi.";
+            $messages["{$key}.integer"] = "Nilai kriteria :attribute harus berupa angka.";
+            $messages["{$key}.min"] = "Nilai kriteria :attribute minimal adalah 1.";
+            $messages["{$key}.max"] = "Nilai kriteria :attribute maksimal adalah 5.";
         }
-        $validated = $request->validate($rules);
+
+        $validated = $request->validate($rules, $messages, $attributes);
         $inputScores = $validated['scores'] ?? [];
 
         foreach ($allCriteria as $c) {

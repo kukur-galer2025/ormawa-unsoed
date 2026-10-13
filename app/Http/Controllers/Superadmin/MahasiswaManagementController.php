@@ -42,6 +42,18 @@ class MahasiswaManagementController extends Controller
         return view('superadmin.mahasiswa-management.index', compact('mahasiswas', 'fakultas'));
     }
 
+    public function show(User $mahasiswa)
+    {
+        abort_if($mahasiswa->role !== 'mahasiswa', 404);
+        $mahasiswa->load([
+            'mahasiswaProfile.fakultasRel',
+            'mahasiswaProfile.jurusanRel',
+            'applications.recruitment.ormawa',
+            'applications.division',
+        ]);
+        return view('superadmin.mahasiswa-management.show', compact('mahasiswa'));
+    }
+
     public function toggle(User $mahasiswa)
     {
         abort_if($mahasiswa->role !== 'mahasiswa', 404);
