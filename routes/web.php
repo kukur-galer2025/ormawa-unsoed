@@ -28,10 +28,12 @@ Route::post('/logout', [LogoutController::class, 'logout'])->name('logout')->mid
 Route::get('/', function () {
     if (auth()->check()) {
         return match (auth()->user()->role) {
-            'superadmin' => redirect()->route('superadmin.dashboard'),
-            'admin' => redirect()->route('admin.dashboard'),
-            'mahasiswa' => redirect()->route('mahasiswa.dashboard'),
-            default => redirect()->route('login'),
+            'superadmin'   => redirect()->route('superadmin.dashboard'),
+            'admin'        => redirect()->route('admin.dashboard'),
+            'mahasiswa'    => redirect()->route('mahasiswa.dashboard'),
+            'wakil_rektor',
+            'wakil_dekan'  => redirect()->route('pimpinan.dashboard'),
+            default        => redirect()->route('login'),
         };
     }
 
@@ -79,6 +81,15 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 
     // Monitoring Rekrutmen (read-only)
     Route::get('/recruitment-monitoring', [\App\Http\Controllers\Superadmin\RecruitmentMonitoringController::class, 'index'])->name('recruitment-monitoring.index');
+
+    // Pimpinan Management (wakil_rektor & wakil_dekan)
+    Route::get('/pimpinan', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'index'])->name('pimpinan.index');
+    Route::get('/pimpinan/create', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'create'])->name('pimpinan.create');
+    Route::post('/pimpinan', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'store'])->name('pimpinan.store');
+    Route::get('/pimpinan/{pimpinan}/edit', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'edit'])->name('pimpinan.edit');
+    Route::put('/pimpinan/{pimpinan}', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'update'])->name('pimpinan.update');
+    Route::patch('/pimpinan/{pimpinan}/toggle', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'toggleActive'])->name('pimpinan.toggle');
+    Route::delete('/pimpinan/{pimpinan}', [\App\Http\Controllers\Superadmin\PimpinanManagementController::class, 'destroy'])->name('pimpinan.destroy');
 });
 
 use App\Http\Controllers\Admin\PrestasiController;
@@ -163,4 +174,13 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
         // Application History
         Route::get('/applications', [\App\Http\Controllers\Mahasiswa\ApplicationController::class, 'history'])->name('applications.history');
     });
+});
+
+// ============================================================
+// PIMPINAN ROUTES (wakil_rektor & wakil_dekan — READ ONLY)
+// ============================================================
+Route::middleware(['auth', 'role:wakil_rektor,wakil_dekan'])->prefix('pimpinan')->name('pimpinan.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Pimpinan\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/recruitment', [\App\Http\Controllers\Pimpinan\RecruitmentController::class, 'index'])->name('recruitment.index');
+    Route::get('/recruitment/{recruitment}', [\App\Http\Controllers\Pimpinan\RecruitmentController::class, 'show'])->name('recruitment.show');
 });

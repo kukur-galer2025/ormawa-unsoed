@@ -77,4 +77,34 @@ class Recruitment extends Model
 
         return null; // Rekrutmen sedang buka
     }
+
+    /**
+     * Scope: limit recruitments visible to a given user based on their role.
+     * Delegates to the Ormawa's scopeVisibleTo for consistency.
+     *
+     * - wakil_rektor : all recruitments
+     * - wakil_dekan  : only recruitments from ormawa in their faculty
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->isWakilRektor()) {
+            return $query;
+        }
+
+        if ($user->isWakilDekan()) {
+            $fakultasId = $user->fakultas_id;
+
+            return $query->whereHas('ormawa', function ($q) use ($fakultasId) {
+                $q->where(function ($q2) use ($fakultasId) {
+                    $q2->where('fakultas_id', $fakultasId)
+                       ->orWhereHas('jurusanRel', function ($q3) use ($fakultasId) {
+                           $q3->where('fakultas_id', $fakultasId);
+                       });
+                })
+                ->where('tingkat', '!=', 'Universitas');
+            });
+        }
+
+        return $query;
+    }
 }

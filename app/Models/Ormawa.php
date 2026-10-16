@@ -51,4 +51,37 @@ class Ormawa extends Model
     public function programKerjas() { return $this->hasMany(OrmawaProgramKerja::class); }
     public function fakultasRel() { return $this->belongsTo(Fakultas::class, 'fakultas_id'); }
     public function jurusanRel() { return $this->belongsTo(Jurusan::class, 'jurusan_id'); }
+
+    /**
+     * Scope: limit ormawa visible to a given user based on their role.
+     *
+     * - wakil_rektor : sees ALL ormawa
+     * - wakil_dekan  : sees ormawa belonging to their faculty (via fakultas_id or
+     *                  via jurusan.fakultas_id). University-level ormawa excluded.
+     * - others       : no restriction (caller must apply their own logic)
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->isWakilRektor()) {
+            // No additional restriction
+            return $query;
+        }
+
+        if ($user->isWakilDekan()) {
+            $fakultasId = $user->fakultas_id;
+
+            return $query->where(function ($q) use ($fakultasId) {
+                // Ormawa directly linked to this faculty
+                $q->where('fakultas_id', $fakultasId)
+                  // OR Ormawa linked to a jurusan that belongs to this faculty
+                  ->orWhereHas('jurusanRel', function ($q2) use ($fakultasId) {
+                      $q2->where('fakultas_id', $fakultasId);
+                  });
+            })
+            // Exclude university-level ormawa (tingkat = 'Universitas')
+            ->where('tingkat', '!=', 'Universitas');
+        }
+
+        return $query;
+    }
 }

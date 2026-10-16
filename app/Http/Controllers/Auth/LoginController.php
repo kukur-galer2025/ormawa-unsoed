@@ -56,10 +56,12 @@ class LoginController extends Controller
     protected function redirectByRole($user)
     {
         return match ($user->role) {
-            'superadmin' => redirect()->route('superadmin.dashboard'),
-            'admin' => redirect()->route('admin.dashboard'),
-            'mahasiswa' => redirect()->route('mahasiswa.dashboard'),
-            default => redirect('/login'),
+            'superadmin'   => redirect()->route('superadmin.dashboard'),
+            'admin'        => redirect()->route('admin.dashboard'),
+            'mahasiswa'    => redirect()->route('mahasiswa.dashboard'),
+            'wakil_rektor',
+            'wakil_dekan'  => redirect()->route('pimpinan.dashboard'),
+            default        => redirect('/login'),
         };
     }
 }

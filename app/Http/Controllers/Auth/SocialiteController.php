@@ -35,6 +35,12 @@ class SocialiteController extends Controller
                      ->orWhere('email', $googleUser->getEmail())
                      ->first();
 
+        // Block wakil_rektor / wakil_dekan from using Google login
+        if ($user && in_array($user->role, ['wakil_rektor', 'wakil_dekan'])) {
+            return redirect()->route('login')
+                ->with('error', 'Akun pimpinan tidak dapat masuk menggunakan Google. Silakan gunakan email dan kata sandi.');
+        }
+
         if ($user) {
             // Selalu sinkronkan google_id dan avatar terbaru setiap kali user login via Google
             $user->update([
@@ -67,9 +73,11 @@ class SocialiteController extends Controller
 
         // Redirect based on role
         return match ($user->role) {
-            'superadmin' => redirect()->route('superadmin.dashboard'),
-            'admin' => redirect()->route('admin.dashboard'),
-            default => redirect()->route('mahasiswa.dashboard'),
+            'superadmin'  => redirect()->route('superadmin.dashboard'),
+            'admin'       => redirect()->route('admin.dashboard'),
+            'wakil_rektor',
+            'wakil_dekan' => redirect()->route('pimpinan.dashboard'),
+            default       => redirect()->route('mahasiswa.dashboard'),
         };
     }
 }
