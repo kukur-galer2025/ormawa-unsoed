@@ -181,6 +181,8 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
 // ============================================================
 Route::middleware(['auth', 'role:wakil_rektor,wakil_dekan'])->prefix('pimpinan')->name('pimpinan.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Pimpinan\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/ormawa', [\App\Http\Controllers\Pimpinan\OrmawaController::class, 'index'])->name('ormawa.index');
+    Route::get('/ormawa/{ormawa}', [\App\Http\Controllers\Pimpinan\OrmawaController::class, 'show'])->name('ormawa.show');
     Route::get('/recruitment', [\App\Http\Controllers\Pimpinan\RecruitmentController::class, 'index'])->name('recruitment.index');
     Route::get('/recruitment/{recruitment}', [\App\Http\Controllers\Pimpinan\RecruitmentController::class, 'show'])->name('recruitment.show');
 });

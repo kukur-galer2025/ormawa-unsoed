@@ -108,40 +108,56 @@
                             <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Pendaftar</th>
                             <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">NIM</th>
                             <th class="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Skor</th>
-                            <th class="text-center px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Rekomendasi</th>
+                            <th class="text-center px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status / Hasil</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         @foreach($results as $index => $result)
+                        @php
+                            $app = $result->application;
+                            $isTop = ($result->ranking ?? ($index + 1)) <= $division->kuota;
+                        @endphp
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="px-5 py-3">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold
                                     {{ $index === 0 ? 'bg-yellow-100 text-yellow-700' : ($index === 1 ? 'bg-slate-100 text-slate-600' : ($index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-slate-50 text-slate-500')) }}">
-                                    {{ $index + 1 }}
+                                    {{ $result->ranking ?? ($index + 1) }}
                                 </span>
                             </td>
                             <td class="px-5 py-3 font-medium text-slate-800">
-                                {{ $result->application?->user?->name ?? '-' }}
+                                {{ $app?->user?->name ?? '-' }}
                             </td>
                             <td class="px-5 py-3 text-slate-500">
-                                {{ $result->application?->user?->mahasiswaProfile?->nim ?? '-' }}
+                                {{ $app?->user?->mahasiswaProfile?->nim ?? '-' }}
                             </td>
                             <td class="px-5 py-3 text-right font-semibold text-blue-700">
                                 {{ number_format($result->total_score, 3) }}
                             </td>
                             <td class="px-5 py-3 text-center">
-                                @if($result->status_rekomendasi === 'diterima')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                        Diterima
-                                    </span>
-                                @elseif($result->status_rekomendasi === 'ditolak')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                                        Ditolak
-                                    </span>
+                                @if($division->is_finalized)
+                                    @if($app?->status === 'diterima')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                            Diterima
+                                        </span>
+                                    @elseif($app?->status === 'ditolak')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                            Ditolak
+                                        </span>
+                                    @else
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">—</span>
+                                    @endif
                                 @else
-                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">—</span>
+                                    @if($app?->status_rekomendasi === 'direkomendasikan' || $isTop)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                            Masuk Kuota
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                                            Luar Kuota
+                                        </span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

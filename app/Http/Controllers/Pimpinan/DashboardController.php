@@ -16,6 +16,8 @@ class DashboardController extends Controller
         $totalOrmawa = Ormawa::visibleTo($user)->count();
         $totalRekrutmen = Recruitment::visibleTo($user)->count();
         $rekrutmenAktif = Recruitment::visibleTo($user)->reallyOpen()->count();
+        $totalProker = \App\Models\OrmawaProgramKerja::whereHas('ormawa', fn($q) => $q->visibleTo($user))->count();
+        $totalPrestasi = \App\Models\OrmawaPrestasi::whereHas('ormawa', fn($q) => $q->visibleTo($user))->count();
 
         $recentRecruitments = Recruitment::visibleTo($user)
             ->with('ormawa')
@@ -25,7 +27,7 @@ class DashboardController extends Controller
 
         $ormawas = Ormawa::visibleTo($user)
             ->where('is_active', true)
-            ->withCount('recruitments')
+            ->withCount(['recruitments', 'programKerjas', 'prestasis'])
             ->latest()
             ->take(6)
             ->get();
@@ -35,6 +37,8 @@ class DashboardController extends Controller
             'totalOrmawa',
             'totalRekrutmen',
             'rekrutmenAktif',
+            'totalProker',
+            'totalPrestasi',
             'recentRecruitments',
             'ormawas',
         ));
