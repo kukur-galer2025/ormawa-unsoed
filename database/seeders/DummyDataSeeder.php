@@ -156,14 +156,16 @@ class DummyDataSeeder extends Seeder
             $ormawa = Ormawa::where('nama', $rData['ormawa'])->first();
             if (!$ormawa) continue;
 
+            $isClosed = ($rData['ormawa'] === 'BEM Fakultas Teknik');
+
             $recruitment = Recruitment::updateOrCreate(
                 ['ormawa_id' => $ormawa->id, 'judul' => $rData['judul']],
                 [
                     'deskripsi' => $rData['deskripsi'],
                     'persyaratan' => "1. Mahasiswa aktif\n2. Berkomitmen tinggi\n3. Lulus wawancara",
-                    'tanggal_buka' => now()->subDays(5)->format('Y-m-d'),
-                    'tanggal_tutup' => now()->addDays(20)->format('Y-m-d'),
-                    'status' => 'dibuka',
+                    'tanggal_buka' => $isClosed ? now()->subDays(10)->format('Y-m-d') : now()->subDays(5)->format('Y-m-d'),
+                    'tanggal_tutup' => $isClosed ? now()->subDays(1)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d'),
+                    'status' => $isClosed ? 'ditutup' : 'dibuka',
                 ]
             );
 
@@ -223,11 +225,11 @@ class DummyDataSeeder extends Seeder
 
                     $appAnton = Application::updateOrCreate(
                         ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $anton->id],
-                        ['status' => 'terkirim']
+                        ['status' => 'diproses']
                     );
                     $appBudi = Application::updateOrCreate(
                         ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $budi->id],
-                        ['status' => 'terkirim']
+                        ['status' => 'diproses']
                     );
 
                     $antonScores = [2, 5, 3, 5, 4];
