@@ -95,7 +95,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between gap-2">
             <div>
-                <h3 class="font-bold text-slate-800 text-sm sm:text-base">{{ $division->nama_divisi }}</h3>
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base">{{ $division->nama }}</h3>
                 <p class="text-xs text-slate-500 mt-0.5">
                     {{ $division->applications->count() }} pendaftar ·
                     @if($division->is_finalized)
