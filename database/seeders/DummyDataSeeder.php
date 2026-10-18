@@ -128,37 +128,106 @@ class DummyDataSeeder extends Seeder
             }
         }
 
-        // 4. CREATE RECRUITMENTS FOR ALL 5 ORMAWAS
+        // 4. CREATE 2 RECRUITMENTS PER ORMAWA (1 DITUTUP/SIAP HITUNG + 1 DIBUKA/AKTIF PENDAFTARAN)
         $recruitmentData = [
+            // 1. BEM UNSOED
             [
                 'ormawa' => 'BEM UNSOED',
-                'judul' => 'Open Recruitment BEM UNSOED 2026',
-                'deskripsi' => 'Mari bergabung dan berkontribusi untuk kampus dan bangsa melalui BEM UNSOED.',
-                'divisi' => ['Kementerian Sosial', 'Kementerian Komunikasi'],
+                'judul' => 'Seleksi Pengurus Inti BEM UNSOED 2026',
+                'deskripsi' => 'Seleksi pengurus inti BEM UNSOED yang telah menyelesaikan tahap wawancara dan siap dilakukan penetapan ranking.',
+                'status' => 'ditutup',
+                'tanggal_buka' => now()->subDays(12)->format('Y-m-d'),
+                'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
+                'divisi' => ['Biro Administrasi & Keuangan', 'Kementerian Komunikasi & Informasi'],
+            ],
+            [
+                'ormawa' => 'BEM UNSOED',
+                'judul' => 'Open Recruitment Staf Muda BEM UNSOED 2026',
+                'deskripsi' => 'Pendaftaran terbuka untuk mahasiswa baru dan aktif UNSOED yang ingin berkontribusi di kementerian sosial dan PSDM.',
+                'status' => 'dibuka',
+                'tanggal_buka' => now()->subDays(2)->format('Y-m-d'),
+                'tanggal_tutup' => now()->addDays(14)->format('Y-m-d'),
+                'divisi' => ['Kementerian Sosial Masyarakat', 'Kementerian PSDM'],
+            ],
+
+            // 2. UKM Olahraga
+            [
+                'ormawa' => 'UKM Olahraga',
+                'judul' => 'Seleksi Atlet Tim Utama Pekan Olahraga Mahasiswa',
+                'deskripsi' => 'Penilaian dan perankingan atlet cabang futsal dan basket untuk delegasi kejuaraan antarkampus.',
+                'status' => 'ditutup',
+                'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
+                'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
+                'divisi' => ['Atlet Futsal', 'Atlet Basket'],
             ],
             [
                 'ormawa' => 'UKM Olahraga',
-                'judul' => 'Rekrutmen Atlet & Official UKM Olahraga 2026',
-                'deskripsi' => 'Pendaftaran untuk atlet dan pengurus official unit kegiatan olahraga UNSOED.',
-                'divisi' => ['Official Futsal', 'Official Basket'],
+                'judul' => 'Open Recruitment Official & Panitia Rektor Cup 2026',
+                'deskripsi' => 'Pendaftaran terbuka bagi mahasiswa yang berminat menjadi official lapangan dan tim dokumentasi turnamen.',
+                'status' => 'dibuka',
+                'tanggal_buka' => now()->subDays(1)->format('Y-m-d'),
+                'tanggal_tutup' => now()->addDays(15)->format('Y-m-d'),
+                'divisi' => ['Official Pertandingan', 'Divisi Publikasi & Dokumentasi'],
             ],
+
+            // 3. BEM Fakultas Teknik
             [
                 'ormawa' => 'BEM Fakultas Teknik',
                 'judul' => 'Oprec Pengurus BEM FT 2026',
-                'deskripsi' => 'Saatnya Teknik Bergerak! Bergabunglah menjadi pengurus BEM Fakultas Teknik.',
+                'deskripsi' => 'Saatnya Teknik Bergerak! Seleksi pengurus BEM Fakultas Teknik yang telah memasuki tahap perangkingan.',
+                'status' => 'ditutup',
+                'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
+                'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
                 'divisi' => ['Divisi Pengajian', 'Divisi Minat Bakat'],
             ],
             [
+                'ormawa' => 'BEM Fakultas Teknik',
+                'judul' => 'Open Recruitment Volunteer Dies Natalis FT UNSOED',
+                'deskripsi' => 'Pendaftaran terbuka relawan mahasiswa teknik untuk perayaan Dies Natalis Fakultas Teknik UNSOED.',
+                'status' => 'dibuka',
+                'tanggal_buka' => now()->subDays(3)->format('Y-m-d'),
+                'tanggal_tutup' => now()->addDays(12)->format('Y-m-d'),
+                'divisi' => ['Divisi Acara & Panggung', 'Divisi Sponsorship & Humas'],
+            ],
+
+            // 4. HMIF (Himpunan Mahasiswa Informatika)
+            [
                 'ormawa' => 'Himpunan Mahasiswa Informatika (HMIF)',
-                'judul' => 'Open Recruitment Pengurus HMIF UNSOED 2026',
-                'deskripsi' => 'Wadah pengembangan keilmuan teknologi informasi, coding culture, dan kepemimpinan.',
-                'divisi' => ['Divisi Keilmuan & Riset', 'Divisi Media Kreatif'],
+                'judul' => 'Seleksi Panitia Informatics Championship (IC) 2026',
+                'deskripsi' => 'Seleksi kepanitiaan lomba IT nasional tingkat mahasiswa yang telah menyelesaikan proses wawancara.',
+                'status' => 'ditutup',
+                'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
+                'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
+                'divisi' => ['Divisi Kompetisi & Soal', 'Divisi Hubungan Eksternal'],
+            ],
+            [
+                'ormawa' => 'Himpunan Mahasiswa Informatika (HMIF)',
+                'judul' => 'Open Recruitment Pengurus HMIF UNSOED Periode 2026',
+                'deskripsi' => 'Pendaftaran calon pengurus baru HMIF UNSOED untuk divisi riset teknologi dan media kreatif.',
+                'status' => 'dibuka',
+                'tanggal_buka' => now()->subDays(2)->format('Y-m-d'),
+                'tanggal_tutup' => now()->addDays(14)->format('Y-m-d'),
+                'divisi' => ['Divisi Keilmuan & Riset IT', 'Divisi Media Kreatif'],
+            ],
+
+            // 5. BEM Fakultas Ekonomi dan Bisnis
+            [
+                'ormawa' => 'BEM Fakultas Ekonomi dan Bisnis',
+                'judul' => 'Seleksi Delegasi Business Plan & Innovation FEB 2026',
+                'deskripsi' => 'Seleksi calon delegasi kompetisi bisnis mahasiswa FEB yang siap ditentukan rankingnya.',
+                'status' => 'ditutup',
+                'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
+                'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
+                'divisi' => ['Tim Business Plan', 'Tim Marketing Communication'],
             ],
             [
                 'ormawa' => 'BEM Fakultas Ekonomi dan Bisnis',
-                'judul' => 'Open Recruitment Pengurus BEM FEB 2026',
-                'deskripsi' => 'Membangun ekosistem mahasiswa ekonomi dan bisnis yang berjiwa profesional dan inovatif.',
-                'divisi' => ['Divisi Kewirausahaan', 'Divisi Advokasi'],
+                'judul' => 'Open Recruitment Pengurus BEM FEB UNSOED Periode 2026',
+                'deskripsi' => 'Pendaftaran calon pengurus BEM FEB untuk mewadahi minat kewirausahaan dan advokasi mahasiswa.',
+                'status' => 'dibuka',
+                'tanggal_buka' => now()->subDays(2)->format('Y-m-d'),
+                'tanggal_tutup' => now()->addDays(14)->format('Y-m-d'),
+                'divisi' => ['Divisi Kewirausahaan Mahasiswa', 'Divisi Advokasi Kesejahteraan'],
             ],
         ];
 
@@ -170,22 +239,21 @@ class DummyDataSeeder extends Seeder
             $ormawa = Ormawa::where('nama', $rData['ormawa'])->first();
             if (!$ormawa) continue;
 
-            // Semua rekrutmen diset "ditutup" agar siap langsung dihitung di Profile Matching
             $recruitment = Recruitment::updateOrCreate(
                 ['ormawa_id' => $ormawa->id, 'judul' => $rData['judul']],
                 [
                     'deskripsi' => $rData['deskripsi'],
                     'persyaratan' => "1. Mahasiswa aktif\n2. Berkomitmen tinggi\n3. Lulus wawancara",
-                    'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
-                    'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
-                    'status' => 'ditutup',
+                    'tanggal_buka' => $rData['tanggal_buka'],
+                    'tanggal_tutup' => $rData['tanggal_tutup'],
+                    'status' => $rData['status'],
                 ]
             );
 
             foreach ($rData['divisi'] as $divName) {
                 $division = RecruitmentDivision::updateOrCreate(
                     ['recruitment_id' => $recruitment->id, 'nama' => $divName],
-                    ['kuota' => 2, 'deskripsi' => 'Fokus pada pengembangan ' . strtolower($divName)]
+                    ['kuota' => 2, 'deskripsi' => 'Fokus pada pengembangan bidang ' . strtolower($divName)]
                 );
 
                 // Khusus Divisi Pengajian di BEM FT: Gunakan data Anton & Budi sesuai contoh Excel
@@ -263,22 +331,22 @@ class DummyDataSeeder extends Seeder
                     continue;
                 }
 
-                // Untuk seluruh divisi lainnya di 5 Ormawa:
+                // Untuk divisi lainnya:
                 // Buat 2 Aspek (Total Bobot 100%)
                 $aspek1 = Aspect::updateOrCreate(
-                    ['recruitment_division_id' => $division->id, 'nama' => 'Kemampuan (Skill)'],
+                    ['recruitment_division_id' => $division->id, 'nama' => 'Kompetensi Bidang'],
                     ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
                 );
                 $aspek2 = Aspect::updateOrCreate(
-                    ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian & Wawancara'],
+                    ['recruitment_division_id' => $division->id, 'nama' => 'Soft Skill & Wawancara'],
                     ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 2]
                 );
 
                 $kriteria = [
                     ['aspek' => $aspek1, 'nama' => 'Pengalaman & Portofolio', 'tipe' => 'core', 'target' => 4],
-                    ['aspek' => $aspek1, 'nama' => 'Pemahaman Bidang', 'tipe' => 'secondary', 'target' => 3],
-                    ['aspek' => $aspek2, 'nama' => 'Komunikasi & Kerjasama', 'tipe' => 'core', 'target' => 4],
-                    ['aspek' => $aspek2, 'nama' => 'Komitmen & Integritas', 'tipe' => 'secondary', 'target' => 4],
+                    ['aspek' => $aspek1, 'nama' => 'Pemahaman Peran', 'tipe' => 'secondary', 'target' => 3],
+                    ['aspek' => $aspek2, 'nama' => 'Komunikasi & Kerjasama Tim', 'tipe' => 'core', 'target' => 4],
+                    ['aspek' => $aspek2, 'nama' => 'Komitmen & Motivasi', 'tipe' => 'secondary', 'target' => 4],
                 ];
 
                 $critObjects = [];
@@ -296,24 +364,42 @@ class DummyDataSeeder extends Seeder
                     }
                 }
 
-                // Masukkan 2 pendaftar dan berikan nilai lengkap (skala 3-5)
-                $pendaftarAcak = $mahasiswas->random(2);
-                foreach ($pendaftarAcak as $mhs) {
+                // Jika rekrutmen ditutup: masukkan 2 pelamar dengan nilai LENGKAP siap hitung
+                if ($rData['status'] === 'ditutup') {
+                    $pendaftarAcak = $mahasiswas->random(2);
+                    foreach ($pendaftarAcak as $mhs) {
+                        $app = Application::updateOrCreate(
+                            ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $mhs->id],
+                            ['motivasi' => 'Motivasi saya mendaftar di divisi ' . $divName, 'status' => 'diproses']
+                        );
+
+                        foreach ($critObjects as $c) {
+                            $actualScore = rand(3, 5);
+                            $gap = $actualScore - $c->target_value;
+                            ApplicationScore::updateOrCreate(
+                                ['application_id' => $app->id, 'criteria_id' => $c->id],
+                                [
+                                    'actual_value' => $actualScore,
+                                    'gap' => $gap,
+                                    'bobot_gap' => $this->getBobotGap($gap),
+                                ]
+                            );
+                        }
+                        $totalApps++;
+                    }
+                } else {
+                    // Jika rekrutmen dibuka: masukkan 1 pelamar baru (status 'terkirim', belum dinilai)
+                    // Sehingga admin bisa mencoba menguji alur input nilai setelah menutup rekrutmen
+                    $mhsAcak = $mahasiswas->random(1)->first();
                     $app = Application::updateOrCreate(
-                        ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $mhs->id],
-                        ['motivasi' => 'Motivasi saya mendaftar di divisi ' . $divName, 'status' => 'diproses']
+                        ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $mhsAcak->id],
+                        ['motivasi' => 'Saya sangat tertarik bergabung di divisi ' . $divName . ' untuk mengembangkan potensi diri.', 'status' => 'terkirim']
                     );
 
                     foreach ($critObjects as $c) {
-                        $actualScore = rand(3, 5);
-                        $gap = $actualScore - $c->target_value;
                         ApplicationScore::updateOrCreate(
                             ['application_id' => $app->id, 'criteria_id' => $c->id],
-                            [
-                                'actual_value' => $actualScore,
-                                'gap' => $gap,
-                                'bobot_gap' => $this->getBobotGap($gap),
-                            ]
+                            ['actual_value' => null, 'gap' => null, 'bobot_gap' => null]
                         );
                     }
                     $totalApps++;
@@ -321,7 +407,7 @@ class DummyDataSeeder extends Seeder
             }
         }
 
-        echo "5 Rekrutmen untuk seluruh 5 Ormawa berhasil dibuat lengkap dengan Aspek, Kriteria, dan Nilai Pelamar Siap Hitung ({$totalApps} pendaftar).\n";
+        echo "10 Rekrutmen (5 Ditutup/Siap Hitung + 5 Dibuka/Aktif Pendaftaran) untuk seluruh 5 Ormawa berhasil dibuat ({$totalApps} pendaftar).\n";
     }
 
     private function getBobotGap($gap)
