@@ -6,9 +6,13 @@ use App\Models\User;
 use App\Models\MahasiswaProfile;
 use App\Models\Ormawa;
 use App\Models\OrmawaAdmin;
+use App\Models\OrmawaPrestasi;
+use App\Models\OrmawaProgramKerja;
 use App\Models\Recruitment;
 use App\Models\RecruitmentDivision;
+use App\Models\Aspect;
 use App\Models\Criteria;
+use App\Models\CriteriaValueLabel;
 use App\Models\Application;
 use App\Models\ApplicationScore;
 use Illuminate\Database\Seeder;
@@ -17,9 +21,15 @@ class DummyDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create admin accounts
+        // 1. CREATE 5 ADMIN ACCOUNTS (1 for each Ormawa)
         $ormawas = Ormawa::all();
-        $adminNames = ['Admin BEM', 'Admin DPM', 'Admin HMPS IF'];
+        $adminNames = [
+            'Admin BEM UNSOED',
+            'Admin UKM Olahraga',
+            'Admin BEM FT',
+            'Admin HMIF',
+            'Admin BEM FEB',
+        ];
 
         foreach ($ormawas as $index => $ormawa) {
             $admin = User::updateOrCreate(
@@ -33,12 +43,13 @@ class DummyDataSeeder extends Seeder
             );
 
             OrmawaAdmin::updateOrCreate(
-                ['user_id' => $admin->id, 'ormawa_id' => $ormawa->id]
+                ['ormawa_id' => $ormawa->id],
+                ['user_id' => $admin->id]
             );
         }
-        echo "3 Admin accounts created.\n";
+        echo "5 Admin accounts created & linked to 5 Ormawas.\n";
 
-        // Create mahasiswa accounts
+        // 2. CREATE 10 MAHASISWA ACCOUNTS
         $mahasiswaData = [
             ['name' => 'Andi Pratama', 'nim' => 'H1D021001', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2021'],
             ['name' => 'Budi Santoso', 'nim' => 'H1D021002', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2021'],
@@ -46,10 +57,10 @@ class DummyDataSeeder extends Seeder
             ['name' => 'Dian Kusuma', 'nim' => 'H1D022004', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2022'],
             ['name' => 'Eka Putri', 'nim' => 'H1A021005', 'fakultas' => 'Ekonomi dan Bisnis', 'jurusan' => 'Manajemen', 'angkatan' => '2021'],
             ['name' => 'Fajar Hidayat', 'nim' => 'H1A022006', 'fakultas' => 'Ekonomi dan Bisnis', 'jurusan' => 'Akuntansi', 'angkatan' => '2022'],
-            ['name' => 'Gita Lestari', 'nim' => 'H2A021007', 'fakultas' => 'Hukum', 'jurusan' => 'Ilmu Hukum', 'angkatan' => '2021'],
-            ['name' => 'Hadi Nugroho', 'nim' => 'H2A022008', 'fakultas' => 'Hukum', 'jurusan' => 'Ilmu Hukum', 'angkatan' => '2022'],
-            ['name' => 'Indah Sari', 'nim' => 'H3A021009', 'fakultas' => 'FISIP', 'jurusan' => 'Ilmu Komunikasi', 'angkatan' => '2021'],
-            ['name' => 'Joko Widodo', 'nim' => 'H3A022010', 'fakultas' => 'FISIP', 'jurusan' => 'Administrasi Negara', 'angkatan' => '2022'],
+            ['name' => 'Gita Lestari', 'nim' => 'H2A021007', 'fakultas' => 'Hukum', 'jurusan' => 'Hukum', 'angkatan' => '2021'],
+            ['name' => 'Hadi Nugroho', 'nim' => 'H2A022008', 'fakultas' => 'Hukum', 'jurusan' => 'Hukum', 'angkatan' => '2022'],
+            ['name' => 'Indah Sari', 'nim' => 'H3A021009', 'fakultas' => 'Ilmu Sosial dan Ilmu Politik', 'jurusan' => 'Ilmu Komunikasi', 'angkatan' => '2021'],
+            ['name' => 'Joko Widodo', 'nim' => 'H3A022010', 'fakultas' => 'Ilmu Sosial dan Ilmu Politik', 'jurusan' => 'Administrasi Publik', 'angkatan' => '2022'],
         ];
 
         foreach ($mahasiswaData as $i => $data) {
@@ -79,93 +90,95 @@ class DummyDataSeeder extends Seeder
         }
         echo "10 Mahasiswa accounts created.\n";
 
-        // ADD IMAGES TO EXISTING ORMAWAS (Using 3 distinct AI Generated, Locally stored images)
-        foreach ($ormawas as $idx => $ormawa) {
-            $logoMap = [
-                'BEM UNSOED' => 'ormawas/logo_dummy.jpg',
-                'BEM Fakultas Teknik' => 'ormawas/logo_ft.jpg',
-                'UKM Olahraga' => 'ormawas/logo_olahraga.jpg',
-            ];
-            
-            $coverMap = [
-                'BEM UNSOED' => 'ormawas/cover_dummy.jpg',
-                'BEM Fakultas Teknik' => 'ormawas/cover_ft.jpg',
-                'UKM Olahraga' => 'ormawas/cover_olahraga.jpg',
-            ];
+        // 3. LOGOS, COVERS, PRESTASI & PROKER FOR ALL 5 ORMAWAS
+        $prestasiMap = [
+            'BEM UNSOED' => ['judul' => 'Juara 1 Debat Nasional 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
+            'BEM Fakultas Teknik' => ['judul' => 'Juara 1 Kontes Robotika Nasional 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
+            'UKM Olahraga' => ['judul' => 'Juara Umum Liga Futsal Mahasiswa 2023', 'foto' => 'ormawas/prestasi_olahraga.jpg'],
+            'Himpunan Mahasiswa Informatika (HMIF)' => ['judul' => 'Juara 1 Gemastik UX Design 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
+            'BEM Fakultas Ekonomi dan Bisnis' => ['judul' => 'Juara 1 Business Plan Competition 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
+        ];
 
+        $prokerMap = [
+            'BEM UNSOED' => ['nama' => 'Seminar Nasional & Town Hall Mahasiswa', 'foto' => 'ormawas/proker_univ.jpg'],
+            'BEM Fakultas Teknik' => ['nama' => 'Workshop & Pembuatan Prototipe Robot', 'foto' => 'ormawas/proker_ft.jpg'],
+            'UKM Olahraga' => ['nama' => 'Turnamen Olahraga Rektor Cup UNSOED', 'foto' => 'ormawas/proker_olahraga.jpg'],
+            'Himpunan Mahasiswa Informatika (HMIF)' => ['nama' => 'Informatics Championship & Hackathon', 'foto' => 'ormawas/proker_ft.jpg'],
+            'BEM Fakultas Ekonomi dan Bisnis' => ['nama' => 'FEB Entrepreneur Expo & Business Talk', 'foto' => 'ormawas/proker_univ.jpg'],
+        ];
+
+        foreach ($ormawas as $ormawa) {
             $ormawa->update([
-                'logo' => $logoMap[$ormawa->nama] ?? 'ormawas/logo_dummy.jpg',
-                'cover_photo' => $coverMap[$ormawa->nama] ?? 'ormawas/cover_dummy.jpg',
+                'logo' => 'ormawas/logo_dummy.jpg',
+                'cover_photo' => 'ormawas/cover_dummy.jpg',
             ]);
 
-            // Add Prestasi (Achievements)
-            $prestasiMap = [
-                'BEM UNSOED' => ['judul' => 'Juara 1 Debat Nasional 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
-                'BEM Fakultas Teknik' => ['judul' => 'Juara 1 Kontes Robotika Nasional 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
-                'UKM Olahraga' => ['judul' => 'Juara Umum Liga Futsal Mahasiswa 2023', 'foto' => 'ormawas/prestasi_olahraga.jpg'],
-            ];
-
-            // Add Program Kerja (Work Programs)
-            $prokerMap = [
-                'BEM UNSOED' => ['nama' => 'Seminar Nasional & Town Hall', 'foto' => 'ormawas/proker_univ.jpg'],
-                'BEM Fakultas Teknik' => ['nama' => 'Workshop & Pembuatan Prototipe Robot', 'foto' => 'ormawas/proker_ft.jpg'],
-                'UKM Olahraga' => ['nama' => 'Turnamen Olahraga Rektor Cup', 'foto' => 'ormawas/proker_olahraga.jpg'],
-            ];
-
             if (isset($prestasiMap[$ormawa->nama])) {
-                \App\Models\OrmawaPrestasi::updateOrCreate(
+                OrmawaPrestasi::updateOrCreate(
                     ['ormawa_id' => $ormawa->id, 'judul' => $prestasiMap[$ormawa->nama]['judul']],
                     ['deskripsi' => 'Prestasi membanggakan dari ' . $ormawa->nama, 'tahun' => 2023, 'foto' => $prestasiMap[$ormawa->nama]['foto']]
                 );
             }
 
             if (isset($prokerMap[$ormawa->nama])) {
-                \App\Models\OrmawaProgramKerja::updateOrCreate(
+                OrmawaProgramKerja::updateOrCreate(
                     ['ormawa_id' => $ormawa->id, 'nama' => $prokerMap[$ormawa->nama]['nama']],
                     ['deskripsi' => 'Program kerja unggulan dari ' . $ormawa->nama, 'foto' => $prokerMap[$ormawa->nama]['foto']]
                 );
             }
         }
 
-        // CREATE 3 RECRUITMENTS (1 for each Ormawa)
+        // 4. CREATE RECRUITMENTS FOR ALL 5 ORMAWAS
         $recruitmentData = [
             [
                 'ormawa' => 'BEM UNSOED',
-                'judul' => 'Open Recruitment BEM UNSOED 2024',
+                'judul' => 'Open Recruitment BEM UNSOED 2026',
                 'deskripsi' => 'Mari bergabung dan berkontribusi untuk kampus dan bangsa melalui BEM UNSOED.',
-                'divisi' => ['Kementerian Sosial', 'Kementerian Komunikasi', 'Kementerian PSDM'],
-            ],
-            [
-                'ormawa' => 'BEM Fakultas Teknik',
-                'judul' => 'Oprec Pengurus BEM FT 2024',
-                'deskripsi' => 'Saatnya Teknik Bergerak! Bergabunglah menjadi pengurus BEM Fakultas Teknik.',
-                'divisi' => ['Divisi Pengajian', 'Divisi Minat Bakat', 'Divisi Humas'],
+                'divisi' => ['Kementerian Sosial', 'Kementerian Komunikasi'],
             ],
             [
                 'ormawa' => 'UKM Olahraga',
-                'judul' => 'Rekrutmen Atlet & Official UKM Olahraga',
-                'deskripsi' => 'Pendaftaran untuk atlet dan pengurus official unit kegiatan olahraga.',
-                'divisi' => ['Official Futsal', 'Official Voli', 'Official Basket'],
-            ]
+                'judul' => 'Rekrutmen Atlet & Official UKM Olahraga 2026',
+                'deskripsi' => 'Pendaftaran untuk atlet dan pengurus official unit kegiatan olahraga UNSOED.',
+                'divisi' => ['Official Futsal', 'Official Basket'],
+            ],
+            [
+                'ormawa' => 'BEM Fakultas Teknik',
+                'judul' => 'Oprec Pengurus BEM FT 2026',
+                'deskripsi' => 'Saatnya Teknik Bergerak! Bergabunglah menjadi pengurus BEM Fakultas Teknik.',
+                'divisi' => ['Divisi Pengajian', 'Divisi Minat Bakat'],
+            ],
+            [
+                'ormawa' => 'Himpunan Mahasiswa Informatika (HMIF)',
+                'judul' => 'Open Recruitment Pengurus HMIF UNSOED 2026',
+                'deskripsi' => 'Wadah pengembangan keilmuan teknologi informasi, coding culture, dan kepemimpinan.',
+                'divisi' => ['Divisi Keilmuan & Riset', 'Divisi Media Kreatif'],
+            ],
+            [
+                'ormawa' => 'BEM Fakultas Ekonomi dan Bisnis',
+                'judul' => 'Open Recruitment Pengurus BEM FEB 2026',
+                'deskripsi' => 'Membangun ekosistem mahasiswa ekonomi dan bisnis yang berjiwa profesional dan inovatif.',
+                'divisi' => ['Divisi Kewirausahaan', 'Divisi Advokasi'],
+            ],
         ];
 
         $mahasiswas = User::where('role', 'mahasiswa')->get();
         $totalApps = 0;
+        $defaultLabels = ['Sangat Kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat Baik'];
 
         foreach ($recruitmentData as $rData) {
             $ormawa = Ormawa::where('nama', $rData['ormawa'])->first();
             if (!$ormawa) continue;
 
-            $isClosed = ($rData['ormawa'] === 'BEM Fakultas Teknik');
-
+            // Semua rekrutmen diset "ditutup" agar siap langsung dihitung di Profile Matching
             $recruitment = Recruitment::updateOrCreate(
                 ['ormawa_id' => $ormawa->id, 'judul' => $rData['judul']],
                 [
                     'deskripsi' => $rData['deskripsi'],
                     'persyaratan' => "1. Mahasiswa aktif\n2. Berkomitmen tinggi\n3. Lulus wawancara",
-                    'tanggal_buka' => $isClosed ? now()->subDays(10)->format('Y-m-d') : now()->subDays(5)->format('Y-m-d'),
-                    'tanggal_tutup' => $isClosed ? now()->subDays(1)->format('Y-m-d') : now()->addDays(20)->format('Y-m-d'),
-                    'status' => $isClosed ? 'ditutup' : 'dibuka',
+                    'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
+                    'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
+                    'status' => 'ditutup',
                 ]
             );
 
@@ -175,13 +188,13 @@ class DummyDataSeeder extends Seeder
                     ['kuota' => 2, 'deskripsi' => 'Fokus pada pengembangan ' . strtolower($divName)]
                 );
 
-                // Jika divisi ini adalah "Divisi Pengajian", gunakan data sesuai tes (Excel)
+                // Khusus Divisi Pengajian di BEM FT: Gunakan data Anton & Budi sesuai contoh Excel
                 if ($divName === 'Divisi Pengajian') {
-                    $aspek1 = \App\Models\Aspect::updateOrCreate(
+                    $aspek1 = Aspect::updateOrCreate(
                         ['recruitment_division_id' => $division->id, 'nama' => 'Kecerdasan'],
                         ['bobot' => 40.50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
                     );
-                    $aspek2 = \App\Models\Aspect::updateOrCreate(
+                    $aspek2 = Aspect::updateOrCreate(
                         ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian'],
                         ['bobot' => 59.50, 'cf_percentage' => 70, 'sf_percentage' => 30, 'urutan' => 2]
                     );
@@ -194,7 +207,6 @@ class DummyDataSeeder extends Seeder
                         ['aspek' => $aspek2, 'nama' => 'Tanggung Jawab', 'tipe' => 'core', 'target' => 4],
                     ];
 
-                    $defaultLabels = ['Sangat Kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat Baik'];
                     $kObjects = [];
                     foreach ($kriteria as $idx => $k) {
                         $crit = Criteria::updateOrCreate(
@@ -203,7 +215,7 @@ class DummyDataSeeder extends Seeder
                         );
                         $kObjects[] = $crit;
                         foreach ($defaultLabels as $lIdx => $label) {
-                            \App\Models\CriteriaValueLabel::updateOrCreate(
+                            CriteriaValueLabel::updateOrCreate(
                                 ['criteria_id' => $crit->id, 'value' => $lIdx + 1],
                                 ['label' => $label]
                             );
@@ -215,13 +227,13 @@ class DummyDataSeeder extends Seeder
                         ['email' => 'anton@ormawa-unsoed.test'],
                         ['name' => 'Anton', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
                     );
-                    \App\Models\MahasiswaProfile::firstOrCreate(['user_id' => $anton->id], ['nim' => 'A10001']);
+                    MahasiswaProfile::firstOrCreate(['user_id' => $anton->id], ['nim' => 'A10001']);
 
                     $budi = User::firstOrCreate(
                         ['email' => 'budi@ormawa-unsoed.test'],
                         ['name' => 'Budi', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
                     );
-                    \App\Models\MahasiswaProfile::firstOrCreate(['user_id' => $budi->id], ['nim' => 'A10002']);
+                    MahasiswaProfile::firstOrCreate(['user_id' => $budi->id], ['nim' => 'A10002']);
 
                     $appAnton = Application::updateOrCreate(
                         ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $anton->id],
@@ -236,13 +248,11 @@ class DummyDataSeeder extends Seeder
                     $budiScores = [4, 5, 4, 3, 1];
 
                     foreach ($kObjects as $i => $crit) {
-                        // Anton
                         $gapA = $antonScores[$i] - $crit->target_value;
                         ApplicationScore::updateOrCreate(
                             ['application_id' => $appAnton->id, 'criteria_id' => $crit->id],
                             ['actual_value' => $antonScores[$i], 'gap' => $gapA, 'bobot_gap' => $this->getBobotGap($gapA)]
                         );
-                        // Budi
                         $gapB = $budiScores[$i] - $crit->target_value;
                         ApplicationScore::updateOrCreate(
                             ['application_id' => $appBudi->id, 'criteria_id' => $crit->id],
@@ -250,69 +260,68 @@ class DummyDataSeeder extends Seeder
                         );
                     }
                     $totalApps += 2;
-                    continue; // Skip the default dummy data insertion for this division
+                    continue;
                 }
 
-                // Aspek & Kriteria Standar untuk divisi lainnya
-                $aspek1 = \App\Models\Aspect::updateOrCreate(
+                // Untuk seluruh divisi lainnya di 5 Ormawa:
+                // Buat 2 Aspek (Total Bobot 100%)
+                $aspek1 = Aspect::updateOrCreate(
                     ['recruitment_division_id' => $division->id, 'nama' => 'Kemampuan (Skill)'],
                     ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
                 );
-                $aspek2 = \App\Models\Aspect::updateOrCreate(
-                    ['recruitment_division_id' => $division->id, 'nama' => 'Wawancara'],
+                $aspek2 = Aspect::updateOrCreate(
+                    ['recruitment_division_id' => $division->id, 'nama' => 'Kepribadian & Wawancara'],
                     ['bobot' => 50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 2]
                 );
 
                 $kriteria = [
-                    ['aspek' => $aspek1, 'nama' => 'Pengalaman', 'tipe' => 'core'],
-                    ['aspek' => $aspek1, 'nama' => 'Pengetahuan', 'tipe' => 'secondary'],
-                    ['aspek' => $aspek2, 'nama' => 'Komunikasi', 'tipe' => 'core'],
-                    ['aspek' => $aspek2, 'nama' => 'Attitude', 'tipe' => 'secondary'],
+                    ['aspek' => $aspek1, 'nama' => 'Pengalaman & Portofolio', 'tipe' => 'core', 'target' => 4],
+                    ['aspek' => $aspek1, 'nama' => 'Pemahaman Bidang', 'tipe' => 'secondary', 'target' => 3],
+                    ['aspek' => $aspek2, 'nama' => 'Komunikasi & Kerjasama', 'tipe' => 'core', 'target' => 4],
+                    ['aspek' => $aspek2, 'nama' => 'Komitmen & Integritas', 'tipe' => 'secondary', 'target' => 4],
                 ];
 
-                $defaultLabels = ['Sangat Kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat Baik'];
+                $critObjects = [];
                 foreach ($kriteria as $idx => $k) {
                     $crit = Criteria::updateOrCreate(
                         ['aspect_id' => $k['aspek']->id, 'nama_kriteria' => $k['nama']],
-                        ['tipe' => $k['tipe'], 'target_value' => 4, 'urutan' => $idx + 1]
+                        ['tipe' => $k['tipe'], 'target_value' => $k['target'], 'urutan' => $idx + 1]
                     );
+                    $critObjects[] = $crit;
                     foreach ($defaultLabels as $lIdx => $label) {
-                        \App\Models\CriteriaValueLabel::updateOrCreate(
+                        CriteriaValueLabel::updateOrCreate(
                             ['criteria_id' => $crit->id, 'value' => $lIdx + 1],
                             ['label' => $label]
                         );
                     }
                 }
 
-                // Masukkan 2 pendaftar acak ke tiap divisi ini
+                // Masukkan 2 pendaftar dan berikan nilai lengkap (skala 3-5)
                 $pendaftarAcak = $mahasiswas->random(2);
                 foreach ($pendaftarAcak as $mhs) {
                     $app = Application::updateOrCreate(
                         ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $mhs->id],
-                        ['motivasi' => 'Motivasi saya untuk divisi ' . $divName, 'status' => 'terkirim']
+                        ['motivasi' => 'Motivasi saya mendaftar di divisi ' . $divName, 'status' => 'diproses']
                     );
-                    
-                    // Beri nilai dummy
-                    foreach ($division->allCriteria()->get() as $c) {
+
+                    foreach ($critObjects as $c) {
+                        $actualScore = rand(3, 5);
+                        $gap = $actualScore - $c->target_value;
                         ApplicationScore::updateOrCreate(
                             ['application_id' => $app->id, 'criteria_id' => $c->id],
-                            ['actual_value' => null, 'gap' => null, 'bobot_gap' => null]
+                            [
+                                'actual_value' => $actualScore,
+                                'gap' => $gap,
+                                'bobot_gap' => $this->getBobotGap($gap),
+                            ]
                         );
                     }
                     $totalApps++;
                 }
             }
         }
-        echo "3 Recruitments and {$totalApps} Applications created.\n";
 
-        echo "\nDummy data seeding complete!\n";
-        echo "Login credentials (all passwords: 'password'):\n";
-        echo "  Superadmin: superadmin@ormawa-unsoed.test\n";
-        echo "  Admin BEM:  admin1@ormawa-unsoed.test\n";
-        echo "  Admin DPM:  admin2@ormawa-unsoed.test\n";
-        echo "  Admin HMPS: admin3@ormawa-unsoed.test\n";
-        echo "  Mahasiswa (Anton): anton@ormawa-unsoed.test\n";
-        echo "  Mahasiswa (Budi):  budi@ormawa-unsoed.test\n";
+        echo "5 Rekrutmen untuk seluruh 5 Ormawa berhasil dibuat lengkap dengan Aspek, Kriteria, dan Nilai Pelamar Siap Hitung ({$totalApps} pendaftar).\n";
     }
 
     private function getBobotGap($gap)
