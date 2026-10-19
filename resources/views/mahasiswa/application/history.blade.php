@@ -52,7 +52,7 @@
                                 </div>
                                 <p class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    <span>Periode: {{ $recruitment->tanggal_buka->format('d M Y') }} s/d {{ $recruitment->tanggal_tutup->format('d M Y') }}</span>
+                                    <span>Periode: {{ $recruitment->tanggal_buka?->format('d M Y') ?? '-' }} s/d {{ $recruitment->tanggal_tutup?->format('d M Y') ?? '-' }}</span>
                                 </p>
                             </div>
                             <span class="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-xs whitespace-nowrap self-start sm:self-center">
