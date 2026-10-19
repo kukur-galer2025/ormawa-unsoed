@@ -63,16 +63,16 @@ class Recruitment extends Model
      */
     public function getClosureMessageAttribute(): ?string
     {
+        if ($this->status === 'ditutup' || ($this->tanggal_tutup && now()->startOfDay() > $this->tanggal_tutup->endOfDay())) {
+            return 'Pendaftaran untuk rekrutmen ini sudah ditutup.';
+        }
+
         if ($this->status !== 'dibuka') {
             return 'Rekrutmen ini sedang tidak aktif atau belum dipublikasikan sepenuhnya.';
         }
 
-        if (now()->startOfDay() < $this->tanggal_buka->startOfDay()) {
+        if ($this->tanggal_buka && now()->startOfDay() < $this->tanggal_buka->startOfDay()) {
             return 'Rekrutmen ini belum dibuka. Pendaftaran baru dimulai pada ' . $this->tanggal_buka->format('d M Y') . '.';
-        }
-
-        if (now()->startOfDay() > $this->tanggal_tutup->endOfDay()) {
-            return 'Rekrutmen ini sudah ditutup sejak ' . $this->tanggal_tutup->format('d M Y') . '.';
         }
 
         return null; // Rekrutmen sedang buka

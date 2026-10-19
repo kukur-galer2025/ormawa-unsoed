@@ -69,8 +69,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/login');
         $this->assertGuest();
-        // Berdasarkan spesifikasi umum sistem: error kredensial tidak valid
-        $this->assertEquals('Email atau password salah.', session('error'));
+        $this->assertEquals('Password yang Anda masukkan salah.', session('error'));
     }
 
     /**

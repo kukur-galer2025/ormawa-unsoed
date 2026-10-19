@@ -47,7 +47,9 @@ class RecruitmentBrowseController extends Controller
         $ormawa->load(['prestasis' => function($query) {
             $query->orderBy('tahun', 'desc')->latest();
         }, 'programKerjas', 'recruitments' => function($query) {
-            $query->reallyOpen();
+            $query->whereIn('status', ['dibuka', 'ditutup', 'selesai'])
+                  ->orderByRaw("CASE WHEN status = 'dibuka' THEN 1 WHEN status = 'ditutup' THEN 2 ELSE 3 END")
+                  ->latest();
         }, 'recruitments.divisions' => function ($query) {
             // Load divisions with application count
             $query->withCount('applications');

@@ -58,11 +58,11 @@
     </div>
 </div>
 
-<h2 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-4">Rekrutmen Dibuka</h2>
+<h2 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-4">Daftar Rekrutmen Organisasi</h2>
 
 @if($ormawa->recruitments->isEmpty())
     <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 text-center shadow-sm">
-        <p class="text-sm sm:text-base text-slate-500">Saat ini tidak ada rekrutmen yang sedang dibuka oleh ormawa ini.</p>
+        <p class="text-sm sm:text-base text-slate-500">Saat ini tidak ada rekrutmen yang tersedia pada ormawa ini.</p>
     </div>
 @else
     <div class="space-y-6" x-data="{ modalOpen: false, selectedRecruitment: null, selectedDivision: null, isSubmitting: false }">
@@ -118,8 +118,9 @@
                                     Kuota Penuh
                                 </button>
                             @elseif(!$rec->isOpen())
-                                <button disabled class="w-full py-2.5 bg-slate-100 text-slate-500 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed border border-slate-200">
-                                    @if(now() < $rec->tanggal_buka) Belum Dibuka @else Ditutup @endif
+                                <button @click="modalOpen = true; selectedRecruitment = {{ $rec->id }}; selectedDivision = {{ $div->id }}" class="w-full py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-xs sm:text-sm font-bold rounded-lg border border-slate-300 hover:border-red-300 transition-colors shadow-xs flex items-center justify-center gap-1.5">
+                                    <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    <span>Lamar Divisi Ini (Ditutup)</span>
                                 </button>
                             @else
                                 <button @click="modalOpen = true; selectedRecruitment = {{ $rec->id }}; selectedDivision = {{ $div->id }}" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors shadow-sm">
