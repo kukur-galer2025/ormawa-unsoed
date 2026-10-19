@@ -14,7 +14,7 @@
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-xs tracking-wider">
-                <tr><th class="px-6 py-4">Organisasi</th><th class="px-6 py-4">Rekrutmen & Divisi</th><th class="px-6 py-4">Tanggal Daftar</th><th class="px-6 py-4">Status</th></tr>
+                <tr><th class="px-6 py-4">Organisasi</th><th class="px-6 py-4">Rekrutmen & Divisi</th><th class="px-6 py-4">Tanggal Daftar</th><th class="px-6 py-4">Status Lamaran</th></tr>
             </thead>
             @foreach($applications->groupBy('recruitment_id') as $recId => $group)
             @php
@@ -30,8 +30,32 @@
                     </td>
                     <td class="px-6 py-4 align-top" colspan="3">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <p class="text-sm font-semibold text-indigo-700">{{ $recruitment->judul }}</p>
-                            <span class="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="text-sm font-semibold text-indigo-700">{{ $recruitment->judul }}</p>
+                                    @if($recruitment->isOpen())
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                            DIBUKA
+                                        </span>
+                                    @elseif($recruitment->status === 'selesai')
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                            SELESAI
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                            DITUTUP
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>Periode: {{ $recruitment->tanggal_buka->format('d M Y') }} s/d {{ $recruitment->tanggal_tutup->format('d M Y') }}</span>
+                                </p>
+                            </div>
+                            <span class="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-xs whitespace-nowrap self-start sm:self-center">
                                 Mendaftar di {{ $group->count() }} Divisi
                             </span>
                         </div>
