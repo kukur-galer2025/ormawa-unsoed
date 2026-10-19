@@ -90,43 +90,216 @@ class DummyDataSeeder extends Seeder
         }
         echo "10 Mahasiswa accounts created.\n";
 
-        // 3. LOGOS, COVERS, PRESTASI & PROKER FOR ALL 5 ORMAWAS
-        $prestasiMap = [
-            'BEM UNSOED' => ['judul' => 'Juara 1 Debat Nasional 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
-            'BEM Fakultas Teknik' => ['judul' => 'Juara 1 Kontes Robotika Nasional 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
-            'UKM Olahraga' => ['judul' => 'Juara Umum Liga Futsal Mahasiswa 2023', 'foto' => 'ormawas/prestasi_olahraga.jpg'],
-            'Himpunan Mahasiswa Informatika (HMIF)' => ['judul' => 'Juara 1 Gemastik UX Design 2023', 'foto' => 'ormawas/prestasi_ft.jpg'],
-            'BEM Fakultas Ekonomi dan Bisnis' => ['judul' => 'Juara 1 Business Plan Competition 2023', 'foto' => 'ormawas/prestasi_univ.jpg'],
-        ];
-
-        $prokerMap = [
-            'BEM UNSOED' => ['nama' => 'Seminar Nasional & Town Hall Mahasiswa', 'foto' => 'ormawas/proker_univ.jpg'],
-            'BEM Fakultas Teknik' => ['nama' => 'Workshop & Pembuatan Prototipe Robot', 'foto' => 'ormawas/proker_ft.jpg'],
-            'UKM Olahraga' => ['nama' => 'Turnamen Olahraga Rektor Cup UNSOED', 'foto' => 'ormawas/proker_olahraga.jpg'],
-            'Himpunan Mahasiswa Informatika (HMIF)' => ['nama' => 'Informatics Championship & Hackathon', 'foto' => 'ormawas/proker_ft.jpg'],
-            'BEM Fakultas Ekonomi dan Bisnis' => ['nama' => 'FEB Entrepreneur Expo & Business Talk', 'foto' => 'ormawas/proker_univ.jpg'],
+        // 3. LOGOS, COVERS, PRESTASI & PROKER FOR ALL 5 ORMAWAS (WEBP COMPRESSED & COMPLETE)
+        $ormawaAssetMap = [
+            'BEM UNSOED' => [
+                'logo' => 'ormawas/bem_unsoed_logo.webp',
+                'cover_photo' => 'ormawas/bem_unsoed_cover.webp',
+                'prestasis' => [
+                    [
+                        'judul' => 'Juara 1 Debat Konstitusi Mahasiswa Nasional 2024',
+                        'deskripsi' => 'Meraih Juara 1 pada Kompetisi Debat Hukum & Konstitusi Mahasiswa Tingkat Nasional Piala Mahkamah Konstitusi RI.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/bem_unsoed_prestasi_1.webp',
+                    ],
+                    [
+                        'judul' => 'Penghargaan BEM Terbaik Kategori Tata Kelola Aspiratif',
+                        'deskripsi' => 'Dianugerahi penghargaan tata kelola advokasi dan transparansi organisasi terbaik tingkat perguruan tinggi se-Indonesia.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/bem_unsoed_prestasi_2.webp',
+                    ],
+                ],
+                'prokers' => [
+                    [
+                        'nama' => 'Sidang Umum & Town Hall Aspirasi Mahasiswa',
+                        'deskripsi' => 'Forum dialog terbuka dan penyerapan aspirasi seluruh mahasiswa UNSOED bersama jajaran pimpinan universitas untuk evaluasi fasilitas dan kebijakan kampus.',
+                        'foto' => 'ormawas/bem_unsoed_proker_1.webp',
+                    ],
+                    [
+                        'nama' => 'Soedirman Art & Culture Festival 2026',
+                        'deskripsi' => 'Pagelaran akbar seni budaya nusantara, parade ormawa, kompetisi karya cipta, dan konser musik kolaborasi antarfakultas.',
+                        'foto' => 'ormawas/bem_unsoed_proker_2.webp',
+                    ],
+                    [
+                        'nama' => 'Soedirman Mengabdi: Desa Binaan Banyumas',
+                        'deskripsi' => 'Program pengabdian masyarakat berkelanjutan yang mencakup revitalisasi literasi sekolah dasar, pelatihan UMKM desa, dan pemeriksaan kesehatan gratis.',
+                        'foto' => 'ormawas/bem_unsoed_proker_3.webp',
+                    ],
+                ],
+            ],
+            'UKM Olahraga' => [
+                'logo' => 'ormawas/ukm_olahraga_logo.webp',
+                'cover_photo' => 'ormawas/ukm_olahraga_cover.webp',
+                'prestasis' => [
+                    [
+                        'judul' => 'Juara Umum Pekan Olahraga Mahasiswa Daerah (POMDA) 2024',
+                        'deskripsi' => 'Membawa kontingen atlet UNSOED menorehkan gelar Juara Umum dengan perolehan 12 medali emas, 8 perak, dan 5 perunggu.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/ukm_olahraga_prestasi_1.webp',
+                    ],
+                    [
+                        'judul' => 'Medali Emas Cabang Futsal Antarmahasiswa Nasional 2023',
+                        'deskripsi' => 'Meraih medali emas divisi utama pada kejuaraan futsal antarmahasiswa se-Indonesia setelah mengalahkan tim universitas terkemuka.',
+                        'tahun' => 2023,
+                        'foto' => 'ormawas/ukm_olahraga_prestasi_2.webp',
+                    ],
+                ],
+                'prokers' => [
+                    [
+                        'nama' => 'Turnamen Akbar Rektor Cup UNSOED 2026',
+                        'deskripsi' => 'Pesta olahraga tahunan mempertandingkan 8 cabang olahraga (futsal, basket, bulutangkis, voli, catur, atletik, tenis meja, taekwondo) antarfakultas.',
+                        'foto' => 'ormawas/ukm_olahraga_proker_1.webp',
+                    ],
+                    [
+                        'nama' => 'Pemusatan Latihan & Coaching Clinic Atlet Kampus',
+                        'deskripsi' => 'Program pelatihan intensif periodik yang menghadirkan atlet pelatnas dan instruktur profesional berlisensi.',
+                        'foto' => 'ormawas/ukm_olahraga_proker_2.webp',
+                    ],
+                    [
+                        'nama' => 'Soedirman Fun Run 10K & Kampanye Bugar',
+                        'deskripsi' => 'Ajang lari massal yang diikuti ribuan mahasiswa, dosen, dan masyarakat umum untuk mengampanyekan gaya hidup sehat dan sportivitas.',
+                        'foto' => 'ormawas/ukm_olahraga_proker_3.webp',
+                    ],
+                ],
+            ],
+            'BEM Fakultas Teknik' => [
+                'logo' => 'ormawas/bem_ft_logo.webp',
+                'cover_photo' => 'ormawas/bem_ft_cover.webp',
+                'prestasis' => [
+                    [
+                        'judul' => 'Juara 1 Kontes Robot Indonesia (KRI) Nasional 2024',
+                        'deskripsi' => 'Menjuarai divisi robot sepak bola humanoid tingkat nasional yang diselenggarakan Puspresnas Kemendikbudristek.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/bem_ft_prestasi_1.webp',
+                    ],
+                    [
+                        'judul' => 'Juara 2 National Bridge Design & Structural Competition 2024',
+                        'deskripsi' => 'Meraih peringkat kedua nasional dalam perancangan jembatan dengan efisiensi beban struktural tertinggi.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/bem_ft_prestasi_2.webp',
+                    ],
+                ],
+                'prokers' => [
+                    [
+                        'nama' => 'Engineering Innovation Expo & Pameran Riset',
+                        'deskripsi' => 'Ekshibisi karya teknologi terapan mahasiswa teknik mulai dari otomasi industri, rancang bangun sipil, energi terbarukan, hingga sistem embedded.',
+                        'foto' => 'ormawas/bem_ft_proker_1.webp',
+                    ],
+                    [
+                        'nama' => 'Workshop IoT & Prototyping Robotika Cerdas',
+                        'deskripsi' => 'Pelatihan perancangan perangkat Internet of Things berbasis mikroprosesor dengan pengujian sensor langsung di laboratorium.',
+                        'foto' => 'ormawas/bem_ft_proker_2.webp',
+                    ],
+                    [
+                        'nama' => 'Bakti Teknik: Listrik Tenaga Surya Pedesaan',
+                        'deskripsi' => 'Aksi nyata pengabdian mahasiswa teknik merancang dan memasang instalasi panel surya untuk fasilitas umum desa terpencil di Banyumas.',
+                        'foto' => 'ormawas/bem_ft_proker_3.webp',
+                    ],
+                ],
+            ],
+            'Himpunan Mahasiswa Informatika (HMIF)' => [
+                'logo' => 'ormawas/hmif_logo.webp',
+                'cover_photo' => 'ormawas/hmif_cover.webp',
+                'prestasis' => [
+                    [
+                        'judul' => 'Juara 1 Gemastik Divisi UX & Software Design 2024',
+                        'deskripsi' => 'Mendapatkan Medali Emas Gemastik XVII kategori User Experience Design dengan aplikasi inklusif ramah disabilitas.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/hmif_prestasi_1.webp',
+                    ],
+                    [
+                        'judul' => 'Juara 1 National Capture The Flag (Cybersecurity) 2023',
+                        'deskripsi' => 'Menjuarai kompetisi keamanan siber, reverse engineering, dan web penetration testing tingkat nasional.',
+                        'tahun' => 2023,
+                        'foto' => 'ormawas/hmif_prestasi_2.webp',
+                    ],
+                ],
+                'prokers' => [
+                    [
+                        'nama' => 'Informatics Championship & 24H Hackathon',
+                        'deskripsi' => 'Kompetisi coding 24 jam nonstop tingkat nasional untuk membangun solusi kecerdasan buatan dan aplikasi web berdampak sosial tinggi.',
+                        'foto' => 'ormawas/hmif_proker_1.webp',
+                    ],
+                    [
+                        'nama' => 'Intensive Bootcamp Fullstack & AI Engineering',
+                        'deskripsi' => 'Pelatihan terstruktur selama 8 pekan yang membimbing mahasiswa menguasai arsitektur backend modern, frontend framework, dan model machine learning.',
+                        'foto' => 'ormawas/hmif_proker_2.webp',
+                    ],
+                    [
+                        'nama' => 'HMIF Tech Talk bersama Software Engineer Unicorn',
+                        'deskripsi' => 'Seminar industri menghadirkan Tech Lead dari startup ternama untuk berbagi best practice microservices dan tips karir tech engineer.',
+                        'foto' => 'ormawas/hmif_proker_3.webp',
+                    ],
+                ],
+            ],
+            'BEM Fakultas Ekonomi dan Bisnis' => [
+                'logo' => 'ormawas/bem_feb_logo.webp',
+                'cover_photo' => 'ormawas/bem_feb_cover.webp',
+                'prestasis' => [
+                    [
+                        'judul' => 'Juara 1 National Business Plan Competition 2024',
+                        'deskripsi' => 'Meraih juara 1 dalam kompetisi rancang bisnis startup hijau berskala nasional dengan investor funding readiness tinggi.',
+                        'tahun' => 2024,
+                        'foto' => 'ormawas/bem_feb_prestasi_1.webp',
+                    ],
+                    [
+                        'judul' => 'Best Paper Award International Economic Research Forum 2023',
+                        'deskripsi' => 'Karya tulis riset mahasiswa FEB dinobatkan sebagai Best Paper dalam forum riset ekonomi pembangunan Asia Tenggara.',
+                        'tahun' => 2023,
+                        'foto' => 'ormawas/bem_feb_prestasi_2.webp',
+                    ],
+                ],
+                'prokers' => [
+                    [
+                        'nama' => 'FEB Entrepreneurship Expo & Bazaar UMKM 2026',
+                        'deskripsi' => 'Ajang gelar produk startup mahasiswa FEB, mentoring model bisnis bersama venture capitalist, serta bazaar produk UMKM lokal.',
+                        'foto' => 'ormawas/bem_feb_proker_1.webp',
+                    ],
+                    [
+                        'nama' => 'National Capital Market Summit & Sekolah Pasar Modal',
+                        'deskripsi' => 'Pendidikan literasi finansial, simulasi trading saham, dan seminar pasar modal berkolaborasi dengan Bursa Efek Indonesia (BEI).',
+                        'foto' => 'ormawas/bem_feb_proker_2.webp',
+                    ],
+                    [
+                        'nama' => 'Youth Economic Leadership & Policy Forum 2026',
+                        'deskripsi' => 'Konferensi kepemimpinan muda yang membahas prospek ekonomi makro dan rekomendasi kebijakan pembangunan berkelanjutan.',
+                        'foto' => 'ormawas/bem_feb_proker_3.webp',
+                    ],
+                ],
+            ],
         ];
 
         foreach ($ormawas as $ormawa) {
-            $ormawa->update([
-                'logo' => 'ormawas/logo_dummy.jpg',
-                'cover_photo' => 'ormawas/cover_dummy.jpg',
-            ]);
+            if (isset($ormawaAssetMap[$ormawa->nama])) {
+                $data = $ormawaAssetMap[$ormawa->nama];
+                $ormawa->update([
+                    'logo' => $data['logo'],
+                    'cover_photo' => $data['cover_photo'],
+                ]);
 
-            if (isset($prestasiMap[$ormawa->nama])) {
-                OrmawaPrestasi::updateOrCreate(
-                    ['ormawa_id' => $ormawa->id, 'judul' => $prestasiMap[$ormawa->nama]['judul']],
-                    ['deskripsi' => 'Prestasi membanggakan dari ' . $ormawa->nama, 'tahun' => 2023, 'foto' => $prestasiMap[$ormawa->nama]['foto']]
-                );
-            }
+                foreach ($data['prestasis'] as $prestasi) {
+                    OrmawaPrestasi::updateOrCreate(
+                        ['ormawa_id' => $ormawa->id, 'judul' => $prestasi['judul']],
+                        [
+                            'deskripsi' => $prestasi['deskripsi'],
+                            'tahun' => $prestasi['tahun'],
+                            'foto' => $prestasi['foto'],
+                        ]
+                    );
+                }
 
-            if (isset($prokerMap[$ormawa->nama])) {
-                OrmawaProgramKerja::updateOrCreate(
-                    ['ormawa_id' => $ormawa->id, 'nama' => $prokerMap[$ormawa->nama]['nama']],
-                    ['deskripsi' => 'Program kerja unggulan dari ' . $ormawa->nama, 'foto' => $prokerMap[$ormawa->nama]['foto']]
-                );
+                foreach ($data['prokers'] as $proker) {
+                    OrmawaProgramKerja::updateOrCreate(
+                        ['ormawa_id' => $ormawa->id, 'nama' => $proker['nama']],
+                        [
+                            'deskripsi' => $proker['deskripsi'],
+                            'foto' => $proker['foto'],
+                        ]
+                    );
+                }
             }
         }
+        echo "Logos, Covers, Proker & Prestasi (WebP) berhasil di-seed untuk 5 ormawa.\n";
 
         // 4. CREATE 2 RECRUITMENTS PER ORMAWA (1 DITUTUP/SIAP HITUNG + 1 DIBUKA/AKTIF PENDAFTARAN)
         $recruitmentData = [

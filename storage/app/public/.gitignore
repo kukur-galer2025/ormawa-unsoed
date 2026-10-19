@@ -1,2 +1,5 @@
 *
 !.gitignore
+!ormawas/
+!ormawas/**
+
