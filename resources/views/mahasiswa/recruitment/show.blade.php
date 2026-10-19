@@ -118,7 +118,16 @@
                                     Kuota Penuh
                                 </button>
                             @elseif(!$rec->isOpen())
-                                <button @click="modalOpen = true; selectedRecruitment = {{ $rec->id }}; selectedDivision = {{ $div->id }}" class="w-full py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-xs sm:text-sm font-bold rounded-lg border border-slate-300 hover:border-red-300 transition-colors shadow-xs flex items-center justify-center gap-1.5">
+                                <button type="button"
+                                        @click="Swal.fire({
+                                            title: 'Gagal!',
+                                            text: 'Pendaftaran untuk rekrutmen ini sudah ditutup.',
+                                            icon: 'error',
+                                            confirmButtonColor: '#ef4444',
+                                            confirmButtonText: 'Tutup',
+                                            customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+                                        })"
+                                        class="w-full py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-xs sm:text-sm font-bold rounded-lg border border-slate-300 hover:border-red-300 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                                     <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                     <span>Lamar Divisi Ini (Ditutup)</span>
                                 </button>
