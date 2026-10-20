@@ -223,8 +223,24 @@
                         <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all">Simpan Nilai Pelamar</button>
                     </div>
                     @else
-                    <div class="mt-4 p-3 bg-slate-100 text-slate-500 text-center rounded-xl text-sm font-medium">
-                        Form terkunci. Nilai tidak dapat diubah lagi.
+                    <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 text-amber-800 text-sm font-medium">
+                            <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <span>Form terkunci. Nilai tidak dapat diubah lagi.</span>
+                        </div>
+                        <button type="button"
+                                onclick="Swal.fire({
+                                    title: 'Nilai Terkunci!',
+                                    text: 'Divisi ini sudah difinalisasi. Nilai tidak dapat diubah lagi.',
+                                    icon: 'warning',
+                                    confirmButtonColor: '#4f46e5',
+                                    confirmButtonText: 'Tutup',
+                                    customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+                                })"
+                                class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold rounded-lg border border-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0">
+                            <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <span>Simpan Nilai (Terkunci)</span>
+                        </button>
                     </div>
                     @endif
                 </form>

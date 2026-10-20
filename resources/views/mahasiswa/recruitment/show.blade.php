@@ -110,8 +110,19 @@
                             </div>
                             
                             @if($isApplied)
-                                <button disabled class="w-full py-2.5 bg-slate-100 text-green-600 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed border border-green-200">
-                                    Sudah Melamar
+                                <button type="button"
+                                        @click="Swal.fire({
+                                            title: 'Perhatian',
+                                            text: 'Anda sudah mendaftar pada divisi ini.',
+                                            icon: 'info',
+                                            confirmButtonColor: '#2563eb',
+                                            confirmButtonText: 'Tutup',
+                                            customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+                                        })"
+                                        class="w-full py-2.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs sm:text-sm font-bold rounded-lg border border-green-300 hover:border-green-400 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                                        title="Klik untuk melihat status pendaftaran Anda">
+                                    <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Sudah Melamar</span>
                                 </button>
                             @elseif($isFull)
                                 <button disabled class="w-full py-2.5 bg-red-50 text-red-500 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed">

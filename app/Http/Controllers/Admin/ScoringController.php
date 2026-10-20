@@ -34,7 +34,7 @@ class ScoringController extends Controller
 
         if (!in_array($recruitment->status, ['ditutup', 'selesai'])) {
             return redirect()->route('admin.recruitment.show', $recruitment)
-                ->with('error', 'Input nilai hanya bisa dilakukan setelah rekrutmen ditutup.');
+                ->with('error', 'Input nilai hanya bisa dilakukan saat status rekrutmen sedang "ditutup".');
         }
 
         $recruitment->load('divisions');
