@@ -73,6 +73,9 @@
         </div>
     </div>
 
+    {{-- Global modal portal: rendered at body level, outside overflow-y-auto container --}}
+    @stack('modals')
+
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.0/dist/sweetalert2.all.min.js" integrity="sha256-BpyIV7Y3e2pnqy8TQGXxsmOiQ4jXNDTOTBGL2TEJeDY=" crossorigin="anonymous"></script>
     <script>
