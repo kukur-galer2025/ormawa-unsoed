@@ -75,7 +75,7 @@
                     </div>
                     <div class="min-w-0 flex-1">
                         <span id="ormawaPickerLabel"
-                              class="block text-sm truncate {{ $oldOrmawaId ? 'font-semibold text-slate-800' : 'font-normal text-slate-400' }}">
+                              class="block text-sm break-words leading-snug {{ $oldOrmawaId ? 'font-semibold text-slate-800' : 'font-normal text-slate-400' }}">
                             {{ $oldOrmawaName }}
                         </span>
                         <span id="ormawaPickerSub" class="text-xs {{ $oldOrmawaId ? 'text-blue-500' : 'text-slate-400' }}">
@@ -131,8 +131,11 @@
                 box-shadow:0 25px 60px -12px rgba(0,0,0,0.3),0 0 0 1px rgba(148,163,184,0.15);
                 overflow:hidden;">
 
+        {{-- Mobile drag handle --}}
+        <div class="mobile-drag-handle" style="display:none;width:36px;height:4px;background:#cbd5e1;border-radius:999px;margin:0.625rem auto 0 auto;flex-shrink:0;"></div>
+
         {{-- Header --}}
-        <div style="padding:1.25rem 1.5rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to right,#f8fafc,#fff);flex-shrink:0;">
+        <div class="ormawa-modal-header" style="padding:1.25rem 1.5rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to right,#f8fafc,#fff);flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:0.75rem;">
                 <div style="width:2.5rem;height:2.5rem;border-radius:0.875rem;background:#dbeafe;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -150,7 +153,7 @@
         </div>
 
         {{-- Search --}}
-        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid #f1f5f9;flex-shrink:0;">
+        <div class="ormawa-search-wrap" style="padding:0.875rem 1.25rem;border-bottom:1px solid #f1f5f9;flex-shrink:0;">
             <div style="position:relative;">
                 <input type="text" id="ormawaPickerSearch" autocomplete="off"
                        placeholder="Cari nama ormawa..."
@@ -170,7 +173,7 @@
         </div>
 
         {{-- List --}}
-        <div id="ormawaPickerList" style="overflow-y:auto;flex:1;padding:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
+        <div id="ormawaPickerList" style="overflow-y:auto;flex:1;padding:0.875rem;display:flex;flex-direction:column;gap:0.5rem;-webkit-overflow-scrolling:touch;">
             <div class="ormawa-item-reset"
                  onclick="selectOrmawa('', 'Pilih Ormawa...')"
                  style="padding:0.75rem 1rem;border-radius:0.875rem;border:1.5px dashed #e2e8f0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.15s;"
@@ -186,23 +189,25 @@
                 @endphp
                 @if($isTaken && !$isCurrent)
                 {{-- Sudah Punya Admin --}}
-                <div class="ormawa-item"
+                <div class="ormawa-item ormawa-item-taken"
                      data-nama="{{ strtolower($o->nama) }}"
                      onclick="rejectTakenOrmawa()"
-                     style="padding:0.875rem;border-radius:0.875rem;border:1px solid rgba(251,191,36,0.5);background:rgba(255,251,235,0.5);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;transition:background 0.15s;"
+                     title="{{ $o->nama }}"
+                     style="padding:0.75rem 0.875rem;border-radius:0.875rem;border:1px solid rgba(251,191,36,0.5);background:rgba(255,251,235,0.5);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;transition:background 0.15s;"
                      onmouseenter="this.style.background='rgba(255,251,235,0.9)'" onmouseleave="this.style.background='rgba(255,251,235,0.5)'">
-                    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;flex:1;">
                         <div style="width:2.25rem;height:2.25rem;border-radius:0.625rem;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0;">
                             {{ strtoupper(substr($o->nama, 0, 2)) }}
                         </div>
-                        <div style="min-width:0;">
-                            <div style="font-size:0.875rem;font-weight:600;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $o->nama }}</div>
-                            <div style="font-size:0.7rem;color:#94a3b8;text-transform:capitalize;">{{ $o->tingkat ?? 'Ormawa' }}</div>
+                        <div style="min-width:0;flex:1;">
+                            <div class="ormawa-item-nama" style="font-size:0.875rem;font-weight:600;color:#374151;line-height:1.35;word-break:break-word;">{{ $o->nama }}</div>
+                            <div style="font-size:0.7rem;color:#94a3b8;text-transform:capitalize;margin-top:2px;">{{ $o->tingkat ?? 'Ormawa' }}</div>
                         </div>
                     </div>
-                    <span style="flex-shrink:0;padding:0.25rem 0.625rem;border-radius:999px;font-size:0.7rem;font-weight:700;background:#fef3c7;color:#b45309;border:1px solid #fcd34d;white-space:nowrap;display:flex;align-items:center;gap:0.375rem;">
+                    <span class="ormawa-badge-taken" style="flex-shrink:0;padding:0.25rem 0.625rem;border-radius:999px;font-size:0.7rem;font-weight:700;background:#fef3c7;color:#b45309;border:1px solid #fcd34d;white-space:nowrap;display:flex;align-items:center;gap:0.375rem;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        Sudah Ada Admin
+                        <span class="badge-text-full">Sudah Ada Admin</span>
+                        <span class="badge-text-short">Ada Admin</span>
                     </span>
                 </div>
                 @else
@@ -212,18 +217,19 @@
                      data-id="{{ $o->id }}"
                      data-label="{{ $o->nama }}"
                      onclick="selectOrmawa('{{ $o->id }}', '{{ addslashes($o->nama) }}')"
-                     style="padding:0.875rem;border-radius:0.875rem;border:1px solid {{ $isCurrent ? '#93c5fd' : '#e2e8f0' }};background:{{ $isCurrent ? 'rgba(239,246,255,0.9)' : '#fff' }};cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;transition:all 0.15s;"
+                     title="{{ $o->nama }}"
+                     style="padding:0.75rem 0.875rem;border-radius:0.875rem;border:1px solid {{ $isCurrent ? '#93c5fd' : '#e2e8f0' }};background:{{ $isCurrent ? 'rgba(239,246,255,0.9)' : '#fff' }};cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;transition:all 0.15s;"
                      onmouseenter="if(!this.classList.contains('selected'))this.style.borderColor='#93c5fd',this.style.background='rgba(239,246,255,0.5)'"
                      onmouseleave="if(!this.classList.contains('selected'))this.style.borderColor='#e2e8f0',this.style.background='#fff'">
-                    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;flex:1;">
                         <div class="ormawa-avatar"
                              style="width:2.25rem;height:2.25rem;border-radius:0.625rem;background:{{ $isCurrent ? '#2563eb' : '#f1f5f9' }};color:{{ $isCurrent ? '#fff' : '#475569' }};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0;transition:all 0.15s;">
                             {{ strtoupper(substr($o->nama, 0, 2)) }}
                         </div>
-                        <div style="min-width:0;">
-                            <div class="ormawa-nama"
-                                 style="font-size:0.875rem;font-weight:600;color:{{ $isCurrent ? '#1e40af' : '#1e293b' }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $o->nama }}</div>
-                            <div style="display:flex;align-items:center;gap:0.375rem;">
+                        <div style="min-width:0;flex:1;">
+                            <div class="ormawa-nama ormawa-item-nama"
+                                 style="font-size:0.875rem;font-weight:600;color:{{ $isCurrent ? '#1e40af' : '#1e293b' }};line-height:1.35;word-break:break-word;">{{ $o->nama }}</div>
+                            <div style="display:flex;align-items:center;gap:0.375rem;margin-top:2px;">
                                 <span style="font-size:0.7rem;color:#94a3b8;text-transform:capitalize;">{{ $o->tingkat ?? 'Ormawa' }}</span>
                                 @if($isCurrent)
                                 <span style="font-size:0.65rem;font-weight:700;padding:0.1rem 0.375rem;border-radius:999px;background:#e0e7ff;color:#4338ca;">Saat Ini</span>
@@ -262,7 +268,16 @@
 </div>
 
 <style>
-/* Mobile: bottom-sheet */
+/* Responsive Ormawa Picker & Bottom Sheet */
+.ormawa-item-nama {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.ormawa-badge-taken .badge-text-short {
+    display: none;
+}
+
 @media (max-width: 600px) {
     #ormawaPickerCard {
         top: auto !important;
@@ -271,10 +286,47 @@
         right: 0 !important;
         transform: none !important;
         width: 100% !important;
-        max-height: 88vh !important;
+        max-height: 90vh !important;
         border-radius: 1.5rem 1.5rem 0 0 !important;
     }
+    .mobile-drag-handle {
+        display: block !important;
+    }
+    .ormawa-modal-header {
+        padding: 0.875rem 1rem 0.75rem !important;
+    }
+    .ormawa-search-wrap {
+        padding: 0.625rem 1rem !important;
+    }
+    #ormawaPickerList {
+        padding: 0.625rem !important;
+        gap: 0.375rem !important;
+    }
+    .ormawa-item {
+        padding: 0.625rem 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+    .ormawa-item-nama {
+        font-size: 0.8125rem !important;
+        line-height: 1.3 !important;
+    }
+    .ormawa-badge-taken {
+        padding: 0.2rem 0.45rem !important;
+        font-size: 0.65rem !important;
+    }
+    .ormawa-badge-taken .badge-text-full {
+        display: none !important;
+    }
+    .ormawa-badge-taken .badge-text-short {
+        display: inline !important;
+    }
+    .ormawa-badge {
+        padding: 0.2rem 0.5rem !important;
+        font-size: 0.65rem !important;
+    }
 }
+
+/* Smooth open/close animation */
 #ormawaPicker.is-open #ormawaPickerBackdrop { animation: fadeIn 0.2s ease; }
 #ormawaPicker.is-open #ormawaPickerCard { animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1); }
 @media (min-width: 601px) {
