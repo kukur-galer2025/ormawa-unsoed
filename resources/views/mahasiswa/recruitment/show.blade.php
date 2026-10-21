@@ -65,18 +65,18 @@
         <p class="text-sm sm:text-base text-slate-500">Saat ini tidak ada rekrutmen yang tersedia pada ormawa ini.</p>
     </div>
 @else
-    <div class="space-y-6" x-data="{ modalOpen: false, selectedRecruitment: null, selectedDivision: null, isSubmitting: false }">
+    <div class="space-y-6" x-data="recruitmentApp()">
         @foreach($ormawa->recruitments as $rec)
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100">
                 <div class="flex justify-between items-start mb-2 gap-4">
                     <h3 class="text-base sm:text-lg md:text-xl font-bold text-slate-800">{{ $rec->judul }}</h3>
                     @if($rec->isOpen())
-                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 animate-pulse">BUKA</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 animate-pulse shrink-0">BUKA</span>
                     @elseif(now() < $rec->tanggal_buka)
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200">SEGERA</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200 shrink-0">SEGERA</span>
                     @else
-                        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200">DITUTUP</span>
+                        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200 shrink-0">DITUTUP</span>
                     @endif
                 </div>
                 <p class="text-xs sm:text-sm text-slate-600 mb-4">{{ $rec->deskripsi }}</p>
@@ -99,7 +99,7 @@
                                 <div class="flex justify-between items-start mb-2">
                                     <h5 class="font-bold text-slate-800">{{ $div->nama }}</h5>
                                     @if($isApplied)
-                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded">TERDAFTAR</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded shrink-0">TERDAFTAR</span>
                                     @endif
                                 </div>
                                 <p class="text-xs text-slate-500 mb-3">{{ $div->deskripsi ?: 'Tidak ada deskripsi' }}</p>
@@ -111,14 +111,7 @@
                             
                             @if($isApplied)
                                 <button type="button"
-                                        @click="Swal.fire({
-                                            title: 'Perhatian',
-                                            text: 'Anda sudah mendaftar pada divisi ini.',
-                                            icon: 'info',
-                                            confirmButtonColor: '#2563eb',
-                                            confirmButtonText: 'Tutup',
-                                            customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
-                                        })"
+                                        @click="showAlreadyApplied()"
                                         class="w-full py-2.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs sm:text-sm font-bold rounded-lg border border-green-300 hover:border-green-400 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                                         title="Klik untuk melihat status pendaftaran Anda">
                                     <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -130,20 +123,13 @@
                                 </button>
                             @elseif(!$rec->isOpen())
                                 <button type="button"
-                                        @click="Swal.fire({
-                                            title: 'Gagal!',
-                                            text: 'Pendaftaran untuk rekrutmen ini sudah ditutup.',
-                                            icon: 'error',
-                                            confirmButtonColor: '#ef4444',
-                                            confirmButtonText: 'Tutup',
-                                            customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
-                                        })"
+                                        @click="showClosed()"
                                         class="w-full py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-xs sm:text-sm font-bold rounded-lg border border-slate-300 hover:border-red-300 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                                     <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                     <span>Lamar Divisi Ini (Ditutup)</span>
                                 </button>
                             @else
-                                <button @click="modalOpen = true; selectedRecruitment = {{ $rec->id }}; selectedDivision = {{ $div->id }}" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors shadow-sm">
+                                <button @click="openModal({{ $rec->id }}, {{ $div->id }})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors shadow-sm">
                                     Lamar Divisi Ini
                                 </button>
                             @endif
@@ -164,17 +150,21 @@
         <!-- Modal Pendaftaran -->
         <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="modalOpen = false"></div>
+                <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="resetModal()"></div>
 
                 <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block w-full max-w-lg p-4 sm:p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
                     <div class="flex justify-between items-center border-b border-slate-100 pb-3 sm:pb-4 mb-3 sm:mb-4">
                         <h3 class="text-base sm:text-lg font-bold text-slate-800">Form Pendaftaran</h3>
-                        <button @click="modalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <button type="button" @click="resetModal()" class="text-slate-400 hover:text-slate-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
                     
-                    <form :action="'{{ url('mahasiswa/recruitment') }}/' + selectedRecruitment + '/apply'" method="POST" enctype="multipart/form-data" class="space-y-4" @submit="if(isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true;">
+                    <form :action="'{{ url('mahasiswa/recruitment') }}/' + selectedRecruitment + '/apply'"
+                          method="POST"
+                          enctype="multipart/form-data"
+                          class="space-y-4"
+                          @submit.prevent="handleSubmit($event)">
                         @csrf
                         <input type="hidden" name="recruitment_division_id" :value="selectedDivision">
                         
@@ -185,8 +175,21 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Berkas Persyaratan (jadi satu)</label>
-                            <input type="file" name="berkas_pendukung" accept=".pdf,.doc,.docx" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            <p class="text-xs text-slate-500 mt-1">Format PDF/DOC/DOCX, maksimal 5MB. Opsional.</p>
+                            <input type="file"
+                                   name="berkas_pendukung"
+                                   id="berkasPendukungInput"
+                                   accept=".pdf,.doc,.docx"
+                                   @change="validateFile($event)"
+                                   class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between mt-1.5 text-xs text-slate-500">
+                                <span>Format PDF/DOC/DOCX, maksimal 5MB. Opsional.</span>
+                                <template x-if="selectedFileName">
+                                    <span class="text-emerald-600 font-semibold flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        <span x-text="selectedFileSize"></span>
+                                    </span>
+                                </template>
+                            </div>
                         </div>
                         
                         <div class="pt-2">
@@ -206,3 +209,118 @@
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+function recruitmentApp() {
+    return {
+        modalOpen: false,
+        selectedRecruitment: null,
+        selectedDivision: null,
+        isSubmitting: false,
+        selectedFileName: '',
+        selectedFileSize: '',
+
+        openModal(recruitmentId, divisionId) {
+            this.selectedRecruitment = recruitmentId;
+            this.selectedDivision = divisionId;
+            this.modalOpen = true;
+        },
+
+        showAlreadyApplied() {
+            Swal.fire({
+                title: 'Perhatian',
+                text: 'Anda sudah mendaftar pada divisi ini.',
+                icon: 'info',
+                confirmButtonColor: '#2563eb',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+            });
+        },
+
+        showClosed() {
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'Pendaftaran untuk rekrutmen ini sudah ditutup.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Tutup',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+            });
+        },
+
+        validateFile(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                this.selectedFileName = '';
+                this.selectedFileSize = '';
+                return;
+            }
+
+            const maxBytes = 5 * 1024 * 1024;
+            const allowedExtensions = ['pdf', 'doc', 'docx'];
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                event.target.value = '';
+                this.selectedFileName = '';
+                this.selectedFileSize = '';
+                Swal.fire({
+                    title: 'Format File Tidak Sesuai!',
+                    text: 'Format file .' + fileExtension + ' tidak didukung. Harap pilih berkas dengan format PDF, DOC, atau DOCX.',
+                    icon: 'warning',
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'Tutup',
+                    customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+                });
+                return;
+            }
+
+            if (file.size > maxBytes) {
+                event.target.value = '';
+                this.selectedFileName = '';
+                this.selectedFileSize = '';
+                Swal.fire({
+                    title: 'Ukuran Berkas Terlalu Besar!',
+                    html: '<div class="text-sm text-slate-600">Ukuran berkas yang dipilih adalah <b>' + fileSizeMB + ' MB</b>, melebihi batas maksimal <b>5 MB</b>.<br><span class="text-xs text-slate-400 mt-2 block">Silakan pilih berkas lain atau kompres file terlebih dahulu.</span></div>',
+                    icon: 'warning',
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'Mengerti',
+                    customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg' }
+                });
+                return;
+            }
+
+            this.selectedFileName = fileName;
+            this.selectedFileSize = (file.size < 1024 * 1024)
+                ? (file.size / 1024).toFixed(0) + ' KB'
+                : fileSizeMB + ' MB';
+        },
+
+        handleSubmit(event) {
+            const fileInput = event.target.querySelector('input[name=berkas_pendukung]');
+            if (fileInput && fileInput.files[0] && fileInput.files[0].size > 5 * 1024 * 1024) {
+                this.validateFile({ target: fileInput });
+                return;
+            }
+            if (this.isSubmitting) {
+                return;
+            }
+            this.isSubmitting = true;
+            event.target.submit();
+        },
+
+        resetModal() {
+            this.modalOpen = false;
+            this.isSubmitting = false;
+            this.selectedFileName = '';
+            this.selectedFileSize = '';
+            const fileInput = document.getElementById('berkasPendukungInput');
+            if (fileInput) fileInput.value = '';
+        }
+    };
+}
+</script>
+@endpush
