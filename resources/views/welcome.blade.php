@@ -132,7 +132,7 @@
                 </div>
                 <div class="text-center">
                     <p class="text-2xl sm:text-4xl font-black text-white tracking-tight">{{ $stats['mahasiswa'] }}</p>
-                    <p class="text-[10px] sm:text-xs font-semibold text-white/60 mt-1 uppercase tracking-wider">Pendaftar</p>
+                    <p class="text-[10px] sm:text-xs font-semibold text-white/60 mt-1 uppercase tracking-wider">Mahasiswa Terdaftar</p>
                 </div>
             </div>
 
