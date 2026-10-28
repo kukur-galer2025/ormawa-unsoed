@@ -117,16 +117,15 @@
                                     <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                     <span>Sudah Melamar</span>
                                 </button>
-                            @elseif($isFull)
-                                <button disabled class="w-full py-2.5 bg-red-50 text-red-500 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed">
-                                    Kuota Penuh
-                                </button>
                             @elseif(!$rec->isOpen())
-                                <button type="button"
-                                        @click="showClosed()"
-                                        class="w-full py-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 text-xs sm:text-sm font-bold rounded-lg border border-slate-300 hover:border-red-300 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                                    <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                    <span>Lamar Divisi Ini (Ditutup)</span>
+                                {{-- Rekrutmen ditutup: prioritas di atas kuota penuh --}}
+                                <button disabled class="w-full py-2.5 bg-slate-100 text-slate-400 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed border border-slate-200 flex items-center justify-center gap-1.5">
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    <span>Rekrutmen Ditutup</span>
+                                </button>
+                            @elseif($isFull)
+                                <button disabled class="w-full py-2.5 bg-red-50 text-red-500 text-xs sm:text-sm font-bold rounded-lg cursor-not-allowed border border-red-100">
+                                    Kuota Penuh
                                 </button>
                             @else
                                 <button @click="openModal({{ $rec->id }}, {{ $div->id }})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors shadow-sm">
