@@ -351,7 +351,7 @@ class DummyDataSeeder extends Seeder
                 'status' => 'ditutup',
                 'tanggal_buka' => now()->subDays(10)->format('Y-m-d'),
                 'tanggal_tutup' => now()->subDays(1)->format('Y-m-d'),
-                'divisi' => ['Divisi Pengajian', 'Divisi Minat Bakat'],
+                'divisi' => ['Divisi Medkominfo', 'Divisi Minat Bakat'],
             ],
             [
                 'ormawa' => 'BEM Fakultas Teknik',
@@ -429,8 +429,8 @@ class DummyDataSeeder extends Seeder
                     ['kuota' => 2, 'deskripsi' => 'Fokus pada pengembangan bidang ' . strtolower($divName)]
                 );
 
-                // Khusus Divisi Pengajian di BEM FT: Gunakan data Anton & Budi sesuai contoh Excel
-                if ($divName === 'Divisi Pengajian') {
+                // Khusus Divisi Medkominfo di BEM FT: Gunakan data Anton & Budi sesuai contoh Excel
+                if ($divName === 'Divisi Medkominfo') {
                     $aspek1 = Aspect::updateOrCreate(
                         ['recruitment_division_id' => $division->id, 'nama' => 'Kecerdasan'],
                         ['bobot' => 40.50, 'cf_percentage' => 60, 'sf_percentage' => 40, 'urutan' => 1]
