@@ -486,7 +486,7 @@ class DummyDataSeeder extends Seeder
                     );
 
                     $antonScores = [2, 5, 3, 5, 4];
-                    $budiScores = [4, 5, 4, 3, 1];
+                    $budiScores  = [4, 5, 4, 3, 1];
 
                     foreach ($kObjects as $i => $crit) {
                         $gapA = $antonScores[$i] - $crit->target_value;
@@ -501,6 +501,42 @@ class DummyDataSeeder extends Seeder
                         );
                     }
                     $totalApps += 2;
+
+                    // 8 pendaftar tambahan dengan nilai lebih rendah dari Anton & Budi
+                    $extraApplicants = [
+                        ['email' => 'candra@ormawa-unsoed.test',   'name' => 'Candra Wijaya',  'nim' => 'A10003', 'scores' => [1, 3, 2, 3, 2]],
+                        ['email' => 'dewi@ormawa-unsoed.test',     'name' => 'Dewi Rahayu',    'nim' => 'A10004', 'scores' => [2, 2, 1, 2, 3]],
+                        ['email' => 'eko@ormawa-unsoed.test',      'name' => 'Eko Prasetyo',   'nim' => 'A10005', 'scores' => [3, 1, 2, 2, 1]],
+                        ['email' => 'fitri@ormawa-unsoed.test',    'name' => 'Fitri Handayani','nim' => 'A10006', 'scores' => [1, 2, 3, 1, 2]],
+                        ['email' => 'galih@ormawa-unsoed.test',    'name' => 'Galih Saputra',  'nim' => 'A10007', 'scores' => [2, 3, 1, 3, 1]],
+                        ['email' => 'hana@ormawa-unsoed.test',     'name' => 'Hana Pertiwi',   'nim' => 'A10008', 'scores' => [1, 1, 2, 2, 3]],
+                        ['email' => 'irvan@ormawa-unsoed.test',    'name' => 'Irvan Maulana',  'nim' => 'A10009', 'scores' => [3, 2, 1, 1, 2]],
+                        ['email' => 'julia@ormawa-unsoed.test',    'name' => 'Julia Sari',     'nim' => 'A10010', 'scores' => [2, 1, 3, 2, 1]],
+                    ];
+
+                    foreach ($extraApplicants as $extra) {
+                        $extraUser = User::firstOrCreate(
+                            ['email' => $extra['email']],
+                            ['name' => $extra['name'], 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
+                        );
+                        MahasiswaProfile::firstOrCreate(['user_id' => $extraUser->id], ['nim' => $extra['nim']]);
+
+                        $extraApp = Application::updateOrCreate(
+                            ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $extraUser->id],
+                            ['status' => 'diproses']
+                        );
+
+                        foreach ($kObjects as $i => $crit) {
+                            $val = $extra['scores'][$i];
+                            $gap = $val - $crit->target_value;
+                            ApplicationScore::updateOrCreate(
+                                ['application_id' => $extraApp->id, 'criteria_id' => $crit->id],
+                                ['actual_value' => $val, 'gap' => $gap, 'bobot_gap' => $this->getBobotGap($gap)]
+                            );
+                        }
+                        $totalApps++;
+                    }
+
                     continue;
                 }
 
