@@ -463,18 +463,34 @@ class DummyDataSeeder extends Seeder
                         }
                     }
 
-                    // Pendaftar khusus: Anton & Budi
+                    // Helper closure untuk resolve fakultas & jurusan
+                    $resolveFakultas = fn($nama) => \App\Models\Fakultas::where('nama_fakultas', 'like', '%' . $nama . '%')->first()?->id;
+                    $resolveJurusan  = fn($nama) => \App\Models\Jurusan::where('nama_jurusan',   'like', '%' . $nama . '%')->first()?->id;
+
+                    // Pendaftar khusus: Anton & Budi (profil lengkap)
                     $anton = User::firstOrCreate(
                         ['email' => 'anton@ormawa-unsoed.test'],
-                        ['name' => 'Anton', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
+                        ['name' => 'Anton Firmansyah', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
                     );
-                    MahasiswaProfile::firstOrCreate(['user_id' => $anton->id], ['nim' => 'A10001']);
+                    MahasiswaProfile::updateOrCreate(['user_id' => $anton->id], [
+                        'nim'         => 'H1D021011',
+                        'fakultas_id' => $resolveFakultas('Teknik'),
+                        'jurusan_id'  => $resolveJurusan('Informatika'),
+                        'angkatan'    => '2021',
+                        'no_hp'       => '081234567801',
+                    ]);
 
                     $budi = User::firstOrCreate(
                         ['email' => 'budi@ormawa-unsoed.test'],
-                        ['name' => 'Budi', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
+                        ['name' => 'Budi Setiawan', 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
                     );
-                    MahasiswaProfile::firstOrCreate(['user_id' => $budi->id], ['nim' => 'A10002']);
+                    MahasiswaProfile::updateOrCreate(['user_id' => $budi->id], [
+                        'nim'         => 'H1D021012',
+                        'fakultas_id' => $resolveFakultas('Teknik'),
+                        'jurusan_id'  => $resolveJurusan('Informatika'),
+                        'angkatan'    => '2021',
+                        'no_hp'       => '081234567802',
+                    ]);
 
                     $appAnton = Application::updateOrCreate(
                         ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $anton->id],
@@ -504,14 +520,46 @@ class DummyDataSeeder extends Seeder
 
                     // 8 pendaftar tambahan dengan nilai lebih rendah dari Anton & Budi
                     $extraApplicants = [
-                        ['email' => 'candra@ormawa-unsoed.test',   'name' => 'Candra Wijaya',  'nim' => 'A10003', 'scores' => [1, 3, 2, 3, 2]],
-                        ['email' => 'dewi@ormawa-unsoed.test',     'name' => 'Dewi Rahayu',    'nim' => 'A10004', 'scores' => [2, 2, 1, 2, 3]],
-                        ['email' => 'eko@ormawa-unsoed.test',      'name' => 'Eko Prasetyo',   'nim' => 'A10005', 'scores' => [3, 1, 2, 2, 1]],
-                        ['email' => 'fitri@ormawa-unsoed.test',    'name' => 'Fitri Handayani','nim' => 'A10006', 'scores' => [1, 2, 3, 1, 2]],
-                        ['email' => 'galih@ormawa-unsoed.test',    'name' => 'Galih Saputra',  'nim' => 'A10007', 'scores' => [2, 3, 1, 3, 1]],
-                        ['email' => 'hana@ormawa-unsoed.test',     'name' => 'Hana Pertiwi',   'nim' => 'A10008', 'scores' => [1, 1, 2, 2, 3]],
-                        ['email' => 'irvan@ormawa-unsoed.test',    'name' => 'Irvan Maulana',  'nim' => 'A10009', 'scores' => [3, 2, 1, 1, 2]],
-                        ['email' => 'julia@ormawa-unsoed.test',    'name' => 'Julia Sari',     'nim' => 'A10010', 'scores' => [2, 1, 3, 2, 1]],
+                        [
+                            'email' => 'candra@ormawa-unsoed.test', 'name' => 'Candra Wijaya',
+                            'nim' => 'H1D022013', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2022', 'no_hp' => '081234567803',
+                            'scores' => [1, 3, 2, 3, 2],
+                        ],
+                        [
+                            'email' => 'dewi@ormawa-unsoed.test', 'name' => 'Dewi Rahayu',
+                            'nim' => 'H1D022014', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2022', 'no_hp' => '081234567804',
+                            'scores' => [2, 2, 1, 2, 3],
+                        ],
+                        [
+                            'email' => 'eko@ormawa-unsoed.test', 'name' => 'Eko Prasetyo',
+                            'nim' => 'H1D023015', 'fakultas' => 'Teknik', 'jurusan' => 'Informatika', 'angkatan' => '2023', 'no_hp' => '081234567805',
+                            'scores' => [3, 1, 2, 2, 1],
+                        ],
+                        [
+                            'email' => 'fitri@ormawa-unsoed.test', 'name' => 'Fitri Handayani',
+                            'nim' => 'H1A022016', 'fakultas' => 'Ekonomi dan Bisnis', 'jurusan' => 'Manajemen', 'angkatan' => '2022', 'no_hp' => '081234567806',
+                            'scores' => [1, 2, 3, 1, 2],
+                        ],
+                        [
+                            'email' => 'galih@ormawa-unsoed.test', 'name' => 'Galih Saputra',
+                            'nim' => 'H1A022017', 'fakultas' => 'Ekonomi dan Bisnis', 'jurusan' => 'Akuntansi', 'angkatan' => '2022', 'no_hp' => '081234567807',
+                            'scores' => [2, 3, 1, 3, 1],
+                        ],
+                        [
+                            'email' => 'hana@ormawa-unsoed.test', 'name' => 'Hana Pertiwi',
+                            'nim' => 'H2A022018', 'fakultas' => 'Hukum', 'jurusan' => 'Hukum', 'angkatan' => '2022', 'no_hp' => '081234567808',
+                            'scores' => [1, 1, 2, 2, 3],
+                        ],
+                        [
+                            'email' => 'irvan@ormawa-unsoed.test', 'name' => 'Irvan Maulana',
+                            'nim' => 'H3A021019', 'fakultas' => 'Ilmu Sosial dan Ilmu Politik', 'jurusan' => 'Ilmu Komunikasi', 'angkatan' => '2021', 'no_hp' => '081234567809',
+                            'scores' => [3, 2, 1, 1, 2],
+                        ],
+                        [
+                            'email' => 'julia@ormawa-unsoed.test', 'name' => 'Julia Sari',
+                            'nim' => 'H3A023020', 'fakultas' => 'Ilmu Sosial dan Ilmu Politik', 'jurusan' => 'Administrasi Publik', 'angkatan' => '2023', 'no_hp' => '081234567810',
+                            'scores' => [2, 1, 3, 2, 1],
+                        ],
                     ];
 
                     foreach ($extraApplicants as $extra) {
@@ -519,7 +567,13 @@ class DummyDataSeeder extends Seeder
                             ['email' => $extra['email']],
                             ['name' => $extra['name'], 'password' => bcrypt('password'), 'role' => 'mahasiswa', 'is_active' => true]
                         );
-                        MahasiswaProfile::firstOrCreate(['user_id' => $extraUser->id], ['nim' => $extra['nim']]);
+                        MahasiswaProfile::updateOrCreate(['user_id' => $extraUser->id], [
+                            'nim'         => $extra['nim'],
+                            'fakultas_id' => $resolveFakultas($extra['fakultas']),
+                            'jurusan_id'  => $resolveJurusan($extra['jurusan']),
+                            'angkatan'    => $extra['angkatan'],
+                            'no_hp'       => $extra['no_hp'],
+                        ]);
 
                         $extraApp = Application::updateOrCreate(
                             ['recruitment_id' => $recruitment->id, 'recruitment_division_id' => $division->id, 'user_id' => $extraUser->id],
