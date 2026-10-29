@@ -15,6 +15,7 @@ use App\Models\Criteria;
 use App\Models\CriteriaValueLabel;
 use App\Models\Application;
 use App\Models\ApplicationScore;
+use App\Services\ProfileMatchingService;
 use Illuminate\Database\Seeder;
 
 class DummyDataSeeder extends Seeder
@@ -671,6 +672,19 @@ class DummyDataSeeder extends Seeder
         }
 
         echo "10 Rekrutmen (5 Ditutup/Siap Hitung + 5 Dibuka/Aktif Pendaftaran) untuk seluruh 5 Ormawa berhasil dibuat ({$totalApps} pendaftar).\n";
+
+        // AUTO-HITUNG Profile Matching untuk semua divisi yang rekrutmennya sudah ditutup
+        $service = new ProfileMatchingService();
+        $closedDivisions = RecruitmentDivision::whereHas('recruitment', fn($q) => $q->where('status', 'ditutup'))->get();
+        foreach ($closedDivisions as $closedDiv) {
+            try {
+                $service->processDivision($closedDiv->recruitment, $closedDiv);
+                echo "  ✓ Profile Matching dihitung: {$closedDiv->recruitment->judul} — {$closedDiv->nama}\n";
+            } catch (\Exception $e) {
+                echo "  ✗ Gagal hitung: {$closedDiv->nama} — {$e->getMessage()}\n";
+            }
+        }
+        echo "Profile Matching selesai dihitung untuk semua divisi rekrutmen yang ditutup.\n";
     }
 
     private function getBobotGap($gap)
